@@ -72,6 +72,9 @@ fi
 #   --selector=app.kubernetes.io/component=controller \
 #   --timeout=90s
 
+echo -e "\n[*] Restore missing auth-delegator RBAC bindings for kube-scheduler/kube-controller-manager"
+kubectl apply -f $SCRIPT_DIR/fix-auth-delegator-rbac.yaml
+
 echo -e "\n[*] Install metrics-server chart"
 # kubectl apply -f "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
 # kubectl patch -n kube-system deployment metrics-server --type=json \

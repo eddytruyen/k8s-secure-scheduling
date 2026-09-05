@@ -1,0 +1,38 @@
+# kind's kubeadm bootstrap does not create the ClusterRoleBindings that grant
+# kube-scheduler and kube-controller-manager the `system:auth-delegator`
+# ClusterRole. Without it, neither component can create SubjectAccessReviews,
+# which their secure serving ports need to authorize any request that isn't
+# using the loopback credentials (e.g. ClusterLoader2's SchedulingMetrics
+# measurement querying kube-scheduler's /metrics over HTTPS). This manifests as:
+#
+#   Internal Server Error: "/metrics": subjectaccessreviews.authorization.k8s.io
+#   is forbidden: User "system:kube-scheduler" cannot create resource
+#   "subjectaccessreviews" in API group "authorization.k8s.io" at the cluster scope
+#
+# Restoring the two bindings below (standard on non-kind kubeadm clusters)
+# fixes it for both components.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: system:kube-scheduler:auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:kube-scheduler
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: system:kube-controller-manager:auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:kube-controller-manager
