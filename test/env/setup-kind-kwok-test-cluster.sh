@@ -84,13 +84,17 @@ fi
 echo -e "\n[*] Restore missing auth-delegator RBAC bindings for kube-scheduler/kube-controller-manager"
 kubectl apply -f $SCRIPT_DIR/fix-auth-delegator-rbac.yaml
 
-echo -e "\n[*] Install metrics-server chart"
-# kubectl apply -f "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
-# kubectl patch -n kube-system deployment metrics-server --type=json \
-#   -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
-helm install metrics-server oci://registry-1.docker.io/bitnamicharts/metrics-server \
-    --namespace kube-system --wait \
-    --values $SCRIPT_DIR/values/metrics-server.yaml
+echo -e "\n[*] Install metrics-server"
+# Official kubernetes-sigs manifest (registry.k8s.io images), not the Bitnami
+# OCI chart: Bitnami aggressively prunes older free-tier image tags, so even
+# a pinned chart --version doesn't prevent its referenced image from later
+# 404ing (observed: bitnami/metrics-server:0.8.0-debian-12-r4 "not found").
+# registry.k8s.io images are the project's own release artifacts and don't
+# get pruned like this.
+kubectl apply -f "https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml"
+kubectl patch -n kube-system deployment metrics-server --type=json \
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+kubectl -n kube-system rollout status deployment/metrics-server --timeout=60s
 
 # echo -e "\n[*] Install kube-prometheus-stack chart"
 # helm upgrade --install kube-prometheus-stack --namespace monitoring --create-namespace --wait \
