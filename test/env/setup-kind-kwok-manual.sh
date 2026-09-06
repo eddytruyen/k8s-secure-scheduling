@@ -66,7 +66,8 @@ kubeadmConfigPatches:
   kind: KubeProxyConfiguration
   metricsBindAddress: 0.0.0.0
 nodes:
-${nodes_yaml}EOF
+${nodes_yaml}
+EOF
 
 kubectl config use-context "kind-${CLUSTER_NAME}"
 echo ""
