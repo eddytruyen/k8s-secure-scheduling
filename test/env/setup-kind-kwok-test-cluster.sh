@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
 
-CONTROL_PLANE_NODES="${CONTROL_PLANE_NODES:-3}"
+# Default is 1 control-plane node, not the original 3: on a resource-
+# constrained shared host, a 3-node HA control plane's etcd-consensus
+# overhead (peer round-trips, occasional leader elections under load) is a
+# real, measured contributor to admission/scheduling latency noise that has
+# nothing to do with Gatekeeper or the use-case policies under test. Set
+# CONTROL_PLANE_NODES=3 explicitly to reproduce the paper's original HA
+# topology on hardware that can actually absorb it.
+CONTROL_PLANE_NODES="${CONTROL_PLANE_NODES:-1}"
 NODES="${NODES:-0}"
 FAKE_NODES="${FAKE_NODES:-100}"
 WITHOUT_GATEKEEPER="${WITHOUT_GATEKEEPER:-false}"
+GATEKEEPER_VERSION="${GATEKEEPER_VERSION:-3.23.1}"
+KWOK_VERSION="${KWOK_VERSION:-v0.8.0}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -109,30 +118,37 @@ CL2_PROMETHEUS_TOLERATE_MASTER=true \
 rm -rf $SCRIPT_DIR/fake-test-report
 
 if [ "$WITHOUT_GATEKEEPER" = false ]; then
-  echo -e '\n[*] Install Gatekeeper chart'
-  # kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
+  echo -e "\n[*] Install Gatekeeper chart (pinned: $GATEKEEPER_VERSION)"
   helm upgrade --install gatekeeper --namespace gatekeeper-system --create-namespace --wait \
-      --repo https://open-policy-agent.github.io/gatekeeper/charts gatekeeper
+      --repo https://open-policy-agent.github.io/gatekeeper/charts gatekeeper \
+      --version "$GATEKEEPER_VERSION"
 
   echo -e "\n[*] Install Gatekeeper pod monitors"
   kubectl apply -f $SCRIPT_DIR/gatekeeper-metrics-exporter/
 fi
 
-echo -e "\n[*] Install Kubernetes WithOut Kubelet"
-kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/latest/download/kwok.yaml"
+echo -e "\n[*] Install Kubernetes WithOut Kubelet (pinned: $KWOK_VERSION)"
+kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/download/${KWOK_VERSION}/kwok.yaml"
 # NOTE: To better simulate real behavior of Pod stages do not use the default
 # Pod Fast Stage (i.e., pod-fast.yaml), but use the Pod General Stage (i.e.,
 # pod-general.yaml)
-kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/latest/download/stage-fast.yaml"
+kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/download/${KWOK_VERSION}/stage-fast.yaml"
 
 # echo -e "\n[*] Setup default metrics usage policy"
 # kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/latest/download/metrics-usage.yaml"
 
-echo -e "\n[*] Disable scheduling pods on control plane nodes"
-for node in "${control_plane_nodes[@]}"
-do
-  kubectl taint nodes ${node} node-role.kubernetes.io/control-plane=:NoSchedule --overwrite
-done
+# Only re-taint control-plane nodes once there are REAL worker nodes to take
+# over scheduling for them. Fake KWOK nodes don't run real containers, so
+# with NODES=0 (our topology) this taint would leave zero schedulable nodes
+# for Gatekeeper/Prometheus/metrics-server — a real bug in the original
+# unconditional version of this step, not just a style choice.
+if [ "$NODES" -gt 0 ]; then
+  echo -e "\n[*] Disable scheduling pods on control plane nodes"
+  for node in "${control_plane_nodes[@]}"
+  do
+    kubectl taint nodes ${node} node-role.kubernetes.io/control-plane=:NoSchedule --overwrite
+  done
+fi
 
 if [ "$NODES" -gt 0 ]; then
   echo -e "\n[*] Enable scheduling pods on worker nodes"
