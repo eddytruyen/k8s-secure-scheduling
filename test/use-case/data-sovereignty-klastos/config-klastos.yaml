@@ -1,0 +1,202 @@
+# KLASTOS counterpart of ../config.yaml, adapted for Experiment 1's
+# apples-to-apples harness. Differences from the Gatekeeper baseline's
+# config.yaml, each deliberate:
+#
+#   - namespace.prefix is pinned ("klastos-eval") instead of left to
+#     ClusterLoader2's default random "test-<6 chars>" prefix. Baseline
+#     never needed this (Gatekeeper's mutation/constraint objects are
+#     cluster-scoped, label-matched, and don't reference a namespace by
+#     name) - but harness/policy/appgroup-template.yaml's AppGroup CR must
+#     name a concrete namespace *before* ClusterLoader2 creates it, so the
+#     name has to be deterministic. Must stay "klastos-eval" to match
+#     apply-class-policy.sh's own default.
+#   - Two pod templates (POD_SPEC_A/POD_SPEC_B) instead of one POD_SPEC,
+#     each creating N/2 replicas, because every pod here must belong to one
+#     of an AppGroup's exactly-2 workloads (Diktyo's minimum - see
+#     harness/policy/appgroup-template.yaml). Both phases share the same
+#     "group" label so WaitForRunningPods/SchedulingMetrics see all N pods
+#     as one population, same as baseline's single-phase N pods.
+#   - GatekeeperValidationRequestDuration/GatekeeperMutationRequestDuration
+#     replaced by OPAAdmissionRequestDuration, querying OPA's own
+#     http_request_duration_seconds_bucket{handler="/"} - confirmed live
+#     this session that raw OPA's admission response comes from the
+#     `system.main` package (policies/system_main.rego), which OPA serves
+#     unwrapped at the bare webhook root path "/" (no {"result":...}
+#     envelope) - that's the exact request the K8s API server's webhook
+#     POSTs on every admission review, so handler="/" isolates it cleanly
+#     from OPA's other traffic (kube-mgmt's v1/data and v1/policies calls,
+#     the /health probe). Requires harness/policy/opa-servicemonitor.yaml
+#     applied first (same Prometheus-CRDs-must-already-exist caveat as
+#     Gatekeeper's own PodMonitors).
+#   - No GatekeeperConstraintTemplateIngestionDuration counterpart - not
+#     needed (kube-mgmt's CSC/AppClass replication lag is already handled
+#     by the appclass-operator/unified-operator's own reconciliation, per
+#     this session's design discussion).
+
+{{$totalSchedulerThroughputPods := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 5000}}
+{{$halfPods := DivideInt $totalSchedulerThroughputPods 2}}
+{{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
+{{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
+{{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
+
+{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 400}}
+
+{{$podSpecA := DefaultParam .POD_SPEC_A "vanilla/workload-a.yaml"}}
+{{$podSpecB := DefaultParam .POD_SPEC_B "vanilla/workload-b.yaml"}}
+
+name: klastos-scheduler-throughput
+namespace:
+  number: 1
+  prefix: klastos-eval
+  # apply-class-policy.sh pre-creates klastos-eval-1 (the AppGroup CR must
+  # name a real namespace before ClusterLoader2 would otherwise create it) -
+  # without this, CL2 hard-errors with "automanaged namespace ... already
+  # created" (default is false). deleteAutomanagedNamespaces stays at its
+  # default (true): CL2 deletes klastos-eval-1 at the end of each class's
+  # run, which cascade-deletes that class's AppGroup CR too - harmless,
+  # delete-class-policy.sh's own AppGroup delete is just a no-op then, and
+  # apply-class-policy.sh recreates the namespace fresh for the next class.
+  enableExistingNamespaces: true
+tuningSets:
+- name: default
+  globalQPSLoad:
+    qps: {{$defaultQps}}
+    burst: {{$defaultBurst}}
+- name: UniformQPS
+  qpsLoad:
+    qps: {{$uniformQps}}
+steps:
+- name: Creating scheduler throughput measurements
+  measurements:
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurmentInterval: 1s # Not a typo, it's wrong in the source code
+
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      pollFrequency: 1s
+
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+  - Identifier: OPAAdmissionRequestDuration
+    Method: GenericPrometheusQuery
+    Params:
+      action: start
+      metricName: OPAAdmissionRequestDuration
+      metricVersion: v1
+      unit: s
+      queries:
+      - name: Perc50
+        query: histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{handler="/"}[5m])) by (le))
+      - name: Perc90
+        query: histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket{handler="/"}[5m])) by (le))
+      - name: Perc99
+        query: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler="/"}[5m])) by (le))
+      - name: Sum
+        query: sum(http_request_duration_seconds_sum{handler="/"})
+
+- name: create scheduler throughput pods
+  phases:
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-scheduler-throughput-pod-a
+      objectTemplatePath: {{$podSpecA}}
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-scheduler-throughput-pod-b
+      objectTemplatePath: {{$podSpecB}}
+      templateFillMap:
+        Group: direct-scheduler-throughput
+- name: Waiting for scheduler throughput pods to be created
+  measurements:
+  - Identifier: WaitForDirectSchedulerThroughputPods
+    Method: WaitForRunningPods
+    Params:
+      action: gather
+      timeout: 5m
+      desiredPodCount: {{$totalSchedulerThroughputPods}}
+      labelSelector: group = direct-scheduler-throughput
+- name: Collecting scheduler throughput measurements
+  measurements:
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: gather
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: gather
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: gather
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: gather
+      enableViolations: true
+      threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: gather
+  - Identifier: OPAAdmissionRequestDuration
+    Method: GenericPrometheusQuery
+    Params:
+      action: gather
+- name: Delete scheduler throughput pods
+  phases:
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-scheduler-throughput-pod-a
+      objectTemplatePath: {{$podSpecA}}
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-scheduler-throughput-pod-b
+      objectTemplatePath: {{$podSpecB}}
+      templateFillMap:
+        Group: direct-scheduler-throughput

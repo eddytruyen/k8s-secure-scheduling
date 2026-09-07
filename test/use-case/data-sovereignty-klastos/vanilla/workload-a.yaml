@@ -1,0 +1,26 @@
+# Calibration pod (no data-sovereignty label, no constraint) — but still
+# AppGroup-labeled, matching harness's "vanilla" AppGroup
+# (harness/policy/appgroup-template.yaml with CLASS=vanilla). Without the
+# appgroup.diktyo.x-k8s.io label, OPA's main.rego skips the pod entirely
+# (default allow, no schedulerName/gate), which would mean it never even
+# reaches diktyo-scheduler — that's not a fair "webhook overhead, zero
+# constraint effect" baseline. Keeping it AppGroup-labeled ensures it still
+# pays the same admission round-trip as eu/us/italynorth pods, just with an
+# always-satisfied (unconstrained) CSI entry.
+#
+# No schedulerName/schedulingGates here — those are injected by OPA's
+# admission webhook at CREATE time (main.rego), not hardcoded, so the
+# harness actually measures admission-mutation overhead (mirrors baseline's
+# pods carrying no nodeAffinity until Gatekeeper's mutation.yaml adds it).
+apiVersion: v1
+kind: Pod
+metadata:
+  generateName: klastos-vanilla-a-
+  labels:
+    appgroup.diktyo.x-k8s.io: vanilla-app
+    appgroup.diktyo.x-k8s.io.workload: vanilla-workload-a
+    group: {{.Group}}
+spec:
+  containers:
+  - image: registry.k8s.io/pause:3.9
+    name: pause
