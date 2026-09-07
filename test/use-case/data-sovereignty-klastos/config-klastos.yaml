@@ -18,15 +18,20 @@
 #     as one population, same as baseline's single-phase N pods.
 #   - GatekeeperValidationRequestDuration/GatekeeperMutationRequestDuration
 #     replaced by OPAAdmissionRequestDuration, querying OPA's own
-#     http_request_duration_seconds_bucket{handler="/"} - confirmed live
-#     this session that raw OPA's admission response comes from the
-#     `system.main` package (policies/system_main.rego), which OPA serves
-#     unwrapped at the bare webhook root path "/" (no {"result":...}
-#     envelope) - that's the exact request the K8s API server's webhook
-#     POSTs on every admission review, so handler="/" isolates it cleanly
-#     from OPA's other traffic (kube-mgmt's v1/data and v1/policies calls,
-#     the /health probe). Requires harness/policy/opa-servicemonitor.yaml
-#     applied first (same Prometheus-CRDs-must-already-exist caveat as
+#     http_request_duration_seconds_bucket{handler="index"} - confirmed
+#     live against real admission traffic (2057 POST/index/200 samples
+#     after a single harness run) that OPA's Go HTTP metrics middleware
+#     labels the bare webhook root path route "index", not literally "/"
+#     as an earlier version of this comment assumed from reading
+#     policies/system_main.rego's own convention (serving the admission
+#     response unwrapped at "/") without checking the actual scraped label
+#     value — that assumption silently returned dataItems: null in every
+#     run for a full evaluation session before being caught. handler="index"
+#     isolates it cleanly from OPA's other traffic (kube-mgmt's v1/data and
+#     v1/policies calls, the /health probe, which each get their own
+#     handler value, confirmed via the same live query). Requires
+#     harness/policy/opa-servicemonitor.yaml applied first (same
+#     Prometheus-CRDs-must-already-exist caveat as
 #     Gatekeeper's own PodMonitors).
 #   - No GatekeeperConstraintTemplateIngestionDuration counterpart - not
 #     needed (kube-mgmt's CSC/AppClass replication lag is already handled
@@ -111,13 +116,13 @@ steps:
       unit: s
       queries:
       - name: Perc50
-        query: histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{handler="/"}[5m])) by (le))
+        query: histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{handler="index"}[5m])) by (le))
       - name: Perc90
-        query: histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket{handler="/"}[5m])) by (le))
+        query: histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket{handler="index"}[5m])) by (le))
       - name: Perc99
-        query: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler="/"}[5m])) by (le))
+        query: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler="index"}[5m])) by (le))
       - name: Sum
-        query: sum(http_request_duration_seconds_sum{handler="/"})
+        query: sum(http_request_duration_seconds_sum{handler="index"})
 
 - name: create scheduler throughput pods
   phases:
