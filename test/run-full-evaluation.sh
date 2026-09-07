@@ -61,6 +61,12 @@ for N in $N_STEPS; do
        CL2_SCHEDULER_THROUGHPUT_PODS="$N" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD" \
        CLASSES="$CLASSES" "$SCRIPT_DIR/run-klastos-use-case-test.sh" \
        > "$STEP_DIR/run.log" 2>&1; then
+      # run-klastos-use-case-test.sh writes to a FIXED per-class path
+      # (result/use-case/data-sovereignty-klastos-test/<class>/), not one
+      # scoped to this N — copy it out now or the next step's run
+      # overwrites these measurements before generate-report.py ever
+      # sees them.
+      cp -r "$SCRIPT_DIR/result/use-case/data-sovereignty-klastos-test" "$STEP_DIR/measurements"
       echo "    OK — log: $STEP_DIR/run.log"
     else
       echo "    FAILED at N=$N — see $STEP_DIR/run.log"
@@ -80,6 +86,8 @@ for N in $N_STEPS; do
        CL2_SCHEDULER_THROUGHPUT_PODS="$N" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD" \
        "$SCRIPT_DIR/run-use-case-test.sh" \
        > "$STEP_DIR/run.log" 2>&1; then
+      # Same fixed-path overwrite risk as the KLASTOS branch above.
+      cp -r "$SCRIPT_DIR/result/use-case/data-sovereignty-test" "$STEP_DIR/measurements"
       echo "    OK — log: $STEP_DIR/run.log"
     else
       echo "    FAILED at N=$N — see $STEP_DIR/run.log"
@@ -97,3 +105,7 @@ done
 
 echo "=== All steps passed ==="
 echo "Results under: $RESULT_ROOT"
+
+python3 "$SCRIPT_DIR/generate-report.py" "$RESULT_ROOT" | tee "$RESULT_ROOT/report.md"
+echo ""
+echo "Report: $RESULT_ROOT/report.md"
