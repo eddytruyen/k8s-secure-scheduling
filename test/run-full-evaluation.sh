@@ -57,6 +57,18 @@ for N in $N_STEPS; do
     echo "[*] KLASTOS harness, N=$N"
     STEP_DIR="$RESULT_ROOT/klastos-n$N"
     mkdir -p "$STEP_DIR"
+
+    # See e2e-latency-watch.py's own header for why this exists:
+    # ClusterLoader2's own SchedulingMetrics measurement can't observe
+    # diktyo-scheduler at all (hardcoded to proxy the DEFAULT scheduler's
+    # static pod), and diktyo-scheduler's own binary doesn't even
+    # register the histogram that measurement queries for. Must be
+    # running BEFORE pods are created and stay running until after the
+    # harness's own delete step, or it misses the events it needs.
+    python3 "$SCRIPT_DIR/e2e-latency-watch.py" --output "$STEP_DIR/e2e-latency.json" &
+    WATCHER_PID=$!
+    sleep 1
+
     if KLASTOS_REPO="$KLASTOS_REPO" NODES="$NODES" \
        CL2_SCHEDULER_THROUGHPUT_PODS="$N" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD" \
        CLASSES="$CLASSES" "$SCRIPT_DIR/run-klastos-use-case-test.sh" \
@@ -72,12 +84,20 @@ for N in $N_STEPS; do
       echo "    FAILED at N=$N — see $STEP_DIR/run.log"
       FAILED=true
     fi
+
+    kill -TERM "$WATCHER_PID" 2>/dev/null || true
+    wait "$WATCHER_PID" 2>/dev/null || true
   fi
 
   if [ "$RUN_BASELINE" = true ]; then
     echo "[*] Gatekeeper baseline, N=$N"
     STEP_DIR="$RESULT_ROOT/baseline-n$N"
     mkdir -p "$STEP_DIR"
+
+    python3 "$SCRIPT_DIR/e2e-latency-watch.py" --output "$STEP_DIR/e2e-latency.json" &
+    WATCHER_PID=$!
+    sleep 1
+
     # run-use-case-test.sh's own scheduler-suite.yaml already covers all 4
     # identifiers (vanilla/eu/us/italynorth) in one clusterloader
     # --testsuite invocation — unlike the KLASTOS harness, no per-class
@@ -105,6 +125,9 @@ for N in $N_STEPS; do
       echo "    FAILED at N=$N — see $STEP_DIR/run.log"
       FAILED=true
     fi
+
+    kill -TERM "$WATCHER_PID" 2>/dev/null || true
+    wait "$WATCHER_PID" 2>/dev/null || true
   fi
 
   if [ "$FAILED" = true ]; then

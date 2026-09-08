@@ -29,13 +29,28 @@ result/use-case/<test>-test/ has never been cleared between runs all
 session, unlike KLASTOS's harness which overwrites the same fixed
 per-class path every run instead of accumulating).
 
+e2e latency comes from e2e-latency-watch.py's own output
+(<STEP_DIR>/e2e-latency.json — one directory above each leaf, since one
+watcher runs for a whole step covering all identifiers), NOT from
+SchedulingMetrics' own e2eSchedulingLatency field: confirmed live this
+session that ClusterLoader2's SchedulingMetrics measurement hardcodes a
+direct proxy call to a pod literally named "kube-scheduler-<masterName>"
+(the DEFAULT scheduler's own static pod) — it can never observe
+diktyo-scheduler (a separate Deployment) at all, and separately, that
+custom-built diktyo-scheduler binary doesn't even register the
+histogram that measurement queries for. Every KLASTOS-side
+e2eSchedulingLatency value was silently 0 because of this, not because
+scheduling was instant — see e2e-latency-watch.py's own header for the
+full story and why it measures this independently, from pod-watch
+events instead.
+
 Usage:
   generate-report.py <root> [<root> ...]
 
 Known measurement files read (all optional — missing ones render as "-"):
   junit.xml                                    — pass/fail (failures+errors == 0)
   SchedulingThroughput_*.json                  — scheduled pods/sec percentiles
-  SchedulingMetrics_*.json                     — e2eSchedulingLatency percentiles
+  ../e2e-latency.json                          — true e2e scheduling latency (see above)
   *OPAAdmissionRequestDuration_*.json           — KLASTOS admission-mutation latency
   *GatekeeperMutationRequestDuration_*.json     — baseline admission-mutation latency
   *GatekeeperValidationRequestDuration_*.json   — baseline validation latency
@@ -58,6 +73,40 @@ _METRIC_PREFIXES = {
     "gk_mutation": "GenericPrometheusQuery GatekeeperMutationRequestDuration_",
     "gk_validation": "GenericPrometheusQuery GatekeeperValidationRequestDuration_",
 }
+
+
+def canonical_class(s):
+    """Normalize a CL2 identifier ("pod-eu-region", "vanilla", "") or a
+    KLASTOS leaf directory's own basename ("eu", "vanilla") into
+    "eu"/"us"/"italynorth"/"vanilla" — MUST match
+    e2e-latency-watch.py's own canonical_class() exactly, since this is
+    how this script's per-row identifiers get joined against that
+    script's own generateName-derived groups."""
+    s = (s or "").lower().rstrip("-")
+    for p in ("pod-churn", "klastos", "pod"):
+        if s == p:
+            s = ""
+            break
+        if s.startswith(p + "-"):
+            s = s[len(p) + 1:]
+            break
+    for suf in ("-region", "-a", "-b"):
+        if s.endswith(suf):
+            s = s[: -len(suf)]
+            break
+    return s.strip("-") or "vanilla"
+
+
+def load_e2e_latency(dirpath, class_key):
+    """e2e-latency-watch.py writes ONE file per evaluation step, covering
+    every identifier/class run during that step — one directory ABOVE
+    the leaf (junit.xml-containing) directory generate-report.py
+    otherwise operates on."""
+    path = os.path.join(os.path.dirname(dirpath.rstrip("/")), "e2e-latency.json")
+    d = load_json(path)
+    if not d:
+        return None
+    return (d.get("summary") or {}).get(class_key)
 
 
 def load_json(path):
@@ -168,19 +217,6 @@ def fmt_ms(seconds):
     return "-" if seconds is None else f"{seconds * 1000:.1f}ms"
 
 
-def fmt_ns_as_ms(nanoseconds):
-    """For SchedulingMetrics' e2eSchedulingLatency (and
-    frameworkExtensionPointDuration, if ever surfaced) — a native
-    ClusterLoader2 Go measurement serializing time.Duration directly as
-    int64 NANOSECONDS, not seconds. Confirmed live this session: treating
-    a raw value like 21818181 as seconds (this session's first version of
-    fmt_ms did exactly that) inflates a genuine ~21.8ms e2e latency into
-    an absurd ~21.8 million ms — the bug hid successfully through every
-    earlier KLASTOS-only report because e2eSchedulingLatency was always
-    exactly 0 there (0 nanoseconds == 0 seconds, no unit info lost), and
-    only surfaced once the baseline's real, non-zero latencies appeared.
-    """
-    return "-" if nanoseconds is None else f"{nanoseconds / 1e6:.1f}ms"
 
 
 def fmt_num(v):
@@ -189,8 +225,9 @@ def fmt_num(v):
 
 def summarize(label, dirpath, identifier):
     st = load_json(latest_for(dirpath, _METRIC_PREFIXES["throughput"], identifier))
-    sm = load_json(latest_for(dirpath, _METRIC_PREFIXES["scheduling_metrics"], identifier))
-    e2e = (sm or {}).get("e2eSchedulingLatency", {}) or {}
+
+    class_key = canonical_class(identifier or os.path.basename(dirpath.rstrip("/")))
+    e2e = load_e2e_latency(dirpath, class_key) or {}
 
     opa = generic_query_percentiles(dirpath, _METRIC_PREFIXES["opa"], identifier)
     gk_mut = generic_query_percentiles(dirpath, _METRIC_PREFIXES["gk_mutation"], identifier)
@@ -203,9 +240,10 @@ def summarize(label, dirpath, identifier):
         "throughput_p50": (st or {}).get("perc50"),
         "throughput_p90": (st or {}).get("perc90"),
         "throughput_p99": (st or {}).get("perc99"),
-        "e2e_p50": e2e.get("Perc50"),
-        "e2e_p90": e2e.get("Perc90"),
-        "e2e_p99": e2e.get("Perc99"),
+        "e2e_p50": e2e.get("p50"),
+        "e2e_p90": e2e.get("p90"),
+        "e2e_p99": e2e.get("p99"),
+        "e2e_count": e2e.get("count"),
         "admission_p50": (admission or {}).get("Perc50"),
         "admission_p90": (admission or {}).get("Perc90"),
         "admission_p99": (admission or {}).get("Perc99"),
@@ -230,7 +268,7 @@ def render_markdown(rows):
     lines = ["| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
     for r in rows:
         sched = f"{fmt_num(r['throughput_p50'])}/{fmt_num(r['throughput_p90'])}/{fmt_num(r['throughput_p99'])}"
-        e2e = f"{fmt_ns_as_ms(r['e2e_p50'])}/{fmt_ns_as_ms(r['e2e_p90'])}/{fmt_ns_as_ms(r['e2e_p99'])}"
+        e2e = f"{fmt_ms(r['e2e_p50'])}/{fmt_ms(r['e2e_p90'])}/{fmt_ms(r['e2e_p99'])}"
         adm = f"{fmt_ms(r['admission_p50'])}/{fmt_ms(r['admission_p90'])}/{fmt_ms(r['admission_p99'])}"
         val = fmt_ms(r["validation_p99"])
         lines.append(f"| {r['label']} | {r['status']} | {sched} | {e2e} | {adm} | {val} |")
