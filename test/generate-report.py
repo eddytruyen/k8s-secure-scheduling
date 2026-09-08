@@ -3,16 +3,34 @@
 harness and/or Gatekeeper baseline) into a markdown table.
 
 Recursively discovers every directory containing a junit.xml (one such
-directory = one clusterloader run: one class/identifier, one report-dir)
-under each given root, rather than assuming a fixed subfolder layout —
-the KLASTOS harness and the baseline use different --report-dir
-conventions, and testsuite-driven multi-identifier runs (the baseline)
-create their own internal per-identifier structure this script doesn't
-need to know about ahead of time.
+directory = one clusterloader run: one class/identifier for KLASTOS, or
+ALL 4 identifiers flatly mixed together for the baseline's own
+--testsuite report-dir) under each given root.
+
+Within a leaf directory, measurement files are further grouped by the
+identifier embedded in their own filename — e.g.
+"SchedulingThroughput_direct-scheduler-throughput_pod-eu-region_<ts>.json"
+groups under "pod-eu-region"; KLASTOS's per-class dirs have no such
+suffix (each dir already holds exactly one class) and group under "".
+This step is required for the baseline, whose --testsuite invocation
+writes all 4 identifiers' files into ONE flat directory — without it,
+a single row would silently merge measurements from 4 different
+identifiers together.
+
+Freshness is judged by the ISO-8601 timestamp EMBEDDED IN EACH
+FILENAME, never filesystem mtime — confirmed live this session that
+copying a result directory with `cp -r` (as run-full-evaluation.sh
+does, to keep each N-step's measurements before the next step
+overwrites the shared source directory) resets every file's mtime to
+the copy time, making "latest by mtime" indistinguishable and liable to
+pick a file left over from a run days earlier once several metric
+files share the same result directory (the baseline's own
+result/use-case/<test>-test/ has never been cleared between runs all
+session, unlike KLASTOS's harness which overwrites the same fixed
+per-class path every run instead of accumulating).
 
 Usage:
   generate-report.py <root> [<root> ...]
-  generate-report.py --md <root> [<root> ...] > report.md
 
 Known measurement files read (all optional — missing ones render as "-"):
   junit.xml                                    — pass/fail (failures+errors == 0)
@@ -24,15 +42,22 @@ Known measurement files read (all optional — missing ones render as "-"):
 """
 import sys
 import os
+import re
 import glob
 import json
 import argparse
 import xml.etree.ElementTree as ET
 
+_TS_RE = re.compile(r"_(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)\.json$")
 
-def latest(pattern):
-    files = sorted(glob.glob(pattern), key=os.path.getmtime)
-    return files[-1] if files else None
+# (report-column key, literal filename prefix before the identifier segment)
+_METRIC_PREFIXES = {
+    "throughput": "SchedulingThroughput_",
+    "scheduling_metrics": "SchedulingMetrics_",
+    "opa": "GenericPrometheusQuery OPAAdmissionRequestDuration_",
+    "gk_mutation": "GenericPrometheusQuery GatekeeperMutationRequestDuration_",
+    "gk_validation": "GenericPrometheusQuery GatekeeperValidationRequestDuration_",
+}
 
 
 def load_json(path):
@@ -45,7 +70,16 @@ def load_json(path):
         return None
 
 
-def junit_status(dirpath):
+def junit_status(dirpath, identifier=""):
+    """Pass/fail for this directory, or for just one identifier within it.
+
+    The baseline writes all 4 identifiers into ONE junit.xml (a
+    --testsuite run) — its suite-level failures/errors counts cover all
+    of them mixed together, so a real failure in "eu" would otherwise
+    mark "vanilla"'s row FAIL too. When identifier is given, check only
+    that identifier's own <testcase> entries (named "<identifier> overall
+    (...)" / "<identifier>: ...") for a <failure>/<error> child instead.
+    """
     path = os.path.join(dirpath, "junit.xml")
     if not os.path.exists(path):
         return "?"
@@ -54,48 +88,118 @@ def junit_status(dirpath):
         ts = root if root.tag == "testsuite" else root.find(".//testsuite")
         if ts is None:
             return "?"
-        failures = int(ts.get("failures", 0))
-        errors = int(ts.get("errors", 0))
-        return "PASS" if failures == 0 and errors == 0 else "FAIL"
+        if not identifier:
+            failures = int(ts.get("failures", 0))
+            errors = int(ts.get("errors", 0))
+            return "PASS" if failures == 0 and errors == 0 else "FAIL"
+        found_any = False
+        for tc in ts.findall("testcase"):
+            name = tc.get("name", "")
+            if name.startswith(identifier + ":") or name.startswith(identifier + " "):
+                found_any = True
+                if tc.find("failure") is not None or tc.find("error") is not None:
+                    return "FAIL"
+        return "PASS" if found_any else "?"
     except Exception:
         return "?"
 
 
-def generic_query_percentiles(dirpath, name_glob):
-    """Parse a GenericPrometheusQuery result file's dataItems[0].data —
-    confirmed live this session: {"version":"v1","dataItems":[{"data":
-    {"Perc50":..,"Perc90":..,"Perc99":..,"Sum":..},"unit":"s"}]}, or
-    dataItems: null if the query returned no samples (e.g. the metric
-    hasn't been scraped yet, or the ServiceMonitor/query is misconfigured
-    — this session hit both, so treat null as "not available", not zero.
-    """
-    d = load_json(latest(os.path.join(dirpath, name_glob)))
+def identifier_of(basename, prefix):
+    """Strip a known literal metric-name prefix, the CONSTANT group-name
+    segment CL2's own config `name:` field contributes right after it
+    (e.g. "direct-scheduler-throughput", "klastos-scheduler-throughput" —
+    always hyphenated, never containing an underscore, so it's always
+    exactly the first "_"-separated segment), and the trailing
+    _<timestamp>.json — leaving whatever's left as the identifier key
+    (e.g. "pod-eu-region" for the baseline's own --testsuite identifiers,
+    or "" when there's nothing left at all — KLASTOS's per-class dirs,
+    which hold only one identifier already, contribute no such suffix)."""
+    if not basename.startswith(prefix):
+        return None
+    rest = basename[len(prefix):]
+    m = _TS_RE.search(rest)
+    if not m:
+        return None
+    rest = rest[: m.start()].strip("_")
+    parts = rest.split("_", 1)
+    return parts[1] if len(parts) > 1 else ""
+
+
+def discover_identifiers(dirpath):
+    """All distinct identifier keys present in this directory, derived
+    from whichever metric files always exist (throughput + scheduling
+    latency are present for every run of either harness)."""
+    ids = set()
+    for prefix in (_METRIC_PREFIXES["throughput"], _METRIC_PREFIXES["scheduling_metrics"]):
+        for path in glob.glob(os.path.join(dirpath, prefix + "*.json")):
+            ident = identifier_of(os.path.basename(path), prefix)
+            if ident is not None:
+                ids.add(ident)
+    return ids or {""}
+
+
+def latest_for(dirpath, prefix, identifier):
+    """Newest (by filename timestamp, not mtime) file for this metric
+    prefix + identifier combination in dirpath, or None."""
+    candidates = []
+    for path in glob.glob(os.path.join(dirpath, prefix + "*.json")):
+        basename = os.path.basename(path)
+        ident = identifier_of(basename, prefix)
+        if ident != identifier:
+            continue
+        m = _TS_RE.search(basename)
+        ts = m.group(1) if m else ""  # ISO-8601 sorts lexicographically = chronologically
+        candidates.append((ts, path))
+    if not candidates:
+        return None
+    return sorted(candidates)[-1][1]
+
+
+def generic_query_percentiles(dirpath, prefix, identifier):
+    d = load_json(latest_for(dirpath, prefix, identifier))
     if not d or not d.get("dataItems"):
         return None
     return d["dataItems"][0].get("data", {})
 
 
 def fmt_ms(seconds):
+    """For GenericPrometheusQuery-derived values (OPA/Gatekeeper mutation
+    and validation) — these come from PromQL evaluation, always seconds."""
     return "-" if seconds is None else f"{seconds * 1000:.1f}ms"
+
+
+def fmt_ns_as_ms(nanoseconds):
+    """For SchedulingMetrics' e2eSchedulingLatency (and
+    frameworkExtensionPointDuration, if ever surfaced) — a native
+    ClusterLoader2 Go measurement serializing time.Duration directly as
+    int64 NANOSECONDS, not seconds. Confirmed live this session: treating
+    a raw value like 21818181 as seconds (this session's first version of
+    fmt_ms did exactly that) inflates a genuine ~21.8ms e2e latency into
+    an absurd ~21.8 million ms — the bug hid successfully through every
+    earlier KLASTOS-only report because e2eSchedulingLatency was always
+    exactly 0 there (0 nanoseconds == 0 seconds, no unit info lost), and
+    only surfaced once the baseline's real, non-zero latencies appeared.
+    """
+    return "-" if nanoseconds is None else f"{nanoseconds / 1e6:.1f}ms"
 
 
 def fmt_num(v):
     return "-" if v is None else str(v)
 
 
-def summarize(label, dirpath):
-    st = load_json(latest(os.path.join(dirpath, "SchedulingThroughput_*.json")))
-    sm = load_json(latest(os.path.join(dirpath, "SchedulingMetrics_*.json")))
+def summarize(label, dirpath, identifier):
+    st = load_json(latest_for(dirpath, _METRIC_PREFIXES["throughput"], identifier))
+    sm = load_json(latest_for(dirpath, _METRIC_PREFIXES["scheduling_metrics"], identifier))
     e2e = (sm or {}).get("e2eSchedulingLatency", {}) or {}
 
-    opa = generic_query_percentiles(dirpath, "*OPAAdmissionRequestDuration_*.json")
-    gk_mut = generic_query_percentiles(dirpath, "*GatekeeperMutationRequestDuration_*.json")
-    gk_val = generic_query_percentiles(dirpath, "*GatekeeperValidationRequestDuration_*.json")
+    opa = generic_query_percentiles(dirpath, _METRIC_PREFIXES["opa"], identifier)
+    gk_mut = generic_query_percentiles(dirpath, _METRIC_PREFIXES["gk_mutation"], identifier)
+    gk_val = generic_query_percentiles(dirpath, _METRIC_PREFIXES["gk_validation"], identifier)
     admission = opa or gk_mut
 
     return {
         "label": label,
-        "status": junit_status(dirpath),
+        "status": junit_status(dirpath, identifier),
         "throughput_p50": (st or {}).get("perc50"),
         "throughput_p90": (st or {}).get("perc90"),
         "throughput_p99": (st or {}).get("perc99"),
@@ -126,7 +230,7 @@ def render_markdown(rows):
     lines = ["| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
     for r in rows:
         sched = f"{fmt_num(r['throughput_p50'])}/{fmt_num(r['throughput_p90'])}/{fmt_num(r['throughput_p99'])}"
-        e2e = f"{fmt_ms(r['e2e_p50'])}/{fmt_ms(r['e2e_p90'])}/{fmt_ms(r['e2e_p99'])}"
+        e2e = f"{fmt_ns_as_ms(r['e2e_p50'])}/{fmt_ns_as_ms(r['e2e_p90'])}/{fmt_ns_as_ms(r['e2e_p99'])}"
         adm = f"{fmt_ms(r['admission_p50'])}/{fmt_ms(r['admission_p90'])}/{fmt_ms(r['admission_p99'])}"
         val = fmt_ms(r["validation_p99"])
         lines.append(f"| {r['label']} | {r['status']} | {sched} | {e2e} | {adm} | {val} |")
@@ -144,8 +248,10 @@ def main():
         root_label = os.path.basename(root)
         for leaf in find_leaf_dirs(root):
             rel = os.path.relpath(leaf, root)
-            label = root_label if rel == "." else f"{root_label}/{rel}"
-            rows.append(summarize(label, leaf))
+            base_label = root_label if rel == "." else f"{root_label}/{rel}"
+            for identifier in sorted(discover_identifiers(leaf)):
+                label = base_label if not identifier else f"{base_label}/{identifier}"
+                rows.append(summarize(label, leaf, identifier))
 
     if not rows:
         print("No runs found (no junit.xml under any given root).", file=sys.stderr)
