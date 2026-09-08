@@ -98,15 +98,25 @@ def canonical_class(s):
 
 
 def load_e2e_latency(dirpath, class_key):
-    """e2e-latency-watch.py writes ONE file per evaluation step, covering
-    every identifier/class run during that step — one directory ABOVE
-    the leaf (junit.xml-containing) directory generate-report.py
-    otherwise operates on."""
-    path = os.path.join(os.path.dirname(dirpath.rstrip("/")), "e2e-latency.json")
-    d = load_json(path)
-    if not d:
-        return None
-    return (d.get("summary") or {}).get(class_key)
+    """e2e-latency-watch.py writes ONE file per evaluation step (STEP_DIR
+    /e2e-latency.json), covering every identifier/class run during that
+    step. How many directory levels above the leaf (junit.xml-containing)
+    directory STEP_DIR sits differs by harness: baseline's leaf IS
+    STEP_DIR/measurements (one level), but KLASTOS's leaf is
+    STEP_DIR/measurements/<class> (two levels) — confirmed live this
+    session that assuming a fixed one-level distance silently missed
+    e2e-latency.json for every KLASTOS row. Walk upward instead of
+    assuming a fixed depth."""
+    d = os.path.dirname(dirpath.rstrip("/"))
+    for _ in range(3):
+        data = load_json(os.path.join(d, "e2e-latency.json"))
+        if data:
+            return (data.get("summary") or {}).get(class_key)
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    return None
 
 
 def load_json(path):

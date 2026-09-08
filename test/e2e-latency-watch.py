@@ -156,7 +156,17 @@ class Watcher:
         received_at = datetime.now(timezone.utc)
         try:
             meta = pod["metadata"]
-            key = (meta["namespace"], meta["name"])
+            # Keyed by UID, not (namespace, name): confirmed live this
+            # session that ClusterLoader2 assigns pods explicit,
+            # index-based names ("klastos-scheduler-throughput-pod-b-0")
+            # that are IDENTICAL across every sequential class run within
+            # a step (vanilla/eu/us/italynorth all reuse the same N
+            # names) - keying by name alone collided every later class's
+            # pods into the first class's already-existing record,
+            # silently classifying 100% of pods as whichever class ran
+            # first (setdefault never updates "class" on a pre-existing
+            # key). UID is unique per object even when names repeat.
+            key = meta.get("uid") or (meta["namespace"], meta["name"])
             created_api = parse_ts(meta.get("creationTimestamp"))
             labels = meta.get("labels", {}) or {}
             gen_name = meta.get("generateName")
