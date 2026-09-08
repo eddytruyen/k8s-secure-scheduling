@@ -172,6 +172,7 @@ class Watcher:
             gen_name = meta.get("generateName")
             cls = canonical_class(gen_name) if gen_name else labels.get("data-sovereignty", "vanilla")
             rec = self.records.setdefault(key, {
+                "namespace": meta["namespace"], "name": meta["name"],
                 "created_api": None, "scheduled_api": None,
                 "first_seen": None, "scheduled_seen": None,
                 "class": cls,
@@ -215,7 +216,8 @@ def percentiles(values):
 def dump(watcher, output_path):
     by_class = {}
     per_pod = []
-    for (ns, name), rec in watcher.records.items():
+    for rec in watcher.records.values():
+        ns, name = rec["namespace"], rec["name"]
         first_seen, scheduled_seen = rec["first_seen"], rec["scheduled_seen"]
         cls = rec["class"]
         latency = (
