@@ -82,7 +82,19 @@ for N in $N_STEPS; do
     # identifiers (vanilla/eu/us/italynorth) in one clusterloader
     # --testsuite invocation — unlike the KLASTOS harness, no per-class
     # looping is needed here.
-    if NODES="$NODES" TEST=data-sovereignty \
+    #
+    # BASELINE=false is required here — it's run-use-case-test.sh's OWN
+    # internal flag (distinct from this script's RUN_BASELINE) gating
+    # whether it applies node region labels + Gatekeeper policy at all
+    # (`if [ "$BASELINE" = false ]`). Left unset, it silently skips both:
+    # confirmed live this session — the "italynorth" identifier bakes its
+    # nodeAffinity directly into the pod template (unlike eu/us, which
+    # depend on Gatekeeper's mutation webhook), so it's the one identifier
+    # that can't accidentally "pass" by scheduling onto an unconstrained
+    # node — it failed outright (0/101 nodes matched) with zero region
+    # labels applied, exposing the gap eu/us's mutation-dependent passes
+    # were quietly masking.
+    if NODES="$NODES" TEST=data-sovereignty BASELINE=false \
        CL2_SCHEDULER_THROUGHPUT_PODS="$N" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD" \
        "$SCRIPT_DIR/run-use-case-test.sh" \
        > "$STEP_DIR/run.log" 2>&1; then
