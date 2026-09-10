@@ -29,11 +29,14 @@ set -euo pipefail
 
 NODES="${NODES:-100}"
 CL2_SCHEDULER_THROUGHPUT_PODS="${CL2_SCHEDULER_THROUGHPUT_PODS:-1000}"
-KLASTOS_REPO="${KLASTOS_REPO:-$HOME/klastos}"
 CLASSES="${CLASSES:-vanilla eu us italynorth}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-HARNESS_DIR="$KLASTOS_REPO/experiment1/harness"
+# Default: this repo checked out as klastos's submodule, at klastos/k8s-secure-scheduling/
+# — two levels up from here (test/) is klastos's own root. Override KLASTOS_REPO
+# explicitly if the two repos are separate sibling checkouts instead.
+KLASTOS_REPO="${KLASTOS_REPO:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+HARNESS_DIR="$KLASTOS_REPO/experiment1/data-sovereignty/harness"
 
 if [ ! -d "$HARNESS_DIR" ]; then
   echo "ERROR: $HARNESS_DIR not found. Set KLASTOS_REPO to your klastos checkout." >&2

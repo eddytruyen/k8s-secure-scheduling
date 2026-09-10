@@ -18,11 +18,13 @@ set -euo pipefail
 N_STEPS="${N_STEPS:-20 100 1000}"
 NODES="${NODES:-100}"
 CLASSES="${CLASSES:-vanilla eu us italynorth}"
-KLASTOS_REPO="${KLASTOS_REPO:-$HOME/klastos}"
 RUN_BASELINE="${RUN_BASELINE:-false}"
 RUN_KLASTOS="${RUN_KLASTOS:-true}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+# Default: this repo checked out as klastos's submodule (see run-klastos-use-case-test.sh
+# for the same convention) — override explicitly for a separate sibling checkout.
+KLASTOS_REPO="${KLASTOS_REPO:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 RESULT_ROOT="$SCRIPT_DIR/result/use-case/full-evaluation-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$RESULT_ROOT"
 
