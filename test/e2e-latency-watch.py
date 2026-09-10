@@ -25,6 +25,32 @@ grouping is consistent across both without any extra wiring. On
 SIGTERM/SIGINT, stops watching and writes per-pod records plus
 aggregate percentiles (grouped by that label) to the given output file.
 
+Also captures, per pod (KLASTOS only - the baseline has no equivalent
+annotation/gate, so these are always None/absent for it):
+  - classification_source: the FINAL observed value of
+    scheduling.diktyo.x-k8s.io/classification-source ("admission" if
+    OPA's own fast path set it and it was never overwritten,
+    "appclass_operator" if Stage 3 wrote or later overwrote it) -
+    added because manually re-deriving this via an ad-hoc raw pod-watch
+    every time it comes up wasted a repeat question; it's now a
+    standard part of every run's output.
+  - a three-phase latency breakdown (classification / gate-release
+    (UCSS) / scheduling), decomposing the single e2e latency number
+    into where the time actually goes:
+      classification: pod created -> class-keys annotation first
+        appears (whichever path wrote it).
+      gate-release: class-keys annotation appears -> schedulingGates
+        actually cleared - only applies to a pod that was OBSERVED
+        gated at some point (OPA's CASE 2); a pod that took the
+        admission fast path (CASE 1, never gated at all) has no
+        separate gate-release phase, so this is None for it rather
+        than a misleading zero.
+      scheduling: from whichever event unblocks the pod (gate-release
+        if it was ever gated, otherwise classification itself) -> the
+        PodScheduled condition. This isolates the scheduler's own
+        processing time from whatever happened before the pod was even
+        eligible to be scheduled.
+
 Latency is timed from THIS PROCESS'S OWN wall-clock receipt time for
 each watch event, not the pod objects' embedded creationTimestamp /
 lastTransitionTime fields - confirmed live those are truncated to
@@ -176,11 +202,43 @@ class Watcher:
                 "created_api": None, "scheduled_api": None,
                 "first_seen": None, "scheduled_seen": None,
                 "class": cls,
+                "classification_source": None,
+                "classified_at": None,
+                "ever_gated": False,
+                "gate_released_at": None,
             })
             if created_api:
                 rec["created_api"] = created_api
             if rec["first_seen"] is None:
                 rec["first_seen"] = received_at
+            # Tracks the LATEST observed value, not the first: this can
+            # legitimately change over a pod's life (OPA's admission-time
+            # fast path writes "admission" at CREATE; appclass_operator's
+            # Stage 3 may later overwrite it to "appclass_operator" if its
+            # own recompute disagrees) - the final, settled value is what
+            # answers "which path actually won," not whichever was seen
+            # first during the watch.
+            annotations = meta.get("annotations", {}) or {}
+            src = annotations.get("scheduling.diktyo.x-k8s.io/classification-source")
+            if src:
+                rec["classification_source"] = src
+            # First appearance of the class-keys annotation at all (either
+            # path writes it) - the end of the "classification" phase,
+            # start of "gate-release"/"scheduling" below.
+            if annotations.get("scheduling.diktyo.x-k8s.io/class-keys") and rec["classified_at"] is None:
+                rec["classified_at"] = received_at
+            # Gate-state transition tracking: a pod that's never gated at
+            # all (OPA's admission-time fast path, is_ready=true at CREATE)
+            # has no separate "gate-release" phase - gate_released_at stays
+            # None for it, and its scheduling phase is timed from
+            # classified_at instead (see dump()). Only a pod OBSERVED with
+            # a non-empty schedulingGates at some point, then later
+            # observed with none, gets a real gate_released_at.
+            gates = (pod.get("spec", {}) or {}).get("schedulingGates")
+            if gates:
+                rec["ever_gated"] = True
+            elif rec["ever_gated"] and rec["gate_released_at"] is None:
+                rec["gate_released_at"] = received_at
             for cond in (pod.get("status", {}) or {}).get("conditions", []) or []:
                 if cond.get("type") == "PodScheduled" and cond.get("status") == "True":
                     t = parse_ts(cond.get("lastTransitionTime"))
@@ -215,20 +273,59 @@ def percentiles(values):
 
 def dump(watcher, output_path):
     by_class = {}
+    by_class_phases = {"classification": {}, "gate_release": {}, "scheduling": {}}
+    classification_source_summary = {}
     per_pod = []
     for rec in watcher.records.values():
         ns, name = rec["namespace"], rec["name"]
         first_seen, scheduled_seen = rec["first_seen"], rec["scheduled_seen"]
+        classified_at, gate_released_at = rec["classified_at"], rec["gate_released_at"]
         cls = rec["class"]
+        src = rec["classification_source"]
         latency = (
             (scheduled_seen - first_seen).total_seconds()
             if (first_seen and scheduled_seen) else None
         )
+
+        # Phase 1: classification - pod created -> class-keys annotation
+        # first appears, whichever path wrote it (admission or Stage 3).
+        classification_seconds = (
+            (classified_at - first_seen).total_seconds()
+            if (first_seen and classified_at) else None
+        )
+        # Phase 2: gate-release/UCSS - only meaningful for a pod that was
+        # actually gated at some point (OPA's CASE 2). A pod that took the
+        # admission fast path (CASE 1) never carries a gate at all, so
+        # this phase doesn't apply to it - stays None, not zero, so it's
+        # excluded from that phase's percentiles rather than dragging them
+        # down with a false "instant" data point.
+        gate_release_seconds = (
+            (gate_released_at - classified_at).total_seconds()
+            if (rec["ever_gated"] and classified_at and gate_released_at) else None
+        )
+        # Phase 3: scheduling - actual scheduler processing time, timed
+        # from whichever event unblocks the pod: gate release if it was
+        # ever gated, otherwise classification itself (CASE 1 admits and
+        # unblocks in the same atomic decision, no separate gate phase).
+        if rec["ever_gated"]:
+            unblocked_at = gate_released_at
+        else:
+            unblocked_at = classified_at
+        scheduling_seconds = (
+            (scheduled_seen - unblocked_at).total_seconds()
+            if (unblocked_at and scheduled_seen) else None
+        )
+
         per_pod.append({
             "namespace": ns, "name": name, "class": cls,
             "first_seen": first_seen.isoformat() if first_seen else None,
             "scheduled_seen": scheduled_seen.isoformat() if scheduled_seen else None,
             "latency_seconds": latency,
+            "classification_source": src,
+            "classification_seconds": classification_seconds,
+            "gate_release_seconds": gate_release_seconds,
+            "scheduling_seconds": scheduling_seconds,
+            "ever_gated": rec["ever_gated"],
             # API-embedded timestamps, second-precision only - kept for
             # cross-checking, not used for the actual latency computation.
             "created_api": rec["created_api"].isoformat() if rec["created_api"] else None,
@@ -236,11 +333,26 @@ def dump(watcher, output_path):
         })
         if latency is not None:
             by_class.setdefault(cls, []).append(latency)
+        if classification_seconds is not None:
+            by_class_phases["classification"].setdefault(cls, []).append(classification_seconds)
+        if gate_release_seconds is not None:
+            by_class_phases["gate_release"].setdefault(cls, []).append(gate_release_seconds)
+        if scheduling_seconds is not None:
+            by_class_phases["scheduling"].setdefault(cls, []).append(scheduling_seconds)
+        src_key = src or "none"
+        classification_source_summary.setdefault(cls, {}).setdefault(src_key, 0)
+        classification_source_summary[cls][src_key] += 1
 
     summary = {cls: percentiles(vals) for cls, vals in by_class.items()}
+    phase_summary = {
+        phase: {cls: percentiles(vals) for cls, vals in per_class.items()}
+        for phase, per_class in by_class_phases.items()
+    }
     with open(output_path, "w") as f:
         json.dump({
             "summary": summary,
+            "phase_summary": phase_summary,
+            "classification_source_summary": classification_source_summary,
             "reconnects": watcher._reconnects,
             "pods": per_pod,
         }, f, indent=1)

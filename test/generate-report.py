@@ -97,7 +97,7 @@ def canonical_class(s):
     return s.strip("-") or "vanilla"
 
 
-def load_e2e_latency(dirpath, class_key):
+def _find_e2e_latency_data(dirpath):
     """e2e-latency-watch.py writes ONE file per evaluation step (STEP_DIR
     /e2e-latency.json), covering every identifier/class run during that
     step. How many directory levels above the leaf (junit.xml-containing)
@@ -111,12 +111,44 @@ def load_e2e_latency(dirpath, class_key):
     for _ in range(3):
         data = load_json(os.path.join(d, "e2e-latency.json"))
         if data:
-            return (data.get("summary") or {}).get(class_key)
+            return data
         parent = os.path.dirname(d)
         if parent == d:
             break
         d = parent
     return None
+
+
+def load_e2e_latency(dirpath, class_key):
+    data = _find_e2e_latency_data(dirpath)
+    if not data:
+        return None
+    return (data.get("summary") or {}).get(class_key)
+
+
+def load_classification_source(dirpath, class_key):
+    """classification_source_summary[class_key] is {"admission": N,
+    "appclass_operator": N, "none": N} — how many of this class's pods
+    settled on each annotation source by the time they were last observed.
+    Baseline runs never populate this (no such annotation exists there),
+    so it's None for every baseline row, rendering as "-"."""
+    data = _find_e2e_latency_data(dirpath)
+    if not data:
+        return None
+    return (data.get("classification_source_summary") or {}).get(class_key)
+
+
+def load_phase_latency(dirpath, class_key):
+    """phase_summary[phase][class_key] percentiles for the three-way
+    breakdown (classification / gate_release / scheduling) e2e-latency-
+    watch.py computes — see that script's own header. Baseline rows have
+    no such breakdown (no classification/gate concept there), so this
+    returns {} for them, rendering every phase column as "-"."""
+    data = _find_e2e_latency_data(dirpath)
+    if not data:
+        return {}
+    phases = data.get("phase_summary") or {}
+    return {phase: (per_class.get(class_key) or {}) for phase, per_class in phases.items()}
 
 
 def load_json(path):
@@ -233,11 +265,27 @@ def fmt_num(v):
     return "-" if v is None else str(v)
 
 
+def fmt_classification_source(d):
+    """{"admission": 584, "appclass_operator": 416} -> "admission=584,
+    appclass_operator=416" — omits "none" unless it's the only key (no
+    classification-source annotation ever observed, e.g. baseline runs,
+    which don't use this annotation at all)."""
+    if not d:
+        return "-"
+    shown = {k: v for k, v in d.items() if k != "none"} or d
+    return ",".join(f"{k}={v}" for k, v in sorted(shown.items()))
+
+
 def summarize(label, dirpath, identifier):
     st = load_json(latest_for(dirpath, _METRIC_PREFIXES["throughput"], identifier))
 
     class_key = canonical_class(identifier or os.path.basename(dirpath.rstrip("/")))
     e2e = load_e2e_latency(dirpath, class_key) or {}
+    classification_source = load_classification_source(dirpath, class_key)
+    phases = load_phase_latency(dirpath, class_key)
+    classification_phase = phases.get("classification") or {}
+    gate_release_phase = phases.get("gate_release") or {}
+    scheduling_phase = phases.get("scheduling") or {}
 
     opa = generic_query_percentiles(dirpath, _METRIC_PREFIXES["opa"], identifier)
     gk_mut = generic_query_percentiles(dirpath, _METRIC_PREFIXES["gk_mutation"], identifier)
@@ -258,6 +306,16 @@ def summarize(label, dirpath, identifier):
         "admission_p90": (admission or {}).get("Perc90"),
         "admission_p99": (admission or {}).get("Perc99"),
         "validation_p99": (gk_val or {}).get("Perc99"),
+        "classification_source": classification_source,
+        "classify_p50": classification_phase.get("p50"),
+        "classify_p90": classification_phase.get("p90"),
+        "classify_p99": classification_phase.get("p99"),
+        "gate_p50": gate_release_phase.get("p50"),
+        "gate_p90": gate_release_phase.get("p90"),
+        "gate_p99": gate_release_phase.get("p99"),
+        "sched_phase_p50": scheduling_phase.get("p50"),
+        "sched_phase_p90": scheduling_phase.get("p90"),
+        "sched_phase_p99": scheduling_phase.get("p99"),
     }
 
 
@@ -273,7 +331,10 @@ def render_markdown(rows):
     headers = [
         "Run", "Status", "Sched pods/s (p50/p90/p99)",
         "e2e latency (p50/p90/p99)", "Admission-mutation (p50/p90/p99)",
-        "Validation p99",
+        "Validation p99", "Classification source",
+        "Classification phase (p50/p90/p99)",
+        "Gate-release phase (p50/p90/p99)",
+        "Scheduling phase (p50/p90/p99)",
     ]
     lines = ["| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
     for r in rows:
@@ -281,7 +342,14 @@ def render_markdown(rows):
         e2e = f"{fmt_ms(r['e2e_p50'])}/{fmt_ms(r['e2e_p90'])}/{fmt_ms(r['e2e_p99'])}"
         adm = f"{fmt_ms(r['admission_p50'])}/{fmt_ms(r['admission_p90'])}/{fmt_ms(r['admission_p99'])}"
         val = fmt_ms(r["validation_p99"])
-        lines.append(f"| {r['label']} | {r['status']} | {sched} | {e2e} | {adm} | {val} |")
+        csrc = fmt_classification_source(r["classification_source"])
+        classify = f"{fmt_ms(r['classify_p50'])}/{fmt_ms(r['classify_p90'])}/{fmt_ms(r['classify_p99'])}"
+        gate = f"{fmt_ms(r['gate_p50'])}/{fmt_ms(r['gate_p90'])}/{fmt_ms(r['gate_p99'])}"
+        sched_phase = f"{fmt_ms(r['sched_phase_p50'])}/{fmt_ms(r['sched_phase_p90'])}/{fmt_ms(r['sched_phase_p99'])}"
+        lines.append(
+            f"| {r['label']} | {r['status']} | {sched} | {e2e} | {adm} | {val} | "
+            f"{csrc} | {classify} | {gate} | {sched_phase} |"
+        )
     return "\n".join(lines)
 
 
