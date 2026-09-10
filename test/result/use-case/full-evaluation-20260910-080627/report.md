@@ -1,0 +1,18 @@
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| full-evaluation-20260910-080627/baseline-n100/measurements/pod-eu-region | PASS | 0/100/100 | 66.9ms/88.2ms/130.2ms | 0.5ms/1.0ms/3.2ms | 5.0ms | none=100 | -/-/- | -/-/- | -/-/- |
+| full-evaluation-20260910-080627/baseline-n100/measurements/pod-italynorth-region | PASS | 0/100/100 | 41.4ms/90.4ms/110.7ms | 0.5ms/1.0ms/4.7ms | 6.7ms | none=100 | -/-/- | -/-/- | -/-/- |
+| full-evaluation-20260910-080627/baseline-n100/measurements/pod-us-region | PASS | 0/100/100 | 55.7ms/149.1ms/205.2ms | 0.5ms/1.0ms/4.7ms | 6.7ms | none=100 | -/-/- | -/-/- | -/-/- |
+| full-evaluation-20260910-080627/baseline-n100/measurements/vanilla | PASS | 0/100/100 | 28.1ms/51.1ms/62.4ms | 0.5ms/1.0ms/3.2ms | 4.6ms | none=100 | -/-/- | -/-/- | -/-/- |
+| full-evaluation-20260910-080627/baseline-n20/measurements/pod-eu-region | PASS | 0/20/20 | 37.6ms/43.5ms/51.5ms | 0.5ms/1.0ms/4.9ms | 6.8ms | none=20 | -/-/- | -/-/- | -/-/- |
+| full-evaluation-20260910-080627/baseline-n20/measurements/pod-italynorth-region | PASS | 0/20/20 | 30.2ms/39.4ms/45.0ms | 0.5ms/1.0ms/5.2ms | 7.8ms | none=20 | -/-/- | -/-/- | -/-/- |
+| full-evaluation-20260910-080627/baseline-n20/measurements/pod-us-region | PASS | 0/20/20 | 65.9ms/77.0ms/78.6ms | 0.5ms/1.0ms/4.7ms | 6.9ms | none=20 | -/-/- | -/-/- | -/-/- |
+| full-evaluation-20260910-080627/baseline-n20/measurements/vanilla | PASS | 0/20/20 | 22.5ms/28.7ms/34.9ms | 0.5ms/1.0ms/2.9ms | 4.1ms | none=20 | -/-/- | -/-/- | -/-/- |
+| full-evaluation-20260910-080627/klastos-n100/measurements/eu | PASS | 0/24/30 | 3954.9ms/5172.4ms/5552.7ms | 8.0ms/76.0ms/98.9ms | - | appclass_operator=100 | 1992.4ms/2488.8ms/2758.8ms | 2080.3ms/2692.8ms/2839.9ms | 19.9ms/38.9ms/53.8ms |
+| full-evaluation-20260910-080627/klastos-n100/measurements/italynorth | PASS | 0/21/36 | 4732.8ms/5748.6ms/6059.9ms | 8.1ms/75.9ms/98.4ms | - | appclass_operator=100 | 2427.6ms/2787.2ms/3076.2ms | 2280.0ms/2942.9ms/2998.3ms | 16.7ms/35.6ms/69.7ms |
+| full-evaluation-20260910-080627/klastos-n100/measurements/us | PASS | 0/28/31 | 4145.1ms/5151.7ms/5481.8ms | 8.0ms/76.3ms/99.1ms | - | appclass_operator=100 | 1991.3ms/2510.3ms/2803.2ms | 2274.4ms/2720.0ms/2789.6ms | 15.4ms/34.5ms/49.3ms |
+| full-evaluation-20260910-080627/klastos-n100/measurements/vanilla | PASS | 18/49/49 | 3104.7ms/3768.0ms/4091.1ms | 8.2ms/76.5ms/97.7ms | - | appclass_operator=100 | 2919.7ms/3683.7ms/4057.2ms | 0.0ms/0.0ms/0.0ms | 59.0ms/578.7ms/911.2ms |
+| full-evaluation-20260910-080627/klastos-n20/measurements/eu | PASS | 0/20/20 | 1428.2ms/1775.4ms/1851.2ms | 7.5ms/70.6ms/97.1ms | - | appclass_operator=20 | 909.6ms/1017.5ms/1085.6ms | 496.8ms/750.9ms/880.9ms | 17.2ms/43.7ms/51.1ms |
+| full-evaluation-20260910-080627/klastos-n20/measurements/italynorth | PASS | 0/14/14 | 1180.9ms/1511.3ms/1518.1ms | 7.5ms/70.4ms/97.0ms | - | appclass_operator=20 | 479.5ms/509.5ms/537.0ms | 684.4ms/969.4ms/991.1ms | 19.4ms/27.3ms/33.9ms |
+| full-evaluation-20260910-080627/klastos-n20/measurements/us | PASS | 0/15/15 | 1648.3ms/2054.3ms/2097.7ms | 7.4ms/70.2ms/97.0ms | - | appclass_operator=20 | 1131.9ms/1185.9ms/1205.9ms | 512.4ms/871.8ms/903.8ms | 14.6ms/24.3ms/31.7ms |
+| full-evaluation-20260910-080627/klastos-n20/measurements/vanilla | PASS | 0/20/20 | 1510.0ms/1655.7ms/1721.0ms | 7.5ms/70.4ms/97.0ms | - | appclass_operator=20 | 1418.7ms/1598.1ms/1707.4ms | 0.0ms/0.0ms/0.0ms | 50.5ms/199.9ms/317.1ms |
