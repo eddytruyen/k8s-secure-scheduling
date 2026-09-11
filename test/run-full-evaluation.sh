@@ -18,13 +18,11 @@ set -euo pipefail
 N_STEPS="${N_STEPS:-20 100 1000}"
 NODES="${NODES:-100}"
 CLASSES="${CLASSES:-vanilla eu us italynorth}"
+KLASTOS_REPO="${KLASTOS_REPO:-$HOME/klastos}"
 RUN_BASELINE="${RUN_BASELINE:-false}"
 RUN_KLASTOS="${RUN_KLASTOS:-true}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-# Default: this repo checked out as klastos's submodule (see run-klastos-use-case-test.sh
-# for the same convention) — override explicitly for a separate sibling checkout.
-KLASTOS_REPO="${KLASTOS_REPO:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 RESULT_ROOT="$SCRIPT_DIR/result/use-case/full-evaluation-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$RESULT_ROOT"
 
@@ -42,8 +40,24 @@ echo ""
 # scheduling itself is completely correct (confirmed this session's own
 # N=20 tryout runs) — not a real signal at that size. Scale it down with N
 # instead of using one fixed value for every step.
+#
+# THRESHOLD_OVERRIDE bypasses this entirely when set: at large N, KLASTOS's
+# own still-unfixed gate-release bottleneck (see
+# ISSUE-ucss-serial-gate-release-loop.md) legitimately drops measured
+# throughput below any N-scaled threshold this heuristic would pick (e.g.
+# N=1000 failed outright at 65 pods/sec vs. a threshold_for()-computed 100)
+# — that's a real, already-tracked finding, not a harness bug, and letting
+# ClusterLoader2 hard-fail the whole run on it means the per-class loop
+# aborts before later classes even run and before results get copied out
+# of the fixed-path measurements dir. Set THRESHOLD_OVERRIDE to a value
+# below the worst-case expected throughput to collect the actual latency
+# data anyway; the measured numbers themselves are unaffected either way.
 threshold_for() {
   local n="$1"
+  if [ -n "${THRESHOLD_OVERRIDE:-}" ]; then
+    echo "$THRESHOLD_OVERRIDE"
+    return
+  fi
   local t=$((n / 10))
   [ "$t" -lt 5 ] && t=5
   echo "$t"
