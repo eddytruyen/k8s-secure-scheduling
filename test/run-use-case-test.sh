@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+# Requires: node labels for $TEST's policy already applied once via
+# `POLICY=$TEST update-labels.sh`, before this script's first invocation -
+# see run-klastos-use-case-test.sh's header for why relabeling on every
+# run (this script's old behavior) is a real, measured bottleneck for the
+# KLASTOS side and not representative of a real cluster anyway. This
+# script no longer applies/removes labels itself.
 
 NODES="${NODES:-100}"
 TEST="${TEST:-multi-tenancy}" # options: data-sovereignty, multi-tenancy, workload-security-rings
@@ -6,10 +12,6 @@ TEST="${TEST:-multi-tenancy}" # options: data-sovereignty, multi-tenancy, worklo
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 if [ "$BASELINE" = false ]; then
-    # Apply labels
-    POLICY=$TEST $SCRIPT_DIR/update-labels.sh
-    echo
-
     # Apply policies
     POLICY=$TEST $SCRIPT_DIR/update-policy.sh
     echo
@@ -61,7 +63,4 @@ if [ "$BASELINE" = false ]; then
     # Remove policies
     DELETE=true POLICY=$TEST $SCRIPT_DIR/update-policy.sh
     echo
-
-    # Remove labels
-    DELETE=true POLICY=$TEST $SCRIPT_DIR/update-labels.sh
 fi

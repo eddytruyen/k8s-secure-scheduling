@@ -18,12 +18,35 @@
 # baseline's suite - just orchestrated here instead of inside
 # ClusterLoader2's own suite iteration.
 #
-# Requires: the KLASTOS stack already deployed (deploy-klastos-stack.sh) on
-# this cluster, including the OPA admission controller - and
-# harness/policy/opa-servicemonitor.yaml applied AFTER the first-ever
-# Prometheus-enabled clusterloader run on this cluster (same Prometheus-CRD
-# timing caveat as gatekeeper-metrics-exporter/'s own PodMonitors - see
-# test/env/setup-kind-kwok-manual.sh).
+# Requires:
+# - Node region labels already applied via `POLICY=data-sovereignty
+#   update-labels.sh`, BEFORE the KLASTOS stack (in particular
+#   unified-operator/UCSS) was ever deployed - do this exactly once per
+#   cluster lifecycle, not per test run. This script used to apply/remove
+#   labels itself on every invocation; that's gone (see below) because a
+#   live investigation traced a genuine, severe bottleneck to it: UCSS's
+#   on_node_event handler runs _run_conflict_scan (a full cluster-wide
+#   pod LIST, since UCSS_CONFLICT_ON_RECONFIG defaults to "event" here,
+#   not "warn") on every node whose topology actually changes, and
+#   update-labels.sh's data-sovereignty policy re-randomizes one EU and
+#   one US region string on every call - a genuine label VALUE change,
+#   every time, for every one of ~100 nodes. Relabeling once per test run
+#   (as this harness always has) meant ~100-200 redundant full-cluster
+#   pod LISTs firing back-to-back at the start of every single run,
+#   confirmed live to delay UCSS's CSI update for a newly-classified
+#   AppGroup by ~36 seconds - dwarfing anything either appclass_operator
+#   fix (d9c8427, appclass-fastpath-scoped-classify) changes, since the
+#   bottleneck isn't in appclass_operator's classification speed at all.
+#   This also isn't realistic: production node topology labels are set
+#   once at provisioning and essentially never change afterward - relabel
+#   churn on every benchmark run was a harness artifact, not something
+#   this benchmark should have been measuring in the first place.
+# - The KLASTOS stack already deployed (deploy-klastos-stack.sh) on this
+#   cluster (AFTER the labels above), including the OPA admission
+#   controller - and harness/policy/opa-servicemonitor.yaml applied AFTER
+#   the first-ever Prometheus-enabled clusterloader run on this cluster
+#   (same Prometheus-CRD timing caveat as gatekeeper-metrics-exporter/'s
+#   own PodMonitors - see test/env/setup-kind-kwok-manual.sh).
 
 set -euo pipefail
 
@@ -42,10 +65,6 @@ if [ ! -d "$HARNESS_DIR" ]; then
   echo "ERROR: $HARNESS_DIR not found. Set KLASTOS_REPO to your klastos checkout." >&2
   exit 1
 fi
-
-echo -e "[*] Apply node region labels (same script/labels as the Gatekeeper baseline)"
-POLICY=data-sovereignty "$SCRIPT_DIR/update-labels.sh"
-echo
 
 echo -e "[*] Apply shared KLASTOS classification schema (AppClass + AppInfoDefinition)"
 "$HARNESS_DIR/apply-shared-policy.sh"
@@ -89,6 +108,3 @@ done
 echo -e "\n[*] Remove shared KLASTOS classification schema"
 "$HARNESS_DIR/delete-shared-policy.sh"
 echo
-
-echo -e "[*] Remove node region labels"
-DELETE=true POLICY=data-sovereignty "$SCRIPT_DIR/update-labels.sh"
