@@ -17,8 +17,8 @@ changes the pass/fail gate, never the measured values themselves.
 | **This session's fixes** | branch `appclass-wake-on-first-pod` (PR pending), commit [`946c1be`](https://github.com/eddytruyen/Nestor-paper/commit/946c1be6cde455d03c52964e01a328da65d541af) | Stage 1 O(N) rewrite + per-appgroup skip, Stage 2/3 signature-skip caching, cached RBAC index (watching `Role`/`ClusterRole`/`RoleBinding`/`ClusterRoleBinding`), and the reintroduced wake-on-first-pod handler. Debug-only instrumentation (pipeline timing logs, trigger-source counters) added and used to validate this work is reverted out of this build - it doesn't affect scheduling behavior, just log volume. |
 
 Raw harness output for the two Nestor-paper-side runs:
-- Pre-fix + Gatekeeper: [`full-evaluation-20260916-134728/report.md`](use-case/full-evaluation-20260916-134728/report.md)
-- This session's fixes: [`full-evaluation-20260916-141543/report.md`](use-case/full-evaluation-20260916-141543/report.md)
+- Pre-fix + Gatekeeper: [`full-evaluation-20260916-134728/report.md`](full-evaluation-20260916-134728/report.md)
+- This session's fixes: [`full-evaluation-20260916-141543/report.md`](full-evaluation-20260916-141543/report.md)
 
 ## Results: `eu` class, N=20/100/1000
 
@@ -100,7 +100,7 @@ copy of the deploy script for this one-off comparison, not a change to the
 committed script itself, since Profile 4 remains this harness's actual
 default.
 
-Raw harness output: [`full-evaluation-20260917-132102/report.md`](use-case/full-evaluation-20260917-132102/report.md).
+Raw harness output: [`full-evaluation-20260917-132102/report.md`](full-evaluation-20260917-132102/report.md).
 Operator/scheduler logs checked clean for this run: 0 restarts across
 `appclass-operator`/`unified-operator`/`diktyo-scheduler`/`scheduler-plugins-controller`,
 no new errors in either operator's log (only the same known/harmless
