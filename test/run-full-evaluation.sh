@@ -157,6 +157,7 @@ done
 echo "=== All steps passed ==="
 echo "Results under: $RESULT_ROOT"
 
-python3 "$SCRIPT_DIR/generate-report.py" "$RESULT_ROOT" | tee "$RESULT_ROOT/report.md"
+python3 "$SCRIPT_DIR/generate-report.py" "$RESULT_ROOT" --csv "$RESULT_ROOT/report.csv" | tee "$RESULT_ROOT/report.md"
 echo ""
 echo "Report: $RESULT_ROOT/report.md"
+echo "CSV:    $RESULT_ROOT/report.csv"

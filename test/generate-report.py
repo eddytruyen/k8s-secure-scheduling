@@ -61,6 +61,7 @@ import re
 import glob
 import json
 import argparse
+import csv
 import xml.etree.ElementTree as ET
 
 _TS_RE = re.compile(r"_(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)\.json$")
@@ -259,6 +260,15 @@ def fmt_ms(seconds):
     return "-" if seconds is None else f"{seconds * 1000:.1f}ms"
 
 
+def to_ms(seconds):
+    """Same conversion as fmt_ms, but returns a raw float (or "" for a
+    missing value) instead of a formatted "N.Nms" string - for report.csv,
+    where a spreadsheet/pandas consumer wants a numeric column, not text
+    with a unit suffix baked in. Same underlying value as the matching
+    fmt_ms()-rendered cell in report.md, just not string-formatted."""
+    return "" if seconds is None else round(seconds * 1000, 1)
+
+
 
 
 def fmt_num(v):
@@ -353,9 +363,47 @@ def render_markdown(rows):
     return "\n".join(lines)
 
 
+def render_csv(rows, fileobj):
+    """Same rows, same values as render_markdown() - percentile triples
+    split into separate numeric columns instead of one "p50/p90/p99"
+    string, and classification_source's dict rendered as one column of
+    comma-joined "k=v" pairs (e.g. "admission=584,appclass_operator=416")
+    so a spreadsheet/pandas consumer gets real numbers to sort/plot
+    instead of text it would have to re-parse."""
+    headers = [
+        "run", "status",
+        "throughput_p50", "throughput_p90", "throughput_p99",
+        "e2e_p50_ms", "e2e_p90_ms", "e2e_p99_ms",
+        "admission_p50_ms", "admission_p90_ms", "admission_p99_ms",
+        "validation_p99_ms",
+        "classification_source",
+        "classify_p50_ms", "classify_p90_ms", "classify_p99_ms",
+        "gate_p50_ms", "gate_p90_ms", "gate_p99_ms",
+        "sched_phase_p50_ms", "sched_phase_p90_ms", "sched_phase_p99_ms",
+    ]
+    writer = csv.writer(fileobj)
+    writer.writerow(headers)
+    for r in rows:
+        writer.writerow([
+            r["label"], r["status"],
+            fmt_num(r["throughput_p50"]), fmt_num(r["throughput_p90"]), fmt_num(r["throughput_p99"]),
+            to_ms(r["e2e_p50"]), to_ms(r["e2e_p90"]), to_ms(r["e2e_p99"]),
+            to_ms(r["admission_p50"]), to_ms(r["admission_p90"]), to_ms(r["admission_p99"]),
+            to_ms(r["validation_p99"]),
+            fmt_classification_source(r["classification_source"]),
+            to_ms(r["classify_p50"]), to_ms(r["classify_p90"]), to_ms(r["classify_p99"]),
+            to_ms(r["gate_p50"]), to_ms(r["gate_p90"]), to_ms(r["gate_p99"]),
+            to_ms(r["sched_phase_p50"]), to_ms(r["sched_phase_p90"]), to_ms(r["sched_phase_p99"]),
+        ])
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("roots", nargs="+", help="result root directories to scan recursively")
+    parser.add_argument(
+        "--csv", metavar="PATH",
+        help="also write the same rows as CSV to PATH (percentiles as separate numeric columns)",
+    )
     args = parser.parse_args()
 
     rows = []
@@ -374,6 +422,10 @@ def main():
         sys.exit(1)
 
     print(render_markdown(rows))
+
+    if args.csv:
+        with open(args.csv, "w", newline="") as f:
+            render_csv(rows, f)
 
 
 if __name__ == "__main__":
