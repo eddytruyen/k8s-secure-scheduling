@@ -1,4 +1,4 @@
-# appclass_operator classification-pipeline fixes: three-way comparison
+# appclass_operator classification-pipeline fixes: comparison
 
 Data-sovereignty use case (Experiment 1), `eu` class unless noted. All runs use
 this repo's own harness (`test/run-full-evaluation.sh`) against the same
@@ -63,7 +63,7 @@ so long (130+ seconds) that some ordering assumption between "classified" and
 code, but flagged here for anyone reading the raw baseline table who notices
 the same thing.
 
-## Reproducing
+## Reproducing (appclass_operator fix comparison)
 
 ```bash
 # Pre-fix baseline (appclass_operator only - Gatekeeper is this repo's own arm)
@@ -73,6 +73,82 @@ KLASTOS_REPO=$HOME/githubrepos/klastos RUN_BASELINE=true RUN_KLASTOS=true THRESH
 
 # This session's fixes
 # Nestor-paper: git checkout appclass-wake-on-first-pod
+KLASTOS_REPO=$HOME/githubrepos/klastos RUN_BASELINE=false RUN_KLASTOS=true THRESHOLD_OVERRIDE=5 \
+  ./run-full-evaluation.sh
+```
+
+---
+
+## Scheduler chart profile comparison: Diktyo+ClassScheduling vs. ClassScheduling-only
+
+Separate axis from the appclass_operator fix comparison above: both runs
+here use the *same* fixed appclass_operator (`appclass-wake-on-first-pod`,
+commit `946c1be`) and the *same* KLASTOS harness - only the diktyo-scheduler
+Helm chart's deployment profile changes
+(`scheduling/charts/as-a-second-scheduler`, see its own README for the full
+profile list).
+
+| Profile | Scheduler plugins | Controllers deployed |
+|---|---|---|
+| **Profile 4** (`values-diktyo-classscheduling.yaml`, used everywhere else in this doc) | ClassScheduling + NetworkOverhead + TopologicalSort | `appgroup-controller`, `networktopology-controller`, `scheduler-plugins-controller` |
+| **Profile 2** (`values-classscheduling.yaml`) | ClassScheduling only | `scheduler-plugins-controller` only |
+
+`deploy-klastos-stack.sh`'s hardcoded rollout-status checks for
+`appgroup-controller`/`networktopology-controller` had to be skipped for the
+Profile 2 run (that profile doesn't deploy them at all) - done via a scratch
+copy of the deploy script for this one-off comparison, not a change to the
+committed script itself, since Profile 4 remains this harness's actual
+default.
+
+Raw harness output: [`full-evaluation-20260917-132102/report.md`](use-case/full-evaluation-20260917-132102/report.md).
+Operator/scheduler logs checked clean for this run: 0 restarts across
+`appclass-operator`/`unified-operator`/`diktyo-scheduler`/`scheduler-plugins-controller`,
+no new errors in either operator's log (only the same known/harmless
+`ExplicitClass_operator.py`/`on_appinfo_event` 404 already documented
+elsewhere in this repo), no panics or errors in the scheduler's own log.
+
+### Results: `eu` class, N=20/100/1000
+
+| | N=20 e2e latency (p50/p90/p99) | N=100 e2e latency (p50/p90/p99) | N=1000 e2e latency (p50/p90/p99) | N=1000 admission fast-path rate | N=1000 classification phase (p50/p90/p99) | N=1000 scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|
+| Profile 4 (Diktyo + ClassScheduling) | 928.9ms/1036.0ms/1138.9ms | 3199.6ms/4058.5ms/4405.3ms | 10603.9ms/17522.3ms/20790.3ms | 694/1000 (69.4%) | 0.0ms/14892.7ms/17972.7ms | 421.6ms/15305.2ms/19043.3ms |
+| Profile 2 (ClassScheduling only) | 823.0ms/942.8ms/991.1ms | 2251.1ms/2840.9ms/3035.7ms | 3883.8ms/16524.9ms/18363.0ms | 690/1000 (69.0%) | 0.0ms/11667.6ms/13659.3ms | 3573.4ms/5147.2ms/5795.3ms |
+
+### Findings
+
+**Admission fast-path rate is essentially unchanged** (69.4% vs 69.0%) -
+expected, since that's driven entirely by appclass_operator/OPA timing, which
+is identical in both runs. The scheduler profile only affects what happens
+*after* a pod is unblocked.
+
+**N=1000 total e2e latency is noticeably better at p50 with Profile 2**
+(3.9s vs 10.6s) and roughly comparable at p90/p99 (16.5-18.4s vs 17.5-20.8s).
+The scheduling-phase breakdown explains why: Profile 2's scheduling phase is
+tighter and more consistent (3.6s/5.1s/5.8s) than Profile 4's
+(0.4s/15.3s/19.0s) - a much smaller p50-to-p99 spread. This is consistent
+with what TopologicalSort actually does: it reorders the scheduler's queue
+by AppGroup dependency, and NetworkOverhead adds inter-node cost scoring on
+top - both real per-pod work that Profile 2 simply doesn't do. Removing them
+trades a small, consistent per-pod cost increase at the median for a much
+narrower tail, rather than the large median-vs-tail gap Profile 4 shows.
+
+**Neither profile is "better" in general** - they answer different
+questions. Profile 4 is the full pipeline this repo's Experiment 1 targets
+(class-based placement *and* network-overhead-aware, dependency-ordered
+scheduling); Profile 2 isolates just the class-based placement half. This
+comparison is about understanding where Profile 4's tail latency actually
+comes from (TopologicalSort/NetworkOverhead, not appclass_operator/OPA), not
+about recommending Profile 2 as a replacement.
+
+### Reproducing
+
+```bash
+# Nestor-paper: git checkout appclass-wake-on-first-pod (same as the fix comparison above)
+# klastos: deploy-klastos-stack.sh's helm invocation swapped to
+#   -f values-classscheduling.yaml, --set plugins.topologicalSort.namespaces=...
+#   dropped (plugin disabled in this profile), and the appgroup-controller/
+#   networktopology-controller rollout-status checks removed (not deployed
+#   by this profile) - a scratch copy of the script, not a committed change.
 KLASTOS_REPO=$HOME/githubrepos/klastos RUN_BASELINE=false RUN_KLASTOS=true THRESHOLD_OVERRIDE=5 \
   ./run-full-evaluation.sh
 ```
