@@ -118,6 +118,50 @@ it's deterministic. Traced to the actual code, not inferred:
    slow path, even though semantically "no constraints to check" sounds like
    the safest, simplest case to fast-path.
 
+## `vanilla` pods do get gated, and the gate is correctly released - not stuck
+
+Since `is_ready` is structurally always `false` for `vanilla` (see above), it
+always falls through to `main.rego`'s CASE 2, which unconditionally adds the
+scheduling gate on CREATE regardless of *why* `is_ready` was false:
+```rego
+gen_result_patches(false, _) = patches if {
+    input.request.operation == "CREATE"
+    not input.request.object.spec.schedulingGates
+    patches := [
+        {"op": "add", "path": "/spec/schedulingGates", "value": [{"name": GATE_NAME}]},
+        {"op": "add", "path": "/spec/schedulerName", "value": SCHEDULER_NAME}
+    ]
+}
+```
+
+That gate does get released correctly, not stuck forever. Once UCSS
+populates the CSI, `vanilla`'s class-key sits in `unconstrainedClasses`
+(established above) - checking that against
+`appclass_operator/code/MergedAppClass_operator_v3.py`'s
+`_pod_should_hold_gate`:
+```python
+known = set(singlemap.keys()) | constrained | interclass | unconstrained | set(doublemap.keys())
+
+for key in desired_entries:
+    if key not in known:               # (1) unknown -> hold
+        return True
+    if key in interclass:              # (3) interclass -> hold
+        return True
+    if key in singlemap:               # (2) constrained + empty allowed -> hold
+        allowed = singlemap[key].get("allowed", []) or []
+        if len(allowed) == 0:
+            return True
+
+return False   # release-eligible
+```
+`vanilla`'s key is "known" (via `unconstrainedClasses` membership), not
+`interclass`, and never appears in `singlemap` at all (no CSC ever produced
+one) - so none of the three HOLD conditions fire, and it correctly falls
+through to release-eligible. This matches the observed data: `vanilla`'s
+~8.8s median classification time is a real but *finite, working* wait
+through the full pipeline round-trip (Stage 1 discover -> Stage 2 classify ->
+CSI populated -> Stage 3 releases), not an indefinite block.
+
 **Bottom line**: `vanilla`'s 0% admission rate is not a defect to fix - it's
 the correct, by-design behavior of a policy that was deliberately hardened
 against a real tenant-isolation vulnerability. Recovering a fast path for
