@@ -140,6 +140,12 @@ comparison is about understanding where Profile 4's tail latency actually
 comes from (TopologicalSort/NetworkOverhead, not appclass_operator/OPA), not
 about recommending Profile 2 as a replacement.
 
+### Follow-up: 5-repeat statistical validation
+
+The single-run comparison above raised its own question about whether a single N=1000 run's numbers can be trusted, given known run-to-run variance at this scale. See [classscheduling-profile-repeated-stats.md](classscheduling-profile-repeated-stats.md) for a 5-repeat statistical follow-up (mean ± stdev per metric, via the new `run-repeated-evaluation.sh`/`aggregate-repeated-runs.py`) on this same ClassScheduling-only profile, using the published `decomads/appclasscontroller:latest`/`decomads/ucsss:latest` images - including a full code-level diagnosis of why the `vanilla` class shows a consistent 0% admission fast-path rate (a deliberate, security-motivated design choice in `main.rego`, not a bug).
+
+---
+
 ### Reproducing
 
 ```bash
