@@ -55,10 +55,30 @@ CL2_SCHEDULER_THROUGHPUT_PODS="${CL2_SCHEDULER_THROUGHPUT_PODS:-1000}"
 CLASSES="${CLASSES:-vanilla eu us italynorth}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-# Default: this repo checked out as klastos's submodule, at klastos/k8s-secure-scheduling/
-# — two levels up from here (test/) is klastos's own root. Override KLASTOS_REPO
-# explicitly if the two repos are separate sibling checkouts instead.
-KLASTOS_REPO="${KLASTOS_REPO:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+# Auto-detect klastos's root under either layout this harness is actually run
+# from: (a) k8s-secure-scheduling checked out as klastos's own submodule
+# (klastos/k8s-secure-scheduling/) - two levels up from here (test/) is
+# klastos's own root; (b) the two repos checked out as separate SIBLING
+# repos (e.g. ~/githubrepos/klastos + ~/githubrepos/k8s-secure-scheduling) -
+# one level up from here, then into a sibling `klastos/` directory. Tries
+# (a) first, then (b), before falling back to (a)'s guess so the error
+# message below still names a sensible path. An explicit KLASTOS_REPO always
+# wins over either guess. Confirmed live: guessing only (a) unconditionally
+# silently computed a nonexistent path in the sibling layout (one directory
+# short of klastos, at the two repos' shared parent,
+# e.g. ~/githubrepos/experiment1/... instead of
+# ~/githubrepos/klastos/experiment1/...) with no indication the wrong
+# checkout was even being probed.
+if [ -z "${KLASTOS_REPO:-}" ]; then
+  if [ -d "$SCRIPT_DIR/../../experiment1" ]; then
+    KLASTOS_REPO=$(cd "$SCRIPT_DIR/../.." && pwd)
+  elif [ -d "$SCRIPT_DIR/../../klastos/experiment1" ]; then
+    KLASTOS_REPO=$(cd "$SCRIPT_DIR/../../klastos" && pwd)
+  else
+    KLASTOS_REPO=$(cd "$SCRIPT_DIR/../.." && pwd)
+  fi
+fi
 HARNESS_DIR="$KLASTOS_REPO/experiment1/data-sovereignty/harness"
 
 if [ ! -d "$HARNESS_DIR" ]; then
