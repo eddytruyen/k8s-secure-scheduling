@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <testsuite name="ClusterLoaderV2" tests="0" failures="0" errors="0" time="20.476">
+      <testcase name="klastos-scheduler-throughput overall (/home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/data-sovereignty-klastos/config-klastos.yaml)" classname="ClusterLoaderV2" time="20.469758577"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [00] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.059555613"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [01] - APIAvailability" classname="ClusterLoaderV2" time="0.008551847"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [02] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.009527766"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [03] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.042919163"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.008564315"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [05] - OPAAdmissionRequestDuration" classname="ClusterLoaderV2" time="0.008692894"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 02] create scheduler throughput pods" classname="ClusterLoaderV2" time="0.119715441"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 03] Waiting for scheduler throughput pods to be created [00] - WaitForDirectSchedulerThroughputPods" classname="ClusterLoaderV2" time="5.054694601"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [00] - APIAvailability" classname="ClusterLoaderV2" time="0.005371745"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [01] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.130719658"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [02] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.090457785"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [03] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.006309043"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.033429057"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [05] - OPAAdmissionRequestDuration" classname="ClusterLoaderV2" time="0.044926992"></testcase>
+      <testcase name="klastos-scheduler-throughput: [step: 05] Delete scheduler throughput pods" classname="ClusterLoaderV2" time="0.045891876"></testcase>
+  </testsuite>

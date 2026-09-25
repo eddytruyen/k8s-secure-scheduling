@@ -1,0 +1,38 @@
+=== Experiment 1 full evaluation ===
+Steps (N):    20 100 1000
+Classes:      vanilla eu us italynorth
+Run KLASTOS:  true
+Run baseline: false
+Results:      /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20260924-082940
+
+--- Step: N=20 (threshold=5 pods/sec) ---
+[*] KLASTOS harness, N=20
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20260924-082940/klastos-n20/run.log
+
+--- Step: N=100 (threshold=5 pods/sec) ---
+[*] KLASTOS harness, N=100
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20260924-082940/klastos-n100/run.log
+
+--- Step: N=1000 (threshold=5 pods/sec) ---
+[*] KLASTOS harness, N=1000
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20260924-082940/klastos-n1000/run.log
+
+=== All steps passed ===
+Results under: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20260924-082940
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| full-evaluation-20260924-082940/klastos-n100/measurements/eu | PASS | 24/26/26 | 2777.8ms/4330.6ms/4618.7ms | -/-/- | - | appclass_operator=100 | 823.1ms/1319.6ms/1694.1ms | 1954.4ms/3331.4ms/3683.7ms | 13.2ms/37.6ms/66.9ms |
+| full-evaluation-20260924-082940/klastos-n100/measurements/italynorth | PASS | 26/28/28 | 2587.9ms/4200.9ms/4558.2ms | -/-/- | - | appclass_operator=100 | 814.4ms/961.8ms/1453.8ms | 1800.3ms/3273.4ms/3653.5ms | 11.4ms/25.7ms/34.6ms |
+| full-evaluation-20260924-082940/klastos-n100/measurements/us | PASS | 11/64/64 | 1520.3ms/2918.1ms/3371.3ms | -/-/- | - | appclass_operator=100 | 949.8ms/1246.6ms/1388.5ms | 0.0ms/2285.6ms/2734.0ms | 26.8ms/299.9ms/360.4ms |
+| full-evaluation-20260924-082940/klastos-n100/measurements/vanilla | PASS | 16/50/50 | 2031.0ms/3101.4ms/3557.3ms | -/-/- | - | appclass_operator=100 | 855.1ms/1659.2ms/1756.7ms | 314.9ms/2328.9ms/2788.9ms | 49.5ms/488.0ms/869.6ms |
+| full-evaluation-20260924-082940/klastos-n1000/measurements/eu | PASS | 45/67/72 | 10082.9ms/16737.3ms/20225.7ms | -/-/- | - | admission=692,appclass_operator=308 | 0.0ms/5400.3ms/6880.7ms | 0.0ms/0.0ms/1220.1ms | 8337.1ms/14244.8ms/17673.2ms |
+| full-evaluation-20260924-082940/klastos-n1000/measurements/italynorth | PASS | 50/74/82 | 7550.7ms/14756.1ms/18458.6ms | -/-/- | - | admission=698,appclass_operator=302 | 0.0ms/9858.6ms/10947.4ms | 0.0ms/6079.4ms/7828.4ms | 1454.0ms/11408.7ms/15581.5ms |
+| full-evaluation-20260924-082940/klastos-n1000/measurements/us | PASS | 50/76/89 | 8068.0ms/13945.8ms/18498.2ms | -/-/- | - | admission=716,appclass_operator=284 | 0.0ms/6815.1ms/8003.5ms | 0.0ms/0.0ms/2535.8ms | 4922.0ms/11268.3ms/14810.6ms |
+| full-evaluation-20260924-082940/klastos-n1000/measurements/vanilla | PASS | 34/62/93 | 11209.9ms/21087.5ms/27248.5ms | -/-/- | - | admission=664,appclass_operator=336 | 0.0ms/8631.3ms/9557.6ms | 0.0ms/11179.4ms/12566.1ms | 7102.4ms/17955.0ms/24360.5ms |
+| full-evaluation-20260924-082940/klastos-n20/measurements/eu | PASS | 0/14/14 | 615.3ms/1164.8ms/1401.9ms | -/-/- | - | appclass_operator=20 | 272.6ms/311.2ms/408.4ms | 328.1ms/843.3ms/1094.6ms | 12.4ms/30.8ms/37.0ms |
+| full-evaluation-20260924-082940/klastos-n20/measurements/italynorth | PASS | 0/11/11 | 706.5ms/1455.4ms/1674.2ms | -/-/- | - | appclass_operator=20 | 255.5ms/308.0ms/368.5ms | 488.8ms/1139.9ms/1380.7ms | 12.3ms/17.6ms/29.6ms |
+| full-evaluation-20260924-082940/klastos-n20/measurements/us | PASS | 0/13/13 | 780.0ms/1187.1ms/1339.9ms | -/-/- | - | appclass_operator=20 | 340.7ms/384.4ms/397.8ms | 409.5ms/829.5ms/940.1ms | 10.7ms/14.5ms/18.3ms |
+| full-evaluation-20260924-082940/klastos-n20/measurements/vanilla | PASS | 0/13/13 | 775.8ms/1105.9ms/1183.3ms | -/-/- | - | appclass_operator=20 | 234.3ms/260.8ms/272.1ms | 557.9ms/895.3ms/979.1ms | 14.5ms/48.4ms/270.6ms |
+
+Report: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20260924-082940/report.md
+CSV:    /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20260924-082940/report.csv

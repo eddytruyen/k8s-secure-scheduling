@@ -1,0 +1,213 @@
+name: klastos-scheduler-throughput
+automanagednamespaces: 0
+namespace:
+  number: 1
+  prefix: klastos-eval
+  deletestalenamespaces: false
+  deleteautomanagednamespaces: true
+  enableexistingnamespaces: true
+  deletenamespacetimeout: 600000000000
+steps:
+- phases: []
+  measurements:
+  - method: SchedulingThroughput
+    params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurmentInterval: 1s
+    identifier: DirectSchedulingThroughput
+    instances: []
+  - method: APIAvailability
+    params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      pollFrequency: 1s
+    identifier: APIAvailability
+    instances: []
+  - method: APIResponsivenessPrometheus
+    params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+    identifier: APIResponsivenessPrometheus
+    instances: []
+  - method: SchedulingMetrics
+    params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+    identifier: SchedulingMetrics
+    instances: []
+  - method: SchedulingThroughputPrometheus
+    params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+    identifier: SchedulingThroughputPrometheus
+    instances: []
+  - method: GenericPrometheusQuery
+    params:
+      action: start
+      metricName: OPAAdmissionRequestDuration
+      metricVersion: v1
+      queries:
+      - name: Perc50
+        query: histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{handler="index"}[5m]))
+          by (le))
+      - name: Perc90
+        query: histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket{handler="index"}[5m]))
+          by (le))
+      - name: Perc99
+        query: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler="index"}[5m]))
+          by (le))
+      - name: Sum
+        query: sum(http_request_duration_seconds_sum{handler="index"})
+      unit: s
+    identifier: OPAAdmissionRequestDuration
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Creating scheduler throughput measurements
+- phases:
+  - namespacerange:
+      min: 1
+      max: 1
+      basename: null
+    namespacelist: []
+    replicaspernamespace: 10
+    tuningset: UniformQPS
+    objectbundle:
+    - basename: klastos-scheduler-throughput-pod-a
+      objecttemplatepath: eu-region/workload-a.yaml
+      templatefillmap:
+        Group: direct-scheduler-throughput
+      listunknownobjectoptions: null
+  - namespacerange:
+      min: 1
+      max: 1
+      basename: null
+    namespacelist: []
+    replicaspernamespace: 10
+    tuningset: UniformQPS
+    objectbundle:
+    - basename: klastos-scheduler-throughput-pod-b
+      objecttemplatepath: eu-region/workload-b.yaml
+      templatefillmap:
+        Group: direct-scheduler-throughput
+      listunknownobjectoptions: null
+  measurements: []
+  module:
+    path: ""
+    params: {}
+  name: create scheduler throughput pods
+- phases: []
+  measurements:
+  - method: WaitForRunningPods
+    params:
+      action: gather
+      desiredPodCount: 20
+      labelSelector: group = direct-scheduler-throughput
+      timeout: 5m
+    identifier: WaitForDirectSchedulerThroughputPods
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Waiting for scheduler throughput pods to be created
+- phases: []
+  measurements:
+  - method: APIAvailability
+    params:
+      action: gather
+    identifier: APIAvailability
+    instances: []
+  - method: APIResponsivenessPrometheus
+    params:
+      action: gather
+    identifier: APIResponsivenessPrometheus
+    instances: []
+  - method: SchedulingMetrics
+    params:
+      action: gather
+    identifier: SchedulingMetrics
+    instances: []
+  - method: SchedulingThroughput
+    params:
+      action: gather
+      enableViolations: true
+      threshold: 5
+    identifier: DirectSchedulingThroughput
+    instances: []
+  - method: SchedulingThroughputPrometheus
+    params:
+      action: gather
+    identifier: SchedulingThroughputPrometheus
+    instances: []
+  - method: GenericPrometheusQuery
+    params:
+      action: gather
+    identifier: OPAAdmissionRequestDuration
+    instances: []
+  module:
+    path: ""
+    params: {}
+  name: Collecting scheduler throughput measurements
+- phases:
+  - namespacerange:
+      min: 1
+      max: 1
+      basename: null
+    namespacelist: []
+    replicaspernamespace: 0
+    tuningset: default
+    objectbundle:
+    - basename: klastos-scheduler-throughput-pod-a
+      objecttemplatepath: eu-region/workload-a.yaml
+      templatefillmap:
+        Group: direct-scheduler-throughput
+      listunknownobjectoptions: null
+  - namespacerange:
+      min: 1
+      max: 1
+      basename: null
+    namespacelist: []
+    replicaspernamespace: 0
+    tuningset: default
+    objectbundle:
+    - basename: klastos-scheduler-throughput-pod-b
+      objecttemplatepath: eu-region/workload-b.yaml
+      templatefillmap:
+        Group: direct-scheduler-throughput
+      listunknownobjectoptions: null
+  measurements: []
+  module:
+    path: ""
+    params: {}
+  name: Delete scheduler throughput pods
+tuningsets:
+- name: default
+  initialdelay: 0
+  qpsload: null
+  randomizedload: null
+  steppedload: null
+  timelimitedload: null
+  randomizedtimelimitedload: null
+  parallelismlimitedload: null
+  globalqpsload:
+    qps: 500
+    burst: 1000
+  poissonload: null
+- name: UniformQPS
+  initialdelay: 0
+  qpsload:
+    qps: 500
+  randomizedload: null
+  steppedload: null
+  timelimitedload: null
+  randomizedtimelimitedload: null
+  parallelismlimitedload: null
+  globalqpsload: null
+  poissonload: null
+chaosmonkey:
+  nodefailure: null
+  excludednodes: {}
