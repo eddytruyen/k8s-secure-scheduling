@@ -1,0 +1,12 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sTenantNodeIsolation
+metadata:
+  name: tenant-node-isolation
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Binding"]
+    namespaces: ["uc1", "uc2", "uc3", "uc4"]
+  parameters:
+    tenantNamespaces: ["uc1", "uc2", "uc3", "uc4"]

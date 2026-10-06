@@ -1,0 +1,15 @@
+# Prerequisite: syncs Pod objects into Gatekeeper's `data.inventory` cache so
+# the Rego below can see where OTHER pods are already scheduled
+# (`.spec.nodeName`). Without this, data.inventory.namespace[...] is simply
+# empty and the constraint never fires.
+apiVersion: config.gatekeeper.sh/v1alpha1
+kind: Config
+metadata:
+  name: config
+  namespace: gatekeeper-system
+spec:
+  sync:
+    syncOnly:
+      - group: ""
+        version: "v1"
+        kind: "Pod"

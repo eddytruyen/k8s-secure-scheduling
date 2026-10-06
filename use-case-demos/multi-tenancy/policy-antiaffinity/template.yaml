@@ -1,0 +1,56 @@
+# Alternative to ../policy/{mutation,template,constraint}.yaml's node-
+# partitioning approach (nodeSelector pinned to a `tenant` node label).
+# This instead enforces "different tenants never share a node" directly —
+# see ../README-antiaffinity.md for the full design rationale, why a
+# mutation (Assign) CR cannot express this, and live validation results.
+#
+# Targets the pods/binding subresource (confirmed already intercepted by
+# this cluster's gatekeeper-validating-webhook-configuration), because the
+# proposed node is only known once the scheduler submits a Binding — a
+# plain Pod CREATE has no .spec.nodeName yet.
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8stenantnodeisolation
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sTenantNodeIsolation
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            tenantNamespaces:
+              description: >-
+                Enumerated set of tenant namespaces that must never share a
+                node with each other. Required: without it, every other
+                namespace in the cluster (including system namespaces like
+                kube-system, which run a pod on every node via DaemonSets)
+                would count as "a different tenant" and every bind attempt
+                would be rejected forever — confirmed live, see
+                ../README-antiaffinity.md.
+              type: array
+              items:
+                type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8stenantnodeisolation
+
+        import future.keywords.contains
+        import future.keywords.if
+        import future.keywords.in
+
+        violation contains {"msg": msg} if {
+          target_node := input.review.object.target.name
+          my_tenant := input.review.namespace
+          some other_ns
+          other_ns in input.parameters.tenantNamespaces
+          other_ns != my_tenant
+          some pod_name
+          other_pod := data.inventory.namespace[other_ns]["v1"]["Pod"][pod_name]
+          other_pod.spec.nodeName == target_node
+
+          msg := sprintf("binding pod to node <%v> would co-locate tenant <%v> with tenant <%v>", [target_node, my_tenant, other_ns])
+        }
