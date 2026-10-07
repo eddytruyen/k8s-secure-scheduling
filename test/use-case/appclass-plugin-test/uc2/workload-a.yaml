@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  generateName: klastos-appclass-test-b-b-
+  generateName: klastos-uc2-a-
   labels:
-    appgroup.diktyo.x-k8s.io: appclass-test-b-app
-    appgroup.diktyo.x-k8s.io.workload: appclass-test-b-workload-b
+    appgroup.diktyo.x-k8s.io: uc2-app
+    appgroup.diktyo.x-k8s.io.workload: uc2-workload-a
     group: {{.Group}}
 spec:
   schedulerName: appclass-scheduler

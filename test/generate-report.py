@@ -77,12 +77,30 @@ _METRIC_PREFIXES = {
 
 
 def canonical_class(s):
-    """Normalize a CL2 identifier ("pod-eu-region", "vanilla", "") or a
-    KLASTOS leaf directory's own basename ("eu", "vanilla") into
-    "eu"/"us"/"italynorth"/"vanilla" — MUST match
-    e2e-latency-watch.py's own canonical_class() exactly, since this is
-    how this script's per-row identifiers get joined against that
-    script's own generateName-derived groups."""
+    """Normalize a baseline CL2 identifier ("pod-eu-region",
+    "pod-uc1-tenant", "vanilla", "") into "eu"/"us"/"italynorth"/"uc1"/
+    "uc2"/"vanilla" — MUST match e2e-latency-watch.py's own
+    canonical_class() exactly, since this is how this script's per-row
+    identifiers get joined against that script's own generateName-derived
+    groups. The suffix list (-region/-tenant/-a/-b) covers every use
+    case's own naming convention (data-sovereignty's "-region",
+    multi-tenancy's "-tenant", and the "-a"/"-b" workload-letter marker
+    e2e-latency-watch.py strips from a pod's generateName) — add a new
+    entry here (and in e2e-latency-watch.py) for any future use case with
+    its own distinct suffix.
+
+    Deliberately NOT applied to a KLASTOS leaf directory's own basename
+    (see summarize() below) — that basename already IS the exact class
+    name the harness itself assigned (e.g. apply-class-policy.sh's own
+    $CLASS), not a noisy identifier needing normalization. Confirmed live
+    this session: a class whose own name happens to end in "-a"/"-b"
+    (e.g. "appclass-test-a") got its trailing "-a" wrongly stripped as if
+    it were a workload-letter marker, colliding two distinct classes
+    ("appclass-test-a"/"appclass-test-b" both canonicalized to
+    "appclass-test") and silently blanking every e2e-latency/phase column
+    for both. Every other existing class name (uc1/uc2/eu/us/italynorth)
+    happened not to end in a recognized suffix, so this was previously a
+    harmless no-op rather than a visible bug."""
     s = (s or "").lower().rstrip("-")
     for p in ("pod-churn", "klastos", "pod"):
         if s == p:
@@ -91,7 +109,7 @@ def canonical_class(s):
         if s.startswith(p + "-"):
             s = s[len(p) + 1:]
             break
-    for suf in ("-region", "-a", "-b"):
+    for suf in ("-region", "-tenant", "-a", "-b"):
         if s.endswith(suf):
             s = s[: -len(suf)]
             break
@@ -289,7 +307,15 @@ def fmt_classification_source(d):
 def summarize(label, dirpath, identifier):
     st = load_json(latest_for(dirpath, _METRIC_PREFIXES["throughput"], identifier))
 
-    class_key = canonical_class(identifier or os.path.basename(dirpath.rstrip("/")))
+    # Only the baseline's own identifier (derived from a noisy CL2
+    # --testsuite measurement-filename suffix) needs canonicalization.
+    # A KLASTOS leaf directory's basename is already the exact class name
+    # (see canonical_class()'s own docstring for why re-canonicalizing it
+    # is actively wrong, not just redundant).
+    if identifier:
+        class_key = canonical_class(identifier)
+    else:
+        class_key = os.path.basename(dirpath.rstrip("/"))
     e2e = load_e2e_latency(dirpath, class_key) or {}
     classification_source = load_classification_source(dirpath, class_key)
     phases = load_phase_latency(dirpath, class_key)

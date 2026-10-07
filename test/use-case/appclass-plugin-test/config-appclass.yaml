@@ -37,9 +37,9 @@
 
 {{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 30}}
 
-{{$namespace := DefaultParam .NAMESPACE "appclass-test-a"}}
-{{$podSpecA := DefaultParam .POD_SPEC_A "appclass-test-a/workload-a.yaml"}}
-{{$podSpecB := DefaultParam .POD_SPEC_B "appclass-test-a/workload-b.yaml"}}
+{{$namespace := DefaultParam .NAMESPACE "uc1"}}
+{{$podSpecA := DefaultParam .POD_SPEC_A "uc1/workload-a.yaml"}}
+{{$podSpecB := DefaultParam .POD_SPEC_B "uc1/workload-b.yaml"}}
 
 name: appclass-plugin-scheduler-throughput
 namespace:

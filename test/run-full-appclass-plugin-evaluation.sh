@@ -32,7 +32,7 @@ set -euo pipefail
 
 N_STEPS="${N_STEPS:-20 100 1000}"
 NODES="${NODES:-100}"
-CLASSES="${CLASSES:-appclass-test-a appclass-test-b}"
+CLASSES="${CLASSES:-uc1 uc2}"
 KLASTOS_REPO="${KLASTOS_REPO:-$HOME/klastos}"
 APPCLASS_NAME="${APPCLASS_NAME:-app-class}"
 

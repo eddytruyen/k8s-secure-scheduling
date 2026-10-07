@@ -76,7 +76,7 @@ case "$HARNESS_MODE" in
     TESTCONFIG_NAME="config-appclass.yaml"
     OVERRIDE_SUFFIX=""
     RESULT_DIR_NAME="appclass-plugin-test"
-    DEFAULT_CLASSES="appclass-test-a appclass-test-b"
+    DEFAULT_CLASSES="uc1 uc2"
     POLICY_DESC="AppGroup (no CSC in this mode)"
     ;;
   *) echo "ERROR: unknown HARNESS_MODE: $HARNESS_MODE (expected classToTopology, antiaffinity, or appclass-plugin)" >&2; exit 1 ;;
