@@ -1,27 +1,33 @@
-# KLASTOS counterpart of ../multi-tenancy/config.yaml, adapted for
-# Experiment 1's apples-to-apples harness — same structural pattern as
-# ../data-sovereignty-klastos/config-klastos.yaml, differences noted below.
+# KLASTOS counterpart of ../multi-tenancy/config.yaml, for the "AppClass"
+# scheduler-plugin variant (klastos/experiment1/multi-tenancy/
+# harness-appclass-plugin/) — no CSC/UCSS, no gating admission controller
+# at all in this mode (see that harness's own README.md).
 #
 #   - namespaceList (a literal namespace name, templated via NAMESPACE),
 #     not namespace.prefix+number. Tenant identity here IS the namespace
-#     (harness/apply-class-policy.sh creates uc1/uc2 directly, mirroring
-#     the baseline's own ../multi-tenancy/config.yaml NAMESPACE pattern)
-#     rather than data-sovereignty's single CL2-managed shared namespace.
-#     enableExistingNamespaces: true because the harness (not CL2) owns
-#     namespace lifecycle.
+#     (harness-appclass-plugin/apply-class-policy.sh creates the namespace
+#     directly). enableExistingNamespaces: true because the harness (not
+#     CL2) owns namespace lifecycle.
 #   - Two pod templates (POD_SPEC_A/POD_SPEC_B) instead of one POD_SPEC,
-#     same reason as data-sovereignty-klastos: every pod must belong to
-#     one of an AppGroup's exactly-2 workloads (Diktyo's minimum - see
-#     harness/policy/appgroup-template.yaml).
-#   - No admission-latency measurement (OPA/webhook). The baseline's own
-#     GatekeeperValidationRequestDuration/GatekeeperMutationRequestDuration
-#     aren't meaningful on this side either way, but note for future
-#     reference: as of this writing the currently-deployed KLASTOS
-#     admission controller is csi-gate-webhook, which exposes no
-#     Prometheus metrics at all (confirmed this session) - unlike OPA,
-#     which does (see data-sovereignty-klastos's own
-#     OPAAdmissionRequestDuration). Add that measurement back here if/when
-#     OPA is the deployed controller again.
+#     same reason as the other multi-tenancy variants: every pod must
+#     belong to one of an AppGroup's exactly-2 workloads (Diktyo's
+#     minimum - see harness-appclass-plugin/policy/appgroup-template.yaml).
+#   - No admission-latency measurement at all — this mode has no gating
+#     admission controller of any kind (confirmed live:
+#     deploy-klastos-stack.sh APPCLASS_PLUGIN_ONLY=true skips both OPA and
+#     csi-gate-webhook).
+#   - CL2_SCHEDULER_THROUGHPUT_THRESHOLD default is 30, not the 400 the
+#     sibling config-klastos.yaml uses — confirmed live this is NOT
+#     interchangeable: the AppClass scheduler plugin's PreFilter lists
+#     every AppGroup-labeled pod cluster-wide and rebuilds satisfied/
+#     violated maps per node on every scheduling decision (see
+#     nestor-scheduling-work/pkg/security/appclass.go), a fundamentally
+#     more expensive per-pod cost than the CSC/ClassScheduling path 400
+#     was calibrated for. Observed actual throughput was ~66 pods/sec at
+#     N=1000 on this cluster; 30 leaves margin below that for run-to-run
+#     variance rather than being a bare pass/fail coin flip. Override
+#     CL2_SCHEDULER_THROUGHPUT_THRESHOLD explicitly for your own N/cluster
+#     rather than trusting this default blindly.
 
 {{$totalSchedulerThroughputPods := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 5000}}
 {{$halfPods := DivideInt $totalSchedulerThroughputPods 2}}
@@ -29,7 +35,7 @@
 {{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
 {{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
 
-{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 400}}
+{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 30}}
 
 {{$namespace := DefaultParam .NAMESPACE "appclass-test-a"}}
 {{$podSpecA := DefaultParam .POD_SPEC_A "appclass-test-a/workload-a.yaml"}}
