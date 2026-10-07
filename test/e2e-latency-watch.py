@@ -84,7 +84,7 @@ from datetime import datetime, timezone
 
 def canonical_class(s):
     """Normalize a pod's generateName (preferred) into "eu"/"us"/
-    "italynorth"/"vanilla", matching generate-report.py's own
+    "italynorth"/"uc1"/"uc2"/"vanilla", matching generate-report.py's own
     canonical_class() exactly - both must agree, since this is how the
     two scripts' outputs get joined together.
 
@@ -93,8 +93,9 @@ def canonical_class(s):
     data-sovereignty: eu (not italynorth) - grouping by that label would
     silently merge eu-region and italynorth-region pods together.
     generateName reliably distinguishes them ("pod-churn-eu-" vs
-    "pod-churn-italynorth-"), for both the baseline (pod-churn-<region>-)
-    and KLASTOS (klastos-<region>-<a|b>-) naming conventions.
+    "pod-churn-italynorth-"), for both the baseline (pod-churn-<region>-,
+    pod-churn-<tenant>-tenant-) and KLASTOS (klastos-<region>-<a|b>-)
+    naming conventions.
     """
     s = (s or "").lower().rstrip("-")
     for p in ("pod-churn", "klastos", "pod"):
@@ -104,7 +105,7 @@ def canonical_class(s):
         if s.startswith(p + "-"):
             s = s[len(p) + 1:]
             break
-    for suf in ("-region", "-a", "-b"):
+    for suf in ("-region", "-tenant", "-a", "-b"):
         if s.endswith(suf):
             s = s[: -len(suf)]
             break
@@ -304,13 +305,26 @@ def dump(watcher, output_path):
             if (rec["ever_gated"] and classified_at and gate_released_at) else None
         )
         # Phase 3: scheduling - actual scheduler processing time, timed
-        # from whichever event unblocks the pod: gate release if it was
-        # ever gated, otherwise classification itself (CASE 1 admits and
-        # unblocks in the same atomic decision, no separate gate phase).
+        # from whichever event unblocks the pod:
+        #   - gated pod: gate release (it genuinely could not schedule
+        #     before that).
+        #   - never-gated pod, admission fast path (class-keys set AND
+        #     gate released atomically at CREATE, e.g. OPA's CASE 1):
+        #     classified_at is already ~= first_seen, so anchoring to
+        #     first_seen instead makes no practical difference.
+        #   - never-gated pod, NO gate exists in this topology at all
+        #     (e.g. the AppClass scheduler plugin): classified_at can
+        #     reflect some OTHER, unrelated, much-later event (confirmed
+        #     live: a classifier's own separate per-pod annotation pass,
+        #     unread by the scheduler, lagging real scheduling by
+        #     seconds under load) - nothing ever blocked this pod, so its
+        #     scheduling phase is anchored to its own creation instead.
+        # Both never-gated sub-cases use first_seen - harmless for the
+        # fast-path case, correct for the no-gate-at-all case.
         if rec["ever_gated"]:
             unblocked_at = gate_released_at
         else:
-            unblocked_at = classified_at
+            unblocked_at = first_seen
         scheduling_seconds = (
             (scheduled_seen - unblocked_at).total_seconds()
             if (unblocked_at and scheduled_seen) else None
