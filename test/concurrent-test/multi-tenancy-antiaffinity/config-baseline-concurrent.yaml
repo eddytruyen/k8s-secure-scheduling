@@ -1,0 +1,134 @@
+# Concurrent variant of ../../use-case/multi-tenancy/config.yaml - creates
+# BOTH uc1 and uc2's pods in the SAME clusterloader run (via
+# scheduler-suite.yaml, the baseline's own 3-identifier list normally
+# runs vanilla/uc1/uc2 sequentially with full teardown between each - see
+# concurrent-test/README.md). No vanilla here: this test is specifically
+# about cross-tenant contention, which only involves uc1/uc2.
+#
+# Same ONE-combined-throughput-number caveat as config-klastos-concurrent.yaml:
+# SchedulingThroughput matches ALL pods under labelSelector, not per-class.
+
+{{$totalPodsPerClass := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 1000}}
+{{$totalPodsBothClasses := MultiplyInt $totalPodsPerClass 2}}
+{{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
+{{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
+{{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
+
+{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 400}}
+
+name: gatekeeper-multitenancy-antiaffinity-concurrent-scheduler-throughput
+namespace:
+  enableExistingNamespaces: true
+tuningSets:
+- name: default
+  globalQPSLoad:
+    qps: {{$defaultQps}}
+    burst: {{$defaultBurst}}
+- name: UniformQPS
+  qpsLoad:
+    qps: {{$uniformQps}}
+steps:
+- name: Creating scheduler throughput measurements
+  measurements:
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      pollFrequency: 1s
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+- name: create scheduler throughput pods (both tenants, concurrently alive)
+  phases:
+  - namespaceList: [uc1]
+    replicasPerNamespace: {{$totalPodsPerClass}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: direct-scheduler-throughput-pod-uc1
+      objectTemplatePath: uc1-tenant/pod.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: {{$totalPodsPerClass}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: direct-scheduler-throughput-pod-uc2
+      objectTemplatePath: uc2-tenant/pod.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+
+- name: Waiting for scheduler throughput pods to be created
+  measurements:
+  - Identifier: WaitForDirectSchedulerThroughputPods
+    Method: WaitForRunningPods
+    Params:
+      action: gather
+      timeout: 5m
+      desiredPodCount: {{$totalPodsBothClasses}}
+      labelSelector: group = direct-scheduler-throughput
+
+- name: Collecting scheduler throughput measurements
+  measurements:
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: gather
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: gather
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: gather
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: gather
+      enableViolations: true
+      threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: gather
+
+- name: Delete scheduler throughput pods (both tenants)
+  phases:
+  - namespaceList: [uc1]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: direct-scheduler-throughput-pod-uc1
+      objectTemplatePath: uc1-tenant/pod.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: direct-scheduler-throughput-pod-uc2
+      objectTemplatePath: uc2-tenant/pod.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
