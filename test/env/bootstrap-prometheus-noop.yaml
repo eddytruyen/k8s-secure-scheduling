@@ -1,0 +1,16 @@
+# Minimal valid ClusterLoader2 testconfig used only to trigger CL2's own
+# Prometheus-operator-stack bootstrap (see setup-kind-kwok-manual.sh's
+# BOOTSTRAP_PROMETHEUS toggle for why this works and why a literally-empty
+# steps list isn't accepted). Creates no pods, no real namespace - the
+# single Sleep measurement is a no-op; it exists purely because CL2's
+# config validator rejects a step with empty phases AND empty measurements.
+name: bootstrap-prometheus-noop
+namespace:
+  useAutomanagedNamespaces: false
+steps:
+- name: noop
+  measurements:
+  - Identifier: Noop
+    Method: Sleep
+    Params:
+      duration: 1s

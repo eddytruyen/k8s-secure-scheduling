@@ -7,15 +7,16 @@
 # separate script rather than replacing the original, since that one still
 # serves other, more general uses of this repo.
 #
-# Deliberately NOT run as part of this script: gatekeeper-metrics-exporter
-# PodMonitors. Applying them requires the Prometheus-operator CRDs
-# (PodMonitor, ServiceMonitor, ...) to already exist, and those are only
-# created the first time ClusterLoader2 runs with
-# --enable-prometheus-server=true (e.g. test/run-use-case-test.sh) — that's
-# exactly what happened this session: the first benchmark run created them,
-# and only then did applying the PodMonitors succeed. Run one benchmark
-# pass first, then:
-#   kubectl apply -f test/env/gatekeeper-metrics-exporter/
+# gatekeeper-metrics-exporter PodMonitors need the Prometheus-operator CRDs
+# (PodMonitor, ServiceMonitor, ...) to already exist - previously these were
+# only ever created as a side effect of the first real ClusterLoader2 run
+# with --enable-prometheus-server=true (e.g. test/run-use-case-test.sh), so
+# applying the PodMonitors needed a manual two-step: run one benchmark pass
+# first, then `kubectl apply -f test/env/gatekeeper-metrics-exporter/`.
+# BOOTSTRAP_PROMETHEUS=true automates exactly that (see Step 7 below and
+# that variable's own comment for the mechanism) - set it to skip the
+# manual step entirely. Left false by default since it's a genuinely
+# separate concern from standing up the bare cluster.
 
 set -euo pipefail
 
@@ -25,6 +26,13 @@ GATEKEEPER_VERSION="${GATEKEEPER_VERSION:-3.23.1}"
 KWOK_VERSION="${KWOK_VERSION:-v0.8.0}"
 NODE_IMAGE="${NODE_IMAGE:-kindest/node:v1.29.2}"
 CLUSTER_NAME="${CLUSTER_NAME:-secure-sched}"
+
+# When true, Step 7 bootstraps the Prometheus-operator stack (CRDs,
+# operator, Prometheus CR, Grafana) via a throwaway zero-pod ClusterLoader2
+# pass (see bootstrap-prometheus-noop.yaml) and applies the
+# gatekeeper-metrics-exporter PodMonitors - see the header comment above
+# for why this works and what it replaces.
+BOOTSTRAP_PROMETHEUS="${BOOTSTRAP_PROMETHEUS:-false}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -108,12 +116,40 @@ if [ "$FAKE_NODES" -gt 0 ]; then
 fi
 echo ""
 
+if [ "$BOOTSTRAP_PROMETHEUS" = true ]; then
+  echo "[*] Bootstrap Prometheus-operator stack (throwaway zero-pod CL2 pass)"
+  CL2_PROMETHEUS_NODE_SELECTOR='node-role.kubernetes.io/control-plane: ""'
+  CL2_PROMETHEUS_TOLERATE_MASTER=true
+  export CL2_PROMETHEUS_NODE_SELECTOR CL2_PROMETHEUS_TOLERATE_MASTER
+  "$SCRIPT_DIR/../clusterloader" --alsologtostderr --logtostderr=false \
+      --enable-prometheus-server=true \
+      --tear-down-prometheus-server=false \
+      --prometheus-apiserver-scrape-port=6443 \
+      --prometheus-pvc-storage-class=standard \
+      --prometheus-ready-timeout=0 \
+      --log_file=/tmp/bootstrap-prometheus.log \
+      --report-dir=/tmp/bootstrap-prometheus-report \
+      --testconfig="$SCRIPT_DIR/bootstrap-prometheus-noop.yaml" \
+      --nodes="$FAKE_NODES" --provider=kind --kubeconfig="$HOME/.kube/config" --v=2
+  unset CL2_PROMETHEUS_NODE_SELECTOR CL2_PROMETHEUS_TOLERATE_MASTER
+  echo ""
+
+  echo "[*] Apply gatekeeper-metrics-exporter PodMonitors"
+  kubectl apply -f "$SCRIPT_DIR/gatekeeper-metrics-exporter/"
+  echo ""
+fi
+
 echo "=== Cluster ready ==="
 echo "Verify with: kubectl get nodes"
 echo "             kubectl -n gatekeeper-system get pods"
-echo ""
-echo "Prometheus-operator CRDs (needed for gatekeeper-metrics-exporter"
-echo "PodMonitors) do not exist yet — run a benchmark pass first, e.g.:"
-echo "  cd ../ && TEST=data-sovereignty NODES=$FAKE_NODES ./run-use-case-test.sh"
-echo "then:"
-echo "  kubectl apply -f $SCRIPT_DIR/gatekeeper-metrics-exporter/"
+if [ "$BOOTSTRAP_PROMETHEUS" = true ]; then
+  echo "             kubectl -n monitoring get pods"
+else
+  echo ""
+  echo "Prometheus-operator CRDs (needed for gatekeeper-metrics-exporter"
+  echo "PodMonitors) do not exist yet — run a benchmark pass first, e.g.:"
+  echo "  cd ../ && TEST=data-sovereignty NODES=$FAKE_NODES ./run-use-case-test.sh"
+  echo "then:"
+  echo "  kubectl apply -f $SCRIPT_DIR/gatekeeper-metrics-exporter/"
+  echo "or re-run this script with BOOTSTRAP_PROMETHEUS=true to automate both steps."
+fi
