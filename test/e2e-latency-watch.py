@@ -358,10 +358,28 @@ def dump(watcher, output_path):
         classification_source_summary[cls][src_key] += 1
 
     summary = {cls: percentiles(vals) for cls, vals in by_class.items()}
+    summary["__all__"] = percentiles([v for vals in by_class.values() for v in vals])
+
     phase_summary = {
         phase: {cls: percentiles(vals) for cls, vals in per_class.items()}
         for phase, per_class in by_class_phases.items()
     }
+    # Combined-across-every-class aggregate, alongside each real class's
+    # own entry — read by generate-report.py's own "__all__" fallback for
+    # a combined-run report-dir that covers every class in one pass (see
+    # that script's own summarize() for why a per-class key alone isn't
+    # enough there).
+    for phase in phase_summary:
+        phase_summary[phase]["__all__"] = percentiles(
+            [v for vals in by_class_phases[phase].values() for v in vals]
+        )
+
+    combined_classification_source = {}
+    for counts in classification_source_summary.values():
+        for src_key, n in counts.items():
+            combined_classification_source[src_key] = combined_classification_source.get(src_key, 0) + n
+    classification_source_summary["__all__"] = combined_classification_source
+
     with open(output_path, "w") as f:
         json.dump({
             "summary": summary,

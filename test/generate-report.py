@@ -317,6 +317,18 @@ def summarize(label, dirpath, identifier):
     else:
         class_key = os.path.basename(dirpath.rstrip("/"))
     e2e = load_e2e_latency(dirpath, class_key) or {}
+    if not identifier and not e2e:
+        # Combined multi-class run (concurrent-test/'s own harnesses):
+        # the report-dir's basename ("measurements") isn't a real class
+        # name at all — every class ran in ONE clusterloader pass writing
+        # ONE shared report-dir, unlike the sequential KLASTOS harness's
+        # own STEP_DIR/measurements/<class> layout this basename fallback
+        # was written for (see canonical_class()'s own docstring). Fall
+        # back to the combined-across-every-class aggregate
+        # e2e-latency-watch.py also emits under "__all__" for exactly
+        # this case.
+        class_key = "__all__"
+        e2e = load_e2e_latency(dirpath, class_key) or {}
     classification_source = load_classification_source(dirpath, class_key)
     phases = load_phase_latency(dirpath, class_key)
     classification_phase = phases.get("classification") or {}
