@@ -1,0 +1,154 @@
+# KLASTOS counterpart of ../workload-security-rings/scheduler-suite.yaml's
+# config.yaml, adapted for Experiment 1's apples-to-apples harness — same
+# structural pattern as ../multi-tenancy-klastos/config-klastos.yaml
+# (namespaceList + NAMESPACE override, enableExistingNamespaces: true,
+# because klastos/experiment1/workload-security-rings/harness/
+# apply-shared-policy.sh — not ClusterLoader2 — owns namespace lifecycle),
+# with one difference: NAMESPACE defaults to the harness's single SHARED
+# namespace (workload-security-rings-eval), not a per-ring one — both
+# rings' pods live in the same namespace here, matching the Gatekeeper
+# baseline's own namespace-agnostic design for this use case (its
+# config.yaml has no per-ring namespace concept at all).
+#
+# Two pod templates (POD_SPEC_A/POD_SPEC_B) for the same reason as every
+# other KLASTOS-side config here: every pod must belong to one of an
+# AppGroup's exactly-2 workloads (see harness/policy/appgroup-template.yaml).
+#
+# No admission-latency measurement — same rationale as
+# multi-tenancy-klastos/config-klastos.yaml's own header (csi-gate-webhook
+# exposes no Prometheus metrics; add OPAAdmissionRequestDuration back if/
+# when OPA is the deployed controller).
+
+{{$totalSchedulerThroughputPods := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 5000}}
+{{$halfPods := DivideInt $totalSchedulerThroughputPods 2}}
+{{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
+{{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
+{{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
+
+{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 400}}
+
+{{$namespace := DefaultParam .NAMESPACE "workload-security-rings-eval"}}
+{{$podSpecA := DefaultParam .POD_SPEC_A "sensitive-tenant/workload-a.yaml"}}
+{{$podSpecB := DefaultParam .POD_SPEC_B "sensitive-tenant/workload-b.yaml"}}
+
+name: klastos-workload-security-rings-scheduler-throughput
+namespace:
+  enableExistingNamespaces: true
+tuningSets:
+- name: default
+  globalQPSLoad:
+    qps: {{$defaultQps}}
+    burst: {{$defaultBurst}}
+- name: UniformQPS
+  qpsLoad:
+    qps: {{$uniformQps}}
+steps:
+- name: Creating scheduler throughput measurements
+  measurements:
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      pollFrequency: 1s
+
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+- name: create scheduler throughput pods
+  phases:
+  - namespaceList:
+    - {{$namespace}}
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-scheduler-throughput-pod-a
+      objectTemplatePath: {{$podSpecA}}
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList:
+    - {{$namespace}}
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-scheduler-throughput-pod-b
+      objectTemplatePath: {{$podSpecB}}
+      templateFillMap:
+        Group: direct-scheduler-throughput
+- name: Waiting for scheduler throughput pods to be created
+  measurements:
+  - Identifier: WaitForDirectSchedulerThroughputPods
+    Method: WaitForRunningPods
+    Params:
+      action: gather
+      timeout: 5m
+      desiredPodCount: {{$totalSchedulerThroughputPods}}
+      labelSelector: group = direct-scheduler-throughput
+- name: Collecting scheduler throughput measurements
+  measurements:
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: gather
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: gather
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: gather
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: gather
+      enableViolations: true
+      threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: gather
+- name: Delete scheduler throughput pods
+  phases:
+  - namespaceList:
+    - {{$namespace}}
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-scheduler-throughput-pod-a
+      objectTemplatePath: {{$podSpecA}}
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList:
+    - {{$namespace}}
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-scheduler-throughput-pod-b
+      objectTemplatePath: {{$podSpecB}}
+      templateFillMap:
+        Group: direct-scheduler-throughput
