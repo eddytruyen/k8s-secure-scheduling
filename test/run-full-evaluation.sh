@@ -18,7 +18,7 @@ set -euo pipefail
 N_STEPS="${N_STEPS:-20 100 1000}"
 NODES="${NODES:-100}"
 CLASSES="${CLASSES:-vanilla eu us italynorth}"
-KLASTOS_REPO="${KLASTOS_REPO:-$HOME/klastos}"
+KLASTOS_REPO="${KLASTOS_REPO:-$HOME/githubrepos/klastos}"
 RUN_BASELINE="${RUN_BASELINE:-false}"
 RUN_KLASTOS="${RUN_KLASTOS:-true}"
 

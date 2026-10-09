@@ -33,7 +33,7 @@ set -euo pipefail
 N_STEPS="${N_STEPS:-20 100 1000}"
 NODES="${NODES:-100}"
 CLASSES="${CLASSES:-uc1 uc2}"
-KLASTOS_REPO="${KLASTOS_REPO:-$HOME/klastos}"
+KLASTOS_REPO="${KLASTOS_REPO:-$HOME/githubrepos/klastos}"
 APPCLASS_NAME="${APPCLASS_NAME:-app-class}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
