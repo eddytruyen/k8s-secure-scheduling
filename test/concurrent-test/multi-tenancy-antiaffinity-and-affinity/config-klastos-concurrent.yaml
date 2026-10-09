@@ -1,0 +1,173 @@
+# Concurrent variant of ../../use-case/multi-tenancy-klastos/config-klastos.yaml
+# - identical shape to ../multi-tenancy-antiaffinity/config-klastos-concurrent.yaml
+# (see that file's own header for the full temporal-overlap rationale); this
+# copy exists only because it targets a different KLASTOS-side harness
+# (../../../../klastos/experiment1/multi-tenancy/harness-antiaffinity-and-affinity/,
+# which adds a same-tenant interClass Affinity term alongside the unchanged
+# cross-tenant interClass AntiAffinity one - see that harness's own README
+# for what/why). No pod-template or CL2-mechanics changes needed: both
+# harnesses place the exact same pods, only the KLASTOS-side CSC enforcing
+# placement differs, so this config is a straight copy with just the `name:`
+# field changed to keep report/log paths distinguishable from the
+# antiaffinity-only run.
+#
+# Same one-combined-throughput-number caveat as the sibling config: read
+# this step's e2e-latency.json directly for a per-class breakdown.
+
+{{$totalPodsPerClass := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 1000}}
+{{$halfPods := DivideInt $totalPodsPerClass 2}}
+{{$totalPodsBothClasses := MultiplyInt $totalPodsPerClass 2}}
+{{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
+{{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
+{{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
+
+{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 30}}
+
+name: klastos-multitenancy-antiaffinity-and-affinity-concurrent-scheduler-throughput
+namespace:
+  enableExistingNamespaces: true
+tuningSets:
+- name: default
+  globalQPSLoad:
+    qps: {{$defaultQps}}
+    burst: {{$defaultBurst}}
+- name: UniformQPS
+  qpsLoad:
+    qps: {{$uniformQps}}
+steps:
+- name: Creating scheduler throughput measurements
+  measurements:
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      pollFrequency: 1s
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+- name: create scheduler throughput pods (both classes, concurrently alive)
+  phases:
+  - namespaceList: [uc1]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-uc1-a
+      objectTemplatePath: uc1-tenant/klastos-workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc1]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-uc1-b
+      objectTemplatePath: uc1-tenant/klastos-workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-uc2-a
+      objectTemplatePath: uc2-tenant/klastos-workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-uc2-b
+      objectTemplatePath: uc2-tenant/klastos-workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+
+- name: Waiting for scheduler throughput pods to be created
+  measurements:
+  - Identifier: WaitForDirectSchedulerThroughputPods
+    Method: WaitForRunningPods
+    Params:
+      action: gather
+      timeout: 5m
+      desiredPodCount: {{$totalPodsBothClasses}}
+      labelSelector: group = direct-scheduler-throughput
+
+- name: Collecting scheduler throughput measurements
+  measurements:
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: gather
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: gather
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: gather
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: gather
+      enableViolations: true
+      threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: gather
+
+- name: Delete scheduler throughput pods (both classes)
+  phases:
+  - namespaceList: [uc1]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-uc1-a
+      objectTemplatePath: uc1-tenant/klastos-workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc1]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-uc1-b
+      objectTemplatePath: uc1-tenant/klastos-workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-uc2-a
+      objectTemplatePath: uc2-tenant/klastos-workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-uc2-b
+      objectTemplatePath: uc2-tenant/klastos-workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput

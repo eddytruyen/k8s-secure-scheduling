@@ -10,11 +10,15 @@
 # class here has a CSC/classification entry (no "vanilla"/unconstrained
 # skip case — the Gatekeeper baseline itself only ever tests uc1/uc2).
 #
-# Three mutually exclusive HARNESS_MODE values, one per KLASTOS-side
+# Four mutually exclusive HARNESS_MODE values, one per KLASTOS-side
 # variant of this use case (see each harness's own README.md):
-#   classToTopology (default) — per-tenant node-partition CSCs
-#   antiaffinity              — a single shared interClass AntiAffinity CSC
-#   appclass-plugin           — the AppClass scheduler plugin, no CSC/UCSS
+#   classToTopology (default)   — per-tenant node-partition CSCs
+#   antiaffinity                — a single shared interClass AntiAffinity CSC
+#   antiaffinity-and-affinity   — antiaffinity, plus a soft same-tenant
+#                                  interClass Affinity term (co-location
+#                                  preference) — see
+#                                  harness-antiaffinity-and-affinity/README.md
+#   appclass-plugin              — the AppClass scheduler plugin, no CSC/UCSS
 #
 # Requires:
 # - classToTopology/antiaffinity: node tenant labels already applied via
@@ -70,6 +74,15 @@ case "$HARNESS_MODE" in
     DEFAULT_CLASSES="uc1 uc2"
     POLICY_DESC="AppGroup (shared CSC already applied)"
     ;;
+  antiaffinity-and-affinity)
+    HARNESS_SUBDIR="harness-antiaffinity-and-affinity"
+    USE_CASE_SUBDIR="multi-tenancy-klastos"
+    TESTCONFIG_NAME="config-klastos.yaml"
+    OVERRIDE_SUFFIX="-tenant"
+    RESULT_DIR_NAME="multi-tenancy-klastos-test"
+    DEFAULT_CLASSES="uc1 uc2"
+    POLICY_DESC="AppGroup (shared AntiAffinity+Affinity CSC already applied)"
+    ;;
   appclass-plugin)
     HARNESS_SUBDIR="harness-appclass-plugin"
     USE_CASE_SUBDIR="appclass-plugin-test"
@@ -79,7 +92,7 @@ case "$HARNESS_MODE" in
     DEFAULT_CLASSES="uc1 uc2"
     POLICY_DESC="AppGroup (no CSC in this mode)"
     ;;
-  *) echo "ERROR: unknown HARNESS_MODE: $HARNESS_MODE (expected classToTopology, antiaffinity, or appclass-plugin)" >&2; exit 1 ;;
+  *) echo "ERROR: unknown HARNESS_MODE: $HARNESS_MODE (expected classToTopology, antiaffinity, antiaffinity-and-affinity, or appclass-plugin)" >&2; exit 1 ;;
 esac
 HARNESS_DIR="$KLASTOS_REPO/experiment1/multi-tenancy/$HARNESS_SUBDIR"
 CLASSES="${CLASSES:-$DEFAULT_CLASSES}"
