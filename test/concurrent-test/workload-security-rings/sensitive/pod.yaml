@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  generateName: pod-churn-sensitive-
+  labels:
+    group: {{.Group}}
+    security-ring: sensitive
+spec:
+  containers:
+  - image: registry.k8s.io/pause:3.9
+    name: pause

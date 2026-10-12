@@ -1,0 +1,184 @@
+# Concurrent variant of
+# ../../use-case/workload-security-rings-klastos/config-klastos.yaml -
+# creates BOTH the sensitive and unhardened ring's pods in the SAME
+# clusterloader run, with no teardown of either ring in between, so
+# they're genuinely alive on the cluster at the same time. See
+# run-concurrent-workload-security-rings-evaluation.sh's own header for
+# the full rationale: unlike multi-tenancy-antiaffinity/'s concurrent
+# config (an actual correctness gap), this use case's two CSCs have no
+# cross-class dependency at all, so this harness exists purely for a
+# realistic mixed-load measurement.
+#
+# Both rings share the SAME namespace (workload-security-rings-eval),
+# unlike the multi-tenancy concurrent configs' per-tenant namespaces -
+# matches this harness's own namespace-agnostic design (see
+# klastos/experiment1/workload-security-rings/harness/README.md). The
+# namespace is hardcoded here (not templated via .NAMESPACE) because
+# run-concurrent-workload-security-rings-evaluation.sh only passes
+# --testconfig, no --testoverrides; if you run with a non-default
+# NAMESPACE, update namespaceList below to match.
+#
+# One consequence of a combined run: SchedulingThroughput is not
+# class-aware, so the report shows ONE combined throughput number across
+# both rings' 2*N pods, not a per-ring number - read this step's
+# e2e-latency.json directly for a per-class e2e-latency/phase breakdown
+# (e2e-latency-watch.py's own generateName-based grouping already works
+# correctly across multiple classes within one run).
+
+{{$totalPodsPerClass := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 1000}}
+{{$halfPods := DivideInt $totalPodsPerClass 2}}
+{{$totalPodsBothClasses := MultiplyInt $totalPodsPerClass 2}}
+{{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
+{{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
+{{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
+
+{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 30}}
+
+name: klastos-workload-security-rings-concurrent-scheduler-throughput
+namespace:
+  enableExistingNamespaces: true
+tuningSets:
+- name: default
+  globalQPSLoad:
+    qps: {{$defaultQps}}
+    burst: {{$defaultBurst}}
+- name: UniformQPS
+  qpsLoad:
+    qps: {{$uniformQps}}
+steps:
+- name: Creating scheduler throughput measurements
+  measurements:
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      pollFrequency: 1s
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+- name: create scheduler throughput pods (both rings, concurrently alive)
+  phases:
+  - namespaceList: [workload-security-rings-eval]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-sensitive-a
+      objectTemplatePath: sensitive-tenant/workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [workload-security-rings-eval]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-sensitive-b
+      objectTemplatePath: sensitive-tenant/workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [workload-security-rings-eval]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-unhardened-a
+      objectTemplatePath: unhardened-tenant/workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [workload-security-rings-eval]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-unhardened-b
+      objectTemplatePath: unhardened-tenant/workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+
+- name: Waiting for scheduler throughput pods to be created
+  measurements:
+  - Identifier: WaitForDirectSchedulerThroughputPods
+    Method: WaitForRunningPods
+    Params:
+      action: gather
+      timeout: 5m
+      desiredPodCount: {{$totalPodsBothClasses}}
+      labelSelector: group = direct-scheduler-throughput
+
+- name: Collecting scheduler throughput measurements
+  measurements:
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: gather
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: gather
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: gather
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: gather
+      enableViolations: true
+      threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: gather
+
+- name: Delete scheduler throughput pods (both rings)
+  phases:
+  - namespaceList: [workload-security-rings-eval]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-sensitive-a
+      objectTemplatePath: sensitive-tenant/workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [workload-security-rings-eval]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-sensitive-b
+      objectTemplatePath: sensitive-tenant/workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [workload-security-rings-eval]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-unhardened-a
+      objectTemplatePath: unhardened-tenant/workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [workload-security-rings-eval]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-unhardened-b
+      objectTemplatePath: unhardened-tenant/workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput

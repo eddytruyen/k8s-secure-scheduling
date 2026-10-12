@@ -14,6 +14,11 @@
 # the effect of adding the affinity term on top of the unchanged
 # anti-affinity one.
 #
+# The step loop itself (threshold scaling, watcher start/stop, run.log
+# capture, OK/FAILED reporting, final report generation) lives in
+# ../lib/common.sh, shared by every concurrent-test variant - only the
+# per-arm apply/run/delete sequence below is specific to this one.
+#
 # Usage:
 #   ./run-concurrent-multitenancy-antiaffinity-and-affinity-evaluation.sh
 #   N_STEPS="20 100 1000" ./run-concurrent-multitenancy-antiaffinity-and-affinity-evaluation.sh
@@ -30,77 +35,46 @@ HARNESS_DIR="$KLASTOS_REPO/experiment1/multi-tenancy/harness-antiaffinity-and-af
 RESULT_ROOT="$TEST_DIR/result/use-case/concurrent-multitenancy-antiaffinity-and-affinity-evaluation-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$RESULT_ROOT"
 
+# shellcheck source=../lib/common.sh
+source "$SCRIPT_DIR/../lib/common.sh"
+
 echo "=== Experiment 1 CONCURRENT evaluation (multi-tenancy, anti-affinity + affinity variant) ==="
 echo "Steps (N per class): $N_STEPS"
 echo "Results:      $RESULT_ROOT"
 echo ""
 
-threshold_for() {
-  local n="$1"
-  if [ -n "${THRESHOLD_OVERRIDE:-}" ]; then
-    echo "$THRESHOLD_OVERRIDE"
-    return
-  fi
-  local t=$((n / 10))
-  [ "$t" -lt 5 ] && t=5
-  echo "$t"
+klastos_work() {
+  "$HARNESS_DIR/apply-shared-policy.sh"
+  "$HARNESS_DIR/apply-class-policy.sh" uc1 "$N"
+  "$HARNESS_DIR/apply-class-policy.sh" uc2 "$N"
+
+  "$TEST_DIR/clusterloader" --alsologtostderr --logtostderr=false \
+      --enable-prometheus-server=true \
+      --tear-down-prometheus-server=false \
+      --prometheus-apiserver-scrape-port=6443 \
+      --prometheus-pvc-storage-class=standard \
+      --prometheus-ready-timeout=0 \
+      --log_file="$STEP_DIR/klastos.log" \
+      --report-dir="$STEP_DIR/measurements" \
+      --testconfig="$SCRIPT_DIR/config-klastos-concurrent.yaml" \
+      --nodes="$NODES" --provider=kind --kubeconfig="$HOME/.kube/config" --v=2
+
+  "$HARNESS_DIR/delete-class-policy.sh" uc1
+  "$HARNESS_DIR/delete-class-policy.sh" uc2
+  "$HARNESS_DIR/delete-shared-policy.sh"
 }
 
 FAILED=false
 
 for N in $N_STEPS; do
-  THRESHOLD=$(threshold_for "$N")
+  THRESHOLD=$(concurrent_threshold_for "$N")
   echo "--- Step: N=$N per class (threshold=$THRESHOLD pods/sec) ---"
 
   echo "[*] KLASTOS harness (antiaffinity-and-affinity, CONCURRENT), N=$N per class"
   STEP_DIR="$RESULT_ROOT/klastos-n$N"
-  mkdir -p "$STEP_DIR"
-
-  python3 "$TEST_DIR/e2e-latency-watch.py" --output "$STEP_DIR/e2e-latency.json" &
-  WATCHER_PID=$!
-  sleep 1
-
-  export CL2_SCHEDULER_THROUGHPUT_PODS="$N"
-  export CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD"
-  export CL2_PROMETHEUS_NODE_SELECTOR='node-role.kubernetes.io/control-plane: ""'
-  export CL2_PROMETHEUS_TOLERATE_MASTER=true
-
-  set +e
-  (
-    set -euo pipefail
-    "$HARNESS_DIR/apply-shared-policy.sh"
-    "$HARNESS_DIR/apply-class-policy.sh" uc1 "$N"
-    "$HARNESS_DIR/apply-class-policy.sh" uc2 "$N"
-
-    "$TEST_DIR/clusterloader" --alsologtostderr --logtostderr=false \
-        --enable-prometheus-server=true \
-        --tear-down-prometheus-server=false \
-        --prometheus-apiserver-scrape-port=6443 \
-        --prometheus-pvc-storage-class=standard \
-        --prometheus-ready-timeout=0 \
-        --log_file="$STEP_DIR/klastos.log" \
-        --report-dir="$STEP_DIR/measurements" \
-        --testconfig="$SCRIPT_DIR/config-klastos-concurrent.yaml" \
-        --nodes="$NODES" --provider=kind --kubeconfig="$HOME/.kube/config" --v=2
-
-    "$HARNESS_DIR/delete-class-policy.sh" uc1
-    "$HARNESS_DIR/delete-class-policy.sh" uc2
-    "$HARNESS_DIR/delete-shared-policy.sh"
-  ) > "$STEP_DIR/run.log" 2>&1
-  KLASTOS_RC=$?
-  set -e
-
-  unset CL2_SCHEDULER_THROUGHPUT_PODS CL2_SCHEDULER_THROUGHPUT_THRESHOLD CL2_PROMETHEUS_NODE_SELECTOR CL2_PROMETHEUS_TOLERATE_MASTER
-
-  if [ $KLASTOS_RC -eq 0 ]; then
-    echo "    OK — log: $STEP_DIR/run.log"
-  else
-    echo "    FAILED at N=$N — see $STEP_DIR/run.log"
+  if ! concurrent_run_step "$STEP_DIR" "$N" "$THRESHOLD" klastos_work; then
     FAILED=true
   fi
-
-  kill -TERM "$WATCHER_PID" 2>/dev/null || true
-  wait "$WATCHER_PID" 2>/dev/null || true
 
   if [ "$FAILED" = true ]; then
     echo ""
@@ -110,10 +84,4 @@ for N in $N_STEPS; do
   echo ""
 done
 
-echo "=== All steps passed ==="
-echo "Results under: $RESULT_ROOT"
-
-python3 "$TEST_DIR/generate-report.py" "$RESULT_ROOT" --csv "$RESULT_ROOT/report.csv" | tee "$RESULT_ROOT/report.md"
-echo ""
-echo "Report: $RESULT_ROOT/report.md"
-echo "CSV:    $RESULT_ROOT/report.csv"
+concurrent_finalize "$RESULT_ROOT"

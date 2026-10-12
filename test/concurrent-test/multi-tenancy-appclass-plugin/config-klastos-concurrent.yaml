@@ -1,0 +1,186 @@
+# Concurrent variant of ../../use-case/appclass-plugin-test/config-appclass.yaml
+# - creates BOTH uc1 and uc2's pods in the SAME clusterloader run, with no
+# teardown of either class in between, so they're genuinely alive on the
+# cluster at the same time. Mirrors ../multi-tenancy-antiaffinity/'s own
+# concurrent config's rationale: the AppClass scheduler plugin's own Filter
+# implements the identical "different tenants never share a node"
+# guarantee as the ClassScheduling plugin's interClass AntiAffinity CSC
+# (see harness-appclass-plugin/README.md: "The plugin's Filter correctly
+# rejects a node already hosting a different-class pod"), so a genuinely
+# concurrent test is the fair, apples-to-apples way to compare the two
+# plugins' behavior under real cross-tenant contention, not just a
+# sequential, isolated-per-class measurement.
+#
+# No Gatekeeper baseline counterpart exists for this mode (KLASTOS-only —
+# see harness-appclass-plugin/README.md).
+#
+# Same ONE-combined-throughput-number caveat as the other concurrent
+# configs: SchedulingThroughput matches ALL pods under labelSelector, not
+# per-class. generate-report.py's "__all__" fallback still gives a correct
+# per-class e2e-latency/phase breakdown despite that.
+#
+# CL2_SCHEDULER_THROUGHPUT_THRESHOLD default kept at 30 (not the 400 the
+# ClassScheduling-plugin concurrent configs use) - see
+# config-appclass.yaml's own header for why these aren't interchangeable
+# (the AppClass plugin's PreFilter is a fundamentally more expensive
+# per-pod cost, confirmed via nestor-scheduling-work/pkg/security/appclass.go
+# — though see that repo's own appclass_v9 fix, reported as a 9.5x
+# reduction in that exact cost at 1000 pods/1000 nodes).
+
+{{$totalPodsPerClass := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 1000}}
+{{$halfPods := DivideInt $totalPodsPerClass 2}}
+{{$totalPodsBothClasses := MultiplyInt $totalPodsPerClass 2}}
+{{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
+{{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
+{{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
+
+{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 30}}
+
+name: klastos-multitenancy-appclass-plugin-concurrent-scheduler-throughput
+namespace:
+  enableExistingNamespaces: true
+tuningSets:
+- name: default
+  globalQPSLoad:
+    qps: {{$defaultQps}}
+    burst: {{$defaultBurst}}
+- name: UniformQPS
+  qpsLoad:
+    qps: {{$uniformQps}}
+steps:
+- name: Creating scheduler throughput measurements
+  measurements:
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      pollFrequency: 1s
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+
+- name: create scheduler throughput pods (both classes, concurrently alive)
+  phases:
+  - namespaceList: [uc1]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-uc1-a
+      objectTemplatePath: uc1/workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc1]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-uc1-b
+      objectTemplatePath: uc1/workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-uc2-a
+      objectTemplatePath: uc2/workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: {{$halfPods}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: klastos-uc2-b
+      objectTemplatePath: uc2/workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+
+- name: Waiting for scheduler throughput pods to be created
+  measurements:
+  - Identifier: WaitForDirectSchedulerThroughputPods
+    Method: WaitForRunningPods
+    Params:
+      action: gather
+      timeout: 5m
+      desiredPodCount: {{$totalPodsBothClasses}}
+      labelSelector: group = direct-scheduler-throughput
+
+- name: Collecting scheduler throughput measurements
+  measurements:
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: gather
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: gather
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: gather
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: gather
+      enableViolations: true
+      threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: gather
+
+- name: Delete scheduler throughput pods (both classes)
+  phases:
+  - namespaceList: [uc1]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-uc1-a
+      objectTemplatePath: uc1/workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc1]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-uc1-b
+      objectTemplatePath: uc1/workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-uc2-a
+      objectTemplatePath: uc2/workload-a.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceList: [uc2]
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: klastos-uc2-b
+      objectTemplatePath: uc2/workload-b.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput

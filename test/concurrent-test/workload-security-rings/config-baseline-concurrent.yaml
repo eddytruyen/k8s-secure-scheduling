@@ -1,0 +1,188 @@
+# Concurrent variant of ../../use-case/config.yaml (scheduler-suite.yaml's
+# own pod-sensitive/pod-unhandened identifiers) - creates BOTH rings' pods
+# in the SAME clusterloader run, instead of scheduler-suite.yaml's own
+# 3-identifier list (vanilla/pod-sensitive/pod-unhandened) which runs them
+# sequentially with full teardown between each. No vanilla here: this is a
+# direct apples-to-apples match against ../workload-security-rings-klastos/
+# config-klastos-concurrent.yaml's own two rings, same convention as
+# multi-tenancy-classtotopology/config-baseline-concurrent.yaml.
+#
+# Not class-aware for SchedulingThroughput, same caveat as
+# config-klastos-concurrent.yaml - see that file's own header.
+#
+# Single default namespace (namespaceRange min=1/max=1), matching this use
+# case's own use-case/config.yaml (no per-tenant namespaces, unlike
+# multi-tenancy's baseline).
+
+{{$totalPodsPerClass := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 1000}}
+{{$totalPodsBothClasses := MultiplyInt $totalPodsPerClass 2}}
+{{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
+{{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
+{{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
+
+{{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 400}}
+
+name: gatekeeper-workload-security-rings-concurrent-scheduler-throughput
+namespace:
+  number: 1
+tuningSets:
+- name: default
+  globalQPSLoad:
+    qps: {{$defaultQps}}
+    burst: {{$defaultBurst}}
+- name: UniformQPS
+  qpsLoad:
+    qps: {{$uniformQps}}
+steps:
+- name: Creating scheduler throughput measurements
+  measurements:
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      pollFrequency: 1s
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: start
+      labelSelector: group = direct-scheduler-throughput
+      measurementInterval: 1s
+  - Identifier: GatekeeperValidationRequestDuration
+    Method: GenericPrometheusQuery
+    Params:
+      action: start
+      metricName: GatekeeperValidationRequestDuration
+      metricVersion: v1
+      unit: s
+      queries:
+      - name: Perc50
+        query: histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))
+      - name: Perc90
+        query: histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))
+      - name: Perc99
+        query: histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))
+      - name: Sum
+        query: gatekeeper_validation_request_duration_seconds_sum
+  - Identifier: GatekeeperMutationRequestDuration
+    Method: GenericPrometheusQuery
+    Params:
+      action: start
+      metricName: GatekeeperMutationRequestDuration
+      metricVersion: v1
+      unit: s
+      queries:
+      - name: Perc50
+        query: histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))
+      - name: Perc90
+        query: histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))
+      - name: Perc99
+        query: histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))
+      - name: Sum
+        query: gatekeeper_mutation_request_duration_seconds_sum
+
+- name: create scheduler throughput pods (both rings, concurrently alive)
+  phases:
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$totalPodsPerClass}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: direct-scheduler-throughput-pod-sensitive
+      objectTemplatePath: sensitive/pod.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$totalPodsPerClass}}
+    tuningSet: UniformQPS
+    objectBundle:
+    - basename: direct-scheduler-throughput-pod-unhardened
+      objectTemplatePath: unhardened/pod.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+
+- name: Waiting for scheduler throughput pods to be created
+  measurements:
+  - Identifier: WaitForDirectSchedulerThroughputPods
+    Method: WaitForRunningPods
+    Params:
+      action: gather
+      timeout: 5m
+      desiredPodCount: {{$totalPodsBothClasses}}
+      labelSelector: group = direct-scheduler-throughput
+
+- name: Collecting scheduler throughput measurements
+  measurements:
+  - Identifier: APIAvailability
+    Method: APIAvailability
+    Params:
+      action: gather
+  - Identifier: APIResponsivenessPrometheus
+    Method: APIResponsivenessPrometheus
+    Params:
+      action: gather
+  - Identifier: SchedulingMetrics
+    Method: SchedulingMetrics
+    Params:
+      action: gather
+  - Identifier: DirectSchedulingThroughput
+    Method: SchedulingThroughput
+    Params:
+      action: gather
+      enableViolations: true
+      threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
+  - Identifier: SchedulingThroughputPrometheus
+    Method: SchedulingThroughputPrometheus
+    Params:
+      action: gather
+  - Identifier: GatekeeperValidationRequestDuration
+    Method: GenericPrometheusQuery
+    Params:
+      action: gather
+  - Identifier: GatekeeperMutationRequestDuration
+    Method: GenericPrometheusQuery
+    Params:
+      action: gather
+
+- name: Delete scheduler throughput pods (both rings)
+  phases:
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: direct-scheduler-throughput-pod-sensitive
+      objectTemplatePath: sensitive/pod.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: 0
+    tuningSet: default
+    objectBundle:
+    - basename: direct-scheduler-throughput-pod-unhardened
+      objectTemplatePath: unhardened/pod.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
