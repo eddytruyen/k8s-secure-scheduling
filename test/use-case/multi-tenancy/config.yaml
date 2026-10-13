@@ -2,6 +2,8 @@
 {{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
 {{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
 {{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
+{{$uniformQpsGlobal := DefaultParam .CL2_UNIFORM_QPS_GLOBAL false}}
+{{$uniformBurst := DefaultParam .CL2_UNIFORM_BURST 30}}
 
 {{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 400}}
 {{$enableViolations := DefaultParam .CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT true}}
@@ -19,8 +21,14 @@ tuningSets:
     qps: {{$defaultQps}}
     burst: {{$defaultBurst}}
 - name: UniformQPS
+{{if $uniformQpsGlobal}}
+  globalQPSLoad:
+    qps: {{$uniformQps}}
+    burst: {{$uniformBurst}}
+{{else}}
   qpsLoad:
     qps: {{$uniformQps}}
+{{end}}
 steps:
 - name: Creating scheduler throughput measurements
   measurements:

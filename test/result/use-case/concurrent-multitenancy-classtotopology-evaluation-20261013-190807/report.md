@@ -1,0 +1,5 @@
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| concurrent-multitenancy-classtotopology-evaluation-20261013-190807/klastos-n100/measurements | PASS | 40/40/40 | 31.3ms/903.8ms/1362.9ms | -/-/- | - | admission=164,appclass_operator=36 | 0.0ms/860.6ms/1343.6ms | 0.0ms/55.8ms/91.5ms | 28.6ms/53.0ms/66.3ms |
+| concurrent-multitenancy-classtotopology-evaluation-20261013-190807/klastos-n1000/measurements | PASS | 50/64.2/64.2 | 5895.8ms/11782.1ms/13092.0ms | -/-/- | - | admission=1960,appclass_operator=40 | 0.0ms/0.0ms/988.8ms | 0.0ms/107.0ms/256.8ms | 5895.8ms/11782.1ms/13092.0ms |
+| concurrent-multitenancy-classtotopology-evaluation-20261013-190807/klastos-n20/measurements | FAIL | 8/8/8 | 546.2ms/772.1ms/989.3ms | -/-/- | - | admission=12,appclass_operator=28 | 523.3ms/753.1ms/969.0ms | 0.0ms/44.4ms/57.3ms | 31.1ms/83.4ms/128.4ms |
