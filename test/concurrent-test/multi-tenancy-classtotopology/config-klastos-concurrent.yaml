@@ -31,6 +31,7 @@
 {{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
 
 {{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 30}}
+{{$enableViolations := DefaultParam .CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT true}}
 
 name: klastos-multitenancy-classtotopology-concurrent-scheduler-throughput
 namespace:
@@ -139,7 +140,7 @@ steps:
     Method: SchedulingThroughput
     Params:
       action: gather
-      enableViolations: true
+      enableViolations: {{$enableViolations}}
       threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
   - Identifier: SchedulingThroughputPrometheus
     Method: SchedulingThroughputPrometheus

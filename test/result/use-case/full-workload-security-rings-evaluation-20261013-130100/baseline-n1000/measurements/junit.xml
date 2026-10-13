@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <testsuite name="ClusterLoaderV2" tests="0" failures="0" errors="0" time="124.279">
+      <testcase name="vanilla overall (use-case/config.yaml)" classname="ClusterLoaderV2" time="41.37501418"></testcase>
+      <testcase name="vanilla: [step: 01] Creating scheduler throughput measurements [00] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.077038744"></testcase>
+      <testcase name="vanilla: [step: 01] Creating scheduler throughput measurements [01] - APIAvailability" classname="ClusterLoaderV2" time="0.025218858"></testcase>
+      <testcase name="vanilla: [step: 01] Creating scheduler throughput measurements [02] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.026244891"></testcase>
+      <testcase name="vanilla: [step: 01] Creating scheduler throughput measurements [03] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.099341853"></testcase>
+      <testcase name="vanilla: [step: 01] Creating scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.025497244"></testcase>
+      <testcase name="vanilla: [step: 01] Creating scheduler throughput measurements [05] - GatekeeperValidationRequestDuration" classname="ClusterLoaderV2" time="0.026927649"></testcase>
+      <testcase name="vanilla: [step: 01] Creating scheduler throughput measurements [06] - GatekeeperMutationRequestDuration" classname="ClusterLoaderV2" time="0.025513232"></testcase>
+      <testcase name="vanilla: [step: 02] create scheduler throughput pods" classname="ClusterLoaderV2" time="8.011618905"></testcase>
+      <testcase name="vanilla: [step: 03] Waiting for scheduler throughput pods to be created [00] - WaitForDirectSchedulerThroughputPods" classname="ClusterLoaderV2" time="10.105488613"></testcase>
+      <testcase name="vanilla: [step: 04] Collecting scheduler throughput measurements [00] - APIAvailability" classname="ClusterLoaderV2" time="0.00300706"></testcase>
+      <testcase name="vanilla: [step: 04] Collecting scheduler throughput measurements [01] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.10916096"></testcase>
+      <testcase name="vanilla: [step: 04] Collecting scheduler throughput measurements [02] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.06138889"></testcase>
+      <testcase name="vanilla: [step: 04] Collecting scheduler throughput measurements [03] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.003384837"></testcase>
+      <testcase name="vanilla: [step: 04] Collecting scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.017977325"></testcase>
+      <testcase name="vanilla: [step: 04] Collecting scheduler throughput measurements [05] - GatekeeperValidationRequestDuration" classname="ClusterLoaderV2" time="0.046883361"></testcase>
+      <testcase name="vanilla: [step: 04] Collecting scheduler throughput measurements [06] - GatekeeperMutationRequestDuration" classname="ClusterLoaderV2" time="0.046809672"></testcase>
+      <testcase name="vanilla: [step: 04] Collecting scheduler throughput measurements [07] - GatekeeperConstraintTemplateIngestionDuration" classname="ClusterLoaderV2" time="0.002112005"></testcase>
+      <testcase name="vanilla: [step: 05] Delete scheduler throughput pods" classname="ClusterLoaderV2" time="8.007061724"></testcase>
+      <testcase name="pod-sensitive overall (use-case/config.yaml)" classname="ClusterLoaderV2" time="41.483154746"></testcase>
+      <testcase name="pod-sensitive: [step: 01] Creating scheduler throughput measurements [00] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.056841134"></testcase>
+      <testcase name="pod-sensitive: [step: 01] Creating scheduler throughput measurements [01] - APIAvailability" classname="ClusterLoaderV2" time="0.009236218"></testcase>
+      <testcase name="pod-sensitive: [step: 01] Creating scheduler throughput measurements [02] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.003026403"></testcase>
+      <testcase name="pod-sensitive: [step: 01] Creating scheduler throughput measurements [03] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.116841371"></testcase>
+      <testcase name="pod-sensitive: [step: 01] Creating scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.002758895"></testcase>
+      <testcase name="pod-sensitive: [step: 01] Creating scheduler throughput measurements [05] - GatekeeperValidationRequestDuration" classname="ClusterLoaderV2" time="0.00669195"></testcase>
+      <testcase name="pod-sensitive: [step: 01] Creating scheduler throughput measurements [06] - GatekeeperMutationRequestDuration" classname="ClusterLoaderV2" time="0.002248987"></testcase>
+      <testcase name="pod-sensitive: [step: 02] create scheduler throughput pods" classname="ClusterLoaderV2" time="8.016436232"></testcase>
+      <testcase name="pod-sensitive: [step: 03] Waiting for scheduler throughput pods to be created [00] - WaitForDirectSchedulerThroughputPods" classname="ClusterLoaderV2" time="10.1063416"></testcase>
+      <testcase name="pod-sensitive: [step: 04] Collecting scheduler throughput measurements [00] - APIAvailability" classname="ClusterLoaderV2" time="0.005198806"></testcase>
+      <testcase name="pod-sensitive: [step: 04] Collecting scheduler throughput measurements [01] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.176828786"></testcase>
+      <testcase name="pod-sensitive: [step: 04] Collecting scheduler throughput measurements [02] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.090402496"></testcase>
+      <testcase name="pod-sensitive: [step: 04] Collecting scheduler throughput measurements [03] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.006177526"></testcase>
+      <testcase name="pod-sensitive: [step: 04] Collecting scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.026892673"></testcase>
+      <testcase name="pod-sensitive: [step: 04] Collecting scheduler throughput measurements [05] - GatekeeperValidationRequestDuration" classname="ClusterLoaderV2" time="0.068846293"></testcase>
+      <testcase name="pod-sensitive: [step: 04] Collecting scheduler throughput measurements [06] - GatekeeperMutationRequestDuration" classname="ClusterLoaderV2" time="0.056337396"></testcase>
+      <testcase name="pod-sensitive: [step: 04] Collecting scheduler throughput measurements [07] - GatekeeperConstraintTemplateIngestionDuration" classname="ClusterLoaderV2" time="0.005758817"></testcase>
+      <testcase name="pod-sensitive: [step: 05] Delete scheduler throughput pods" classname="ClusterLoaderV2" time="8.016874573"></testcase>
+      <testcase name="pod-unhandened overall (use-case/config.yaml)" classname="ClusterLoaderV2" time="41.395652756"></testcase>
+      <testcase name="pod-unhandened: [step: 01] Creating scheduler throughput measurements [00] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.055157552"></testcase>
+      <testcase name="pod-unhandened: [step: 01] Creating scheduler throughput measurements [01] - APIAvailability" classname="ClusterLoaderV2" time="0.008750603"></testcase>
+      <testcase name="pod-unhandened: [step: 01] Creating scheduler throughput measurements [02] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.007338876"></testcase>
+      <testcase name="pod-unhandened: [step: 01] Creating scheduler throughput measurements [03] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.116330492"></testcase>
+      <testcase name="pod-unhandened: [step: 01] Creating scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.006737732"></testcase>
+      <testcase name="pod-unhandened: [step: 01] Creating scheduler throughput measurements [05] - GatekeeperValidationRequestDuration" classname="ClusterLoaderV2" time="0.008222933"></testcase>
+      <testcase name="pod-unhandened: [step: 01] Creating scheduler throughput measurements [06] - GatekeeperMutationRequestDuration" classname="ClusterLoaderV2" time="0.009961661"></testcase>
+      <testcase name="pod-unhandened: [step: 02] create scheduler throughput pods" classname="ClusterLoaderV2" time="8.014490019"></testcase>
+      <testcase name="pod-unhandened: [step: 03] Waiting for scheduler throughput pods to be created [00] - WaitForDirectSchedulerThroughputPods" classname="ClusterLoaderV2" time="10.054315411"></testcase>
+      <testcase name="pod-unhandened: [step: 04] Collecting scheduler throughput measurements [00] - APIAvailability" classname="ClusterLoaderV2" time="0.068451996"></testcase>
+      <testcase name="pod-unhandened: [step: 04] Collecting scheduler throughput measurements [01] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.156369268"></testcase>
+      <testcase name="pod-unhandened: [step: 04] Collecting scheduler throughput measurements [02] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.093091921"></testcase>
+      <testcase name="pod-unhandened: [step: 04] Collecting scheduler throughput measurements [03] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.013213906"></testcase>
+      <testcase name="pod-unhandened: [step: 04] Collecting scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.073027786"></testcase>
+      <testcase name="pod-unhandened: [step: 04] Collecting scheduler throughput measurements [05] - GatekeeperValidationRequestDuration" classname="ClusterLoaderV2" time="0.058016523"></testcase>
+      <testcase name="pod-unhandened: [step: 04] Collecting scheduler throughput measurements [06] - GatekeeperMutationRequestDuration" classname="ClusterLoaderV2" time="0.055545485"></testcase>
+      <testcase name="pod-unhandened: [step: 04] Collecting scheduler throughput measurements [07] - GatekeeperConstraintTemplateIngestionDuration" classname="ClusterLoaderV2" time="0.005244188"></testcase>
+      <testcase name="pod-unhandened: [step: 05] Delete scheduler throughput pods" classname="ClusterLoaderV2" time="8.014403956"></testcase>
+  </testsuite>

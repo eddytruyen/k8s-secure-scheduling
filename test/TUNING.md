@@ -397,11 +397,20 @@ enough to be genuinely meaningful.
 
 ## 8. Known gaps
 
-- **The concurrent configs still hardcode `enableViolations: true`.** Only
-  `use-case/config.yaml` and `use-case/workload-security-rings-klastos/config-klastos.yaml`
-  read `CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT`. A concurrent run
-  at large N will hard-fail on a missed threshold with no way to disable it
-  short of `THRESHOLD_OVERRIDE`. Port the toggle when that first bites.
+- **Only the sequential workload-security-rings orchestrator disables
+  violations automatically.** All 14 CL2 configs now read
+  `CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT`, so the toggle works
+  everywhere — but only `run-full-workload-security-rings-evaluation.sh`
+  has an `enable_violations_for()` that flips it to `false` at N>=1000.
+  For a concurrent or multi-tenancy run at large N, set it yourself:
+
+  ```bash
+  CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT=false \
+    ./concurrent-test/workload-security-rings/run-concurrent-workload-security-rings-evaluation.sh
+  ```
+
+  Adding the automatic N-based rule to the other orchestrators is
+  deliberately deferred until a run actually hits the condition.
 - `measurmentInterval` is misspelled upstream. Fixing it upstream would
   silently change the sampling window from 1s to the 5s default and move
   every `Max` we have recorded. Pin it explicitly in any new config.
