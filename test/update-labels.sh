@@ -42,7 +42,16 @@ if [ "$DELETE" = false ]; then
         'multi-tenancy')
             for node in "${nodes[@]}"
             do
-                kubectl label nodes ${node} tenant=${TENANTS[${i} % 2]} --overwrite
+                # Also applied as topology.kubernetes.io/tenant (same value,
+                # same node, same iteration — can never disagree with the
+                # bare "tenant" label) because KLASTOS's
+                # ClassSchedulingConstraint CRD only accepts
+                # 'kubernetes.io/hostname' or a 'topology.kubernetes.io/'
+                # prefixed topologyKey (confirmed against
+                # classschedulingconstraints-crd.yaml) — it cannot reference
+                # a bare custom label directly. The Gatekeeper baseline
+                # keeps reading the original bare "tenant" label unchanged.
+                kubectl label nodes ${node} tenant=${TENANTS[${i} % 2]} topology.kubernetes.io/tenant=${TENANTS[${i} % 2]} --overwrite
                 i=$((i+1))
             done
             ;;
@@ -66,6 +75,7 @@ else
             ;;
         'multi-tenancy')
             unlabel_nodes ${nodes} tenant
+            unlabel_nodes ${nodes} topology.kubernetes.io/tenant
             ;;
         'workload-security-rings')
             unlabel_nodes ${nodes} security-ring

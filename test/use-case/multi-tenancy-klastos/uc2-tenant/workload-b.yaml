@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  generateName: klastos-uc2-b-
+  labels:
+    appgroup.diktyo.x-k8s.io: uc2-app
+    appgroup.diktyo.x-k8s.io.workload: uc2-workload-b
+    group: {{.Group}}
+spec:
+  containers:
+  - image: registry.k8s.io/pause:3.9
+    name: pause
