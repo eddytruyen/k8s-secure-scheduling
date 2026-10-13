@@ -228,6 +228,41 @@ threshold is an extrapolation rather than a real requirement.
 The default threshold formula in both the sequential and concurrent
 orchestrators is `max(N/10, 5)`.
 
+### Which threshold variable to set — they are not interchangeable
+
+Setting `CL2_SCHEDULER_THROUGHPUT_THRESHOLD` on the command line of a run
+script **has no effect**. The step runner exports it itself, unconditionally,
+overwriting whatever the caller set:
+
+```bash
+# concurrent-test/lib/common.sh
+export CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$threshold"   # clobbers your value
+```
+
+The value it exports comes from `concurrent_threshold_for()` /
+`threshold_for()`, which read **`THRESHOLD_OVERRIDE`**. So:
+
+| How you run | Variable to set |
+|---|---|
+| Through any `run-*.sh` orchestrator | `THRESHOLD_OVERRIDE` |
+| Invoking `clusterloader` directly | `CL2_SCHEDULER_THROUGHPUT_THRESHOLD` |
+
+The same applies to `CL2_SCHEDULER_THROUGHPUT_PODS` (exported from `N`) and
+`CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT` on the sequential
+workload-security-rings orchestrator (exported from `enable_violations_for()`,
+overridable with `ENABLE_VIOLATIONS_OVERRIDE`).
+
+Note also that a config's own `DefaultParam` fallback (e.g. `30` in the
+concurrent configs) only applies to a direct `clusterloader` invocation —
+through an orchestrator the exported `max(N/10, 5)` always wins. For
+`N_STEPS="20 100 1000"` that is 5 / 10 / 100, not 30.
+
+**Pairing this with a paced arrival rate:** `Max` can never exceed the
+arrival rate, so a threshold above `CL2_UNIFORM_QPS` is unreachable by
+construction. Pacing at 20 qps with the auto-scaled threshold of 100 at
+N=1000 fails every time with nothing actually wrong. Set
+`THRESHOLD_OVERRIDE` below the QPS, or disable violations.
+
 ---
 
 ## 5. The N/2 AppGroup rule (KLASTOS arm only)
