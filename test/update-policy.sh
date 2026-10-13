@@ -5,6 +5,39 @@ POLICY="${POLICY:-multi-tenancy}" # options: data-sovereignty, multi-tenancy, wo
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+POLICY_VARIANT="${POLICY_VARIANT:-}" # options: "" (standard), "antiaffinity" (multi-tenancy only)
+
+# Alternative enforcement mechanism for multi-tenancy only — see
+# use-case-demos/multi-tenancy/policy-antiaffinity/README.md. Applies/
+# removes a completely different set of Gatekeeper CRs (Config + a
+# binding-time ConstraintTemplate/Constraint), not mutation+nodeSelector,
+# and needs no node labeling. Handled here, separately from the standard
+# branch below, so the default (POLICY_VARIANT unset) path for every other
+# use case is untouched.
+if [ -n "$POLICY_VARIANT" ] && [ "$POLICY" = "multi-tenancy" ]; then
+    if [ "$POLICY_VARIANT" != "antiaffinity" ]; then
+        echo "Unknown POLICY_VARIANT: $POLICY_VARIANT" >&2
+        exit 1
+    fi
+    DIR="${SCRIPT_DIR}/../use-case-demos/multi-tenancy/policy-antiaffinity"
+    if [ "$DELETE" = false ]; then
+        echo -e '[*] Sync Pod objects into Gatekeeper inventory'
+        kubectl apply -f "$DIR/config.yaml"
+        echo -e '
+[*] Add binding-time tenant-node-isolation constraint template'
+        kubectl apply -f "$DIR/template.yaml"
+        echo -e '[+] Add constraint'
+        kubectl apply -f "$DIR/constraint.yaml"
+    else
+        echo -e '[*] Delete Gatekeeper resources (antiaffinity variant)'
+        kubectl delete -f "$DIR/constraint.yaml" --ignore-not-found
+        kubectl delete -f "$DIR/template.yaml" --ignore-not-found
+        kubectl delete -f "$DIR/config.yaml" --ignore-not-found
+    fi
+    exit 0
+fi
+
+
 if [ "$DELETE" = false ]; then
     echo -e '[*] Allow Gatekeeper to reject workloads that create pods violating constraints'
     kubectl apply -f "${SCRIPT_DIR}/../use-case-demos/$POLICY/policy/expansion-template.yaml"
