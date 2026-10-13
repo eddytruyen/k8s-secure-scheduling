@@ -4,7 +4,7 @@
 {{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
 
 {{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 400}}
-{{$enableViolations := DefaultParam .CL2_ENABLE_VIOLATIONS true}}
+{{$enableViolations := DefaultParam .CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT true}}
 
 {{$podSpec := DefaultParam .POD_SPEC "pod-default.yaml"}}
 

@@ -100,7 +100,7 @@ for N in $N_STEPS; do
 
     if KLASTOS_REPO="$KLASTOS_REPO" NODES="$NODES" \
        CL2_SCHEDULER_THROUGHPUT_PODS="$N" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD" \
-       CL2_ENABLE_VIOLATIONS="$ENABLE_VIOLATIONS" \
+       CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT="$ENABLE_VIOLATIONS" \
        CLASSES="$CLASSES" CLASSIFICATION_SOURCE="$CLASSIFICATION_SOURCE" \
        "$SCRIPT_DIR/run-klastos-workload-security-rings-test.sh" \
        > "$STEP_DIR/run.log" 2>&1; then
@@ -130,7 +130,7 @@ for N in $N_STEPS; do
     # data-sovereignty/multi-tenancy's own baseline arms.
     if NODES="$NODES" TEST=workload-security-rings BASELINE=false \
        CL2_SCHEDULER_THROUGHPUT_PODS="$N" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD" \
-       CL2_ENABLE_VIOLATIONS="$ENABLE_VIOLATIONS" \
+       CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT="$ENABLE_VIOLATIONS" \
        "$SCRIPT_DIR/run-use-case-test.sh" \
        > "$STEP_DIR/run.log" 2>&1; then
       cp -r "$SCRIPT_DIR/result/use-case/workload-security-rings-test" "$STEP_DIR/measurements"
