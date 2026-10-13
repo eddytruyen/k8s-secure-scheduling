@@ -26,6 +26,7 @@
 {{$uniformQps := DefaultParam .CL2_UNIFORM_QPS 500}}
 
 {{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 400}}
+{{$enableViolations := DefaultParam .CL2_ENABLE_VIOLATIONS true}}
 
 {{$namespace := DefaultParam .NAMESPACE "workload-security-rings-eval"}}
 {{$podSpecA := DefaultParam .POD_SPEC_A "sensitive-tenant/workload-a.yaml"}}
@@ -126,7 +127,7 @@ steps:
     Method: SchedulingThroughput
     Params:
       action: gather
-      enableViolations: true
+      enableViolations: {{$enableViolations}}
       threshold: {{$SCHEDULER_THROUGHPUT_THRESHOLD}}
   - Identifier: SchedulingThroughputPrometheus
     Method: SchedulingThroughputPrometheus
