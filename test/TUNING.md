@@ -115,13 +115,49 @@ tuningSets:
     qps:   {{$defaultQps}}     # CL2_DEFAULT_QPS,   default 500
     burst: {{$defaultBurst}}   # CL2_DEFAULT_BURST, default 1000
 - name: UniformQPS         # the measured pod-creation phase
+{{if $uniformQpsGlobal}}     # CL2_UNIFORM_QPS_GLOBAL, default false
+  globalQPSLoad:
+    qps:   {{$uniformQps}}     # CL2_UNIFORM_QPS,   default 500
+    burst: {{$uniformBurst}}   # CL2_UNIFORM_BURST, default 30
+{{else}}
   qpsLoad:
     qps: {{$uniformQps}}       # CL2_UNIFORM_QPS,   default 500
+{{end}}
 ```
 
 **`CL2_UNIFORM_QPS` is the knob that controls arrival rate for the measured
 phase.** `CL2_DEFAULT_QPS`/`BURST` only govern the `default` tuningSet
 (teardown) plus the global client ceiling.
+
+#### `CL2_UNIFORM_QPS` is per phase, not cluster-wide — multiply by the phase count
+
+This is the single easiest number to get wrong here, so it is worth stating
+bluntly rather than leaving it implied by the table above.
+
+`qpsLoad` gives **each phase its own limiter**. The concurrent configs have
+**four** creation phases (two AppGroup workloads x two classes), each
+referencing `UniformQPS`. So `CL2_UNIFORM_QPS=20` does not cap arrivals at
+20/s — it permits up to **4 x 20 = 80/s** in aggregate.
+
+Measured, not theorised: a concurrent classToTopology run at
+`CL2_UNIFORM_QPS=20` recorded **40 pods/s** scheduled at N=100, which a
+genuine cluster-wide 20/s cap makes arithmetically impossible.
+
+Set `CL2_UNIFORM_QPS_GLOBAL=true` to switch the tuning set to
+`globalQPSLoad`, whose limiter is shared across every phase using it. Then
+`CL2_UNIFORM_QPS` means what it looks like it means.
+
+Two further consequences of the same schema distinction:
+
+- **Burst only exists on `globalQPSLoad`.** `QPSLoad` is `{qps}`;
+  `GlobalQPSLoad` is `{qps, burst}`. There is no burst to set on the default
+  per-phase path, so `CL2_UNIFORM_BURST` only takes effect together with
+  `CL2_UNIFORM_QPS_GLOBAL=true`. (`CL2_DEFAULT_BURST` is a different knob —
+  it reaches only the `default` tuning set, used for teardown.)
+- **A per-phase limiter is also shape-wrong for emulating a controller.**
+  A shared token bucket with a burst allowance is what
+  `kube-controller-manager` actually runs; four independent uniform pacers
+  are not.
 
 ### Layer 3 — the cluster's own capacity
 
@@ -206,7 +242,9 @@ threshold is an extrapolation rather than a real requirement.
 | `CL2_SCHEDULER_THROUGHPUT_PODS` | 5000 (baseline) / 1000 (concurrent) | N — pods per class. Split `N/2` across two AppGroup workloads |
 | `CL2_SCHEDULER_THROUGHPUT_THRESHOLD` | 400 (sequential) / 30 (concurrent) | `threshold` for the violation gate (compared against **Max**) |
 | `CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT` | `true` | `false` reports throughput without failing the run |
-| `CL2_UNIFORM_QPS` | 500 | `qpsLoad.qps` for the measured creation phase |
+| `CL2_UNIFORM_QPS` | 500 | Arrival rate for the measured creation phase |
+| `CL2_UNIFORM_QPS_GLOBAL` | `false` | `true` switches that phase to a **shared** `globalQPSLoad` limiter instead of a per-phase `qpsLoad` one |
+| `CL2_UNIFORM_BURST` | 30 | Burst allowance; **only effective with `CL2_UNIFORM_QPS_GLOBAL=true`**, since `qpsLoad` has no burst field |
 | `CL2_DEFAULT_QPS` | 500 (fork default 100) | Client limiter + `default` tuningSet qps |
 | `CL2_DEFAULT_BURST` | 1000 (fork default 200) | Client limiter + `default` tuningSet burst |
 | `POD_SPEC` | `pod-default.yaml` | Which pod template the baseline config uses |
@@ -411,6 +449,44 @@ CL2_SCHEDULER_THROUGHPUT_PODS=100 ./run-klastos-workload-security-rings-test.sh
 
 N=100 → threshold 10, violations enabled. Fast, and the threshold is low
 enough to be genuinely meaningful.
+
+### 6e. Emulating ReplicaSet-paced arrival
+
+Our pod templates are bare `kind: Pod` created directly by CL2, so the
+`kube-controller-manager` ceiling never applies (see section 2). To
+*approximate* that arrival pattern without rewriting the templates as
+Deployments, pace the measured phase with a shared limiter matching the
+controller's own defaults:
+
+```bash
+CL2_UNIFORM_QPS_GLOBAL=true CL2_UNIFORM_QPS=20 CL2_UNIFORM_BURST=30 \
+CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT=false \
+N_STEPS="20 100 1000" ./run-concurrent-multitenancy-classtotopology-evaluation.sh
+```
+
+`qps: 20` / `burst: 30` are the `kube-controller-manager` defaults
+(`--kube-api-qps` / `--kube-api-burst`), and `globalQPSLoad` uses the same
+client-go token bucket the controller does, so the arrival *shape* matches,
+not just the mean rate.
+
+Violations are disabled because no single threshold fits both ends of the
+sweep: `Max` can never exceed the arrival rate, so at 20 qps the N=1000
+step's auto-scaled threshold of 100 is unreachable, while a threshold low
+enough for N=20 (which produces one ~8/s sample) is meaningless at N=1000.
+
+**What this does and does not reproduce.** It reproduces the arrival rate
+and burst shape, which is what throughput and latency claims depend on. It
+does **not** reproduce ReplicaSet *semantics*: slow-start batching (1, 2, 4,
+8 ... per sync), retry/backoff reconciliation toward a desired replica count,
+`ownerReference`s, or the controller identity on the admission request. The
+retry behaviour is the significant one for NESTOR, since a held gate or a
+rejected admission behaves differently under a controller that keeps
+retrying. Report this as "ReplicaSet-paced arrival", never as "tested with
+ReplicaSets".
+
+Worth pairing with an unpaced saturation arm (the default 500 qps), since
+20 qps sits well below the harness ceiling of ~50 p50 / ~145 max and will
+show admission and scheduling keeping up essentially by construction.
 
 ---
 
