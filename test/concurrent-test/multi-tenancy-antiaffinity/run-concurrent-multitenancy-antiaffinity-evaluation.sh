@@ -102,7 +102,7 @@ FAILED=false
 
 for N in $N_STEPS; do
   THRESHOLD=$(concurrent_threshold_for "$N")
-  echo "--- Step: N=$N per class (threshold=$THRESHOLD pods/sec) ---"
+  echo "--- Step: N=$N per class (threshold=$THRESHOLD pods/sec, violations=$(concurrent_violations_state)) ---"
 
   if [ "$RUN_KLASTOS" = true ]; then
     echo "[*] KLASTOS harness (antiaffinity, CONCURRENT), N=$N per class"

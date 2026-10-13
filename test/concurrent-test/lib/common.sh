@@ -72,6 +72,17 @@ concurrent_run_step() {
   fi
 }
 
+# Effective SchedulingThroughput violation setting, for the step header.
+# The threshold is always computed and handed to CL2; CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT
+# only decides whether failing it aborts the run. Printing the state next to
+# the threshold stops the header reading like an enforced gate when it is not.
+concurrent_violations_state() {
+  case "${CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT:-true}" in
+    false|False|FALSE|0) echo "off" ;;
+    *) echo "on" ;;
+  esac
+}
+
 # Final report generation + the same closing lines every variant printed.
 concurrent_finalize() {
   local result_root="$1"

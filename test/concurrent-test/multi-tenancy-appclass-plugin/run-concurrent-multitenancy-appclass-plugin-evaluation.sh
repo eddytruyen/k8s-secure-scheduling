@@ -72,7 +72,7 @@ FAILED=false
 
 for N in $N_STEPS; do
   THRESHOLD=$(concurrent_threshold_for "$N")
-  echo "--- Step: N=$N per class (threshold=$THRESHOLD pods/sec) ---"
+  echo "--- Step: N=$N per class (threshold=$THRESHOLD pods/sec, violations=$(concurrent_violations_state)) ---"
 
   echo "[*] KLASTOS harness (AppClass-plugin, CONCURRENT), N=$N per class"
   STEP_DIR="$RESULT_ROOT/klastos-n$N"
