@@ -157,6 +157,51 @@ def load_classification_source(dirpath, class_key):
     return (data.get("classification_source_summary") or {}).get(class_key)
 
 
+def _percentiles(values):
+    """Same percentile method e2e-latency-watch.py's own percentiles()
+    uses (nearest-rank on len-1), so numbers here agree with the main
+    table's rather than differing by an off-by-one index. Adds max, which
+    matters for a tail that is the whole point of this breakdown."""
+    if not values:
+        return {"p50": None, "p90": None, "p99": None, "max": None, "count": 0}
+    s = sorted(values)
+
+    def pct(q):
+        return s[min(len(s) - 1, int(round(q * (len(s) - 1))))]
+
+    return {"p50": pct(0.50), "p90": pct(0.90), "p99": pct(0.99),
+            "max": s[-1], "count": len(s)}
+
+
+def load_source_latency(dirpath, class_key):
+    """E2E latency split by classification source.
+
+    Unlike the other load_*() helpers this is NOT read from a precomputed
+    summary -- e2e-latency-watch.py does not emit one. It is derived from
+    the per-pod records that script already dumps under "pods", which
+    carry both classification_source and latency_seconds. Deriving it here
+    means the breakdown also appears for result files produced before this
+    table existed, instead of rendering "-" for every historical run.
+
+    Returns {source: {p50,p90,p99,max,count}}. Baseline runs have no
+    classification annotation at all, so every pod lands under "none" --
+    which is what makes the fast-path-vs-baseline rows directly
+    comparable.
+    """
+    data = _find_e2e_latency_data(dirpath)
+    if not data:
+        return {}
+    by_src = {}
+    for rec in (data.get("pods") or []):
+        if class_key != "__all__" and rec.get("class") != class_key:
+            continue
+        latency = rec.get("latency_seconds")
+        if latency is None:
+            continue
+        by_src.setdefault(rec.get("classification_source") or "none", []).append(latency)
+    return {src: _percentiles(vals) for src, vals in by_src.items()}
+
+
 def load_phase_latency(dirpath, class_key):
     """phase_summary[phase][class_key] percentiles for the three-way
     breakdown (classification / gate_release / scheduling) e2e-latency-
@@ -364,6 +409,7 @@ def summarize(label, dirpath, identifier):
         "sched_phase_p50": scheduling_phase.get("p50"),
         "sched_phase_p90": scheduling_phase.get("p90"),
         "sched_phase_p99": scheduling_phase.get("p99"),
+        "source_latency": load_source_latency(dirpath, class_key),
     }
 
 
@@ -399,6 +445,46 @@ def render_markdown(rows):
             f"{csrc} | {classify} | {gate} | {sched_phase} |"
         )
     return "\n".join(lines)
+
+
+def render_source_latency_markdown(rows):
+    """Second table: e2e latency per classification source.
+
+    Kept separate rather than widening the main table, which is already at
+    ten columns, and because the number of sources is not fixed. Rows are
+    ordered most-populous-first within a run so the dominant path reads
+    first and the gated minority sits directly beneath it."""
+    headers = ["Run", "Source", "Pods", "p50", "p90", "p99", "max"]
+    lines = ["| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
+    any_rows = False
+    for r in rows:
+        per_src = r.get("source_latency") or {}
+        for src, s in sorted(per_src.items(), key=lambda kv: -kv[1]["count"]):
+            any_rows = True
+            lines.append(
+                f"| {r['label']} | {src} | {s['count']} | "
+                f"{fmt_ms(s['p50'])} | {fmt_ms(s['p90'])} | "
+                f"{fmt_ms(s['p99'])} | {fmt_ms(s['max'])} |"
+            )
+    if not any_rows:
+        return ""
+    return "### E2E latency by classification source\n\n" + "\n".join(lines)
+
+
+def render_source_latency_csv(rows, fileobj):
+    """Long-format companion to render_source_latency_markdown(): one row
+    per (run, source) rather than per run, since a run has a variable
+    number of sources and would not fit the main CSV's one-row-per-run
+    shape."""
+    writer = csv.writer(fileobj)
+    writer.writerow(["run", "source", "pods", "p50_ms", "p90_ms", "p99_ms", "max_ms"])
+    for r in rows:
+        per_src = r.get("source_latency") or {}
+        for src, s in sorted(per_src.items(), key=lambda kv: -kv[1]["count"]):
+            writer.writerow([
+                r["label"], src, s["count"],
+                to_ms(s["p50"]), to_ms(s["p90"]), to_ms(s["p99"]), to_ms(s["max"]),
+            ])
 
 
 def render_csv(rows, fileobj):
@@ -461,9 +547,19 @@ def main():
 
     print(render_markdown(rows))
 
+    source_table = render_source_latency_markdown(rows)
+    if source_table:
+        print()
+        print(source_table)
+
     if args.csv:
         with open(args.csv, "w", newline="") as f:
             render_csv(rows, f)
+        # Companion long-format CSV; the per-source breakdown cannot share
+        # the main file's one-row-per-run shape.
+        base, ext = os.path.splitext(args.csv)
+        with open(f"{base}-by-source{ext or '.csv'}", "w", newline="") as f:
+            render_source_latency_csv(rows, f)
 
 
 if __name__ == "__main__":
