@@ -64,6 +64,24 @@ watch-delivery-latency bias - applied identically to both approaches
 through the same watcher, so relative comparisons stay fair even
 though the absolute numbers include it.
 
+Liveness: a kubectl watch stream can stop delivering events while the
+process stays alive and silent - no EOF, no error, nothing on stderr.
+Measured (5x run-full-evaluation.sh, 2026-10-15): the baseline arm
+recorded only the first 2 of 4 sequential classes in 3 of 5 repeats,
+~6000 pods of latency data lost per affected repeat, with the reconnect
+counter frozen because reconnecting was only ever triggered by EOF. An
+--idle-timeout watchdog now treats "no event for N seconds" as a dead
+stream and respawns kubectl. Respawning is lossless for pods that still
+exist, because `kubectl get --watch` LISTs before it watches: the new
+stream re-delivers every live pod, and records are keyed by UID and
+merged, so a pod observed before the gap keeps its original first_seen.
+The watchdog also fires during the genuine ~60s lull between two
+sequential classes; that respawn is harmless and gives each class a
+fresh stream, so it is left to fire rather than suppressed. Respawns
+caused by the watchdog are counted separately (idle_respawns) and every
+gap is recorded (watch_gaps), so a run that lost data says so in its own
+result file instead of looking complete.
+
 Usage (wrap a harness invocation with it - the harness creates AND
 deletes the pods, so the watcher must be running for the pods' entire
 lifetime, not just its own read afterward):
@@ -75,10 +93,12 @@ lifetime, not just its own read afterward):
 """
 import argparse
 import json
+import os
 import select
 import signal
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 
 
@@ -122,7 +142,8 @@ def parse_ts(s):
 
 
 class Watcher:
-    def __init__(self, label_selector, kubeconfig=None, context=None):
+    def __init__(self, label_selector, kubeconfig=None, context=None,
+                 idle_timeout=30.0, stderr_path=None):
         self.records = {}  # (namespace, name) -> {"created", "scheduled", "class"}
         self._stop = False
         self._cmd = ["kubectl", "get", "pods", "-A", "-l", label_selector, "--watch", "-o", "json"]
@@ -132,10 +153,47 @@ class Watcher:
             self._cmd += ["--context", context]
         self.proc = None
         self._reconnects = 0
+        # Watchdog state. _last_event_at is monotonic (immune to wall-clock
+        # steps); the human-readable gap records use wall-clock separately.
+        self._idle_timeout = idle_timeout
+        self._last_event_at = time.monotonic()
+        self._idle_respawns = 0
+        self._gaps = []
+        # kubectl's own stderr was previously inherited, so it landed in
+        # whatever log the orchestrator happened to redirect - and when
+        # this failure was investigated, nothing was there to find.
+        # Capturing it next to the output makes a recurrence diagnosable
+        # instead of silent.
+        self._stderr = open(stderr_path, "a", buffering=1) if stderr_path else subprocess.DEVNULL
         self._spawn()
 
     def _spawn(self):
-        self.proc = subprocess.Popen(self._cmd, stdout=subprocess.PIPE, text=True, bufsize=1)
+        self.proc = subprocess.Popen(self._cmd, stdout=subprocess.PIPE,
+                                     stderr=self._stderr, text=True, bufsize=1)
+        self._last_event_at = time.monotonic()
+
+    def _kill_current(self):
+        """Reap the current kubectl before replacing it. Previously the old
+        Popen was simply dropped on respawn, leaving an orphan kubectl
+        holding a watch open against the apiserver for the rest of the run
+        - one more per reconnect, all of them still being served."""
+        proc, self.proc = self.proc, None
+        if proc is None:
+            return
+        try:
+            proc.terminate()
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait(timeout=5)
+        except Exception:
+            pass
+        try:
+            if proc.stdout:
+                proc.stdout.close()
+        except Exception:
+            pass
 
     def run(self):
         """Runs until request_stop() is called. A watch stream can end on
@@ -151,24 +209,52 @@ class Watcher:
         records across the gap.
         """
         while not self._stop:
-            self._read_until_eof_or_stop()
+            reason = self._read_until_eof_or_stop()
             if self._stop:
                 break
             self._reconnects += 1
+            if reason != "eof":
+                self._idle_respawns += 1
+            self._gaps.append({
+                "reason": reason,
+                "idle_seconds": round(time.monotonic() - self._last_event_at, 1),
+                "resumed_at": datetime.now(timezone.utc).isoformat(),
+                "pods_seen_so_far": len(self.records),
+            })
+            self._kill_current()
             self._spawn()
 
+    # A pretty-printed `kubectl get -o json` LIST of 3000 pods is ~15MB;
+    # 64MB is well clear of any legitimate payload while still bounding a
+    # stream that has started emitting something that will never parse.
+    _MAX_BUF = 64 * 1024 * 1024
+
     def _read_until_eof_or_stop(self):
+        """Returns why it stopped: "eof", "idle", "wedged" or "stop"."""
         decoder = json.JSONDecoder()
         buf = ""
         fd = self.proc.stdout
         while not self._stop:
             ready, _, _ = select.select([fd], [], [], 0.5)
             if not ready:
+                # The failure this watchdog exists for: kubectl alive,
+                # stream silent, no EOF ever delivered. Without this
+                # branch the loop spins here for the rest of the run.
+                if time.monotonic() - self._last_event_at > self._idle_timeout:
+                    return "idle"
                 continue
             line = fd.readline()
             if not line:
-                return  # EOF - let run() decide whether to reconnect
+                return "eof"  # let run() reconnect
             buf += line
+            # Only attempt a parse when the buffer plausibly ends a
+            # top-level object. kubectl pretty-prints, so a closing "}" in
+            # column 0 ends one. Attempting raw_decode on every line
+            # instead is quadratic in the buffer: a 15MB initial LIST
+            # (what a respawn mid-class receives) arrives over ~400k
+            # lines, each re-scanning everything accumulated so far.
+            if not (line.startswith("}") or len(buf) < 1024 * 1024):
+                continue
             stripped = buf.strip()
             while stripped:
                 try:
@@ -176,10 +262,23 @@ class Watcher:
                 except json.JSONDecodeError:
                     break
                 self._handle(obj)
+                self._last_event_at = time.monotonic()
                 stripped = stripped[idx:].strip()
             buf = stripped
+            if len(buf) > self._MAX_BUF:
+                return "wedged"
+        return "stop"
 
     def _handle(self, pod):
+        # A respawned `kubectl get --watch` LISTs before it watches, and
+        # that initial payload can arrive as a single List object rather
+        # than as individual pods. Unwrapping it is what makes a mid-class
+        # respawn lossless instead of silently dropping everything that
+        # already existed at reconnect time.
+        if isinstance(pod, dict) and pod.get("kind") == "List":
+            for item in (pod.get("items") or []):
+                self._handle(item)
+            return
         received_at = datetime.now(timezone.utc)
         try:
             meta = pod["metadata"]
@@ -254,8 +353,10 @@ class Watcher:
         self._stop = True
 
     def terminate_kubectl(self):
+        self._kill_current()
         try:
-            self.proc.terminate()
+            if self._stderr is not subprocess.DEVNULL:
+                self._stderr.close()
         except Exception:
             pass
 
@@ -386,6 +487,13 @@ def dump(watcher, output_path):
             "phase_summary": phase_summary,
             "classification_source_summary": classification_source_summary,
             "reconnects": watcher._reconnects,
+            # Split out of "reconnects" so a silent-stream respawn is
+            # distinguishable from an ordinary EOF reconnect, and so the
+            # gap list can be checked against the classes actually present
+            # in "summary" when a run's output looks short.
+            "idle_respawns": watcher._idle_respawns,
+            "watch_gaps": watcher._gaps,
+            "classes_observed": sorted(k for k in summary if k != "__all__"),
             "pods": per_pod,
         }, f, indent=1)
 
@@ -396,9 +504,17 @@ def main():
     ap.add_argument("--output", required=True)
     ap.add_argument("--kubeconfig", default=None)
     ap.add_argument("--context", default=None)
+    ap.add_argument("--idle-timeout", type=float, default=30.0,
+                    help="respawn kubectl after this many seconds with no "
+                         "watch event (default 30; 0 disables the watchdog)")
     args = ap.parse_args()
 
-    watcher = Watcher(args.label, args.kubeconfig, args.context)
+    # Sidecar next to the output rather than inherited, so it survives
+    # whatever the orchestrator does with its own stdout/stderr.
+    stderr_path = os.path.splitext(args.output)[0] + ".watch-stderr.log"
+    watcher = Watcher(args.label, args.kubeconfig, args.context,
+                      idle_timeout=(args.idle_timeout or float("inf")),
+                      stderr_path=stderr_path)
 
     def handle_signal(signum, frame):
         watcher.request_stop()
@@ -409,6 +525,17 @@ def main():
     watcher.run()
     watcher.terminate_kubectl()
     dump(watcher, args.output)
+
+    # Surface a lost-data gap on the orchestrator's own stderr. A silent
+    # stream previously produced a short-but-plausible result file that
+    # looked complete; the point of detecting it is to say so.
+    long_gaps = [g for g in watcher._gaps if g["idle_seconds"] > 60]
+    if long_gaps:
+        observed = sorted(k for k in json.load(open(args.output))["summary"]
+                          if k != "__all__")
+        print("WARNING: %d watch gap(s) over 60s in %s - classes observed: %s"
+              % (len(long_gaps), args.output, ", ".join(observed)),
+              file=sys.stderr)
 
 
 if __name__ == "__main__":
