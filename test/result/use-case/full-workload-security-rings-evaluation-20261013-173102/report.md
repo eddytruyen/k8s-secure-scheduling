@@ -1,4 +1,0 @@
-| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
-|---|---|---|---|---|---|---|---|---|---|
-| full-workload-security-rings-evaluation-20261013-173102/klastos-n1000/measurements/sensitive | PASS | 50/61.4/61.4 | 4174.0ms/15166.2ms/18135.9ms | -/-/- | - | admission=723,appclass_operator=277 | 0.0ms/6985.5ms/8186.7ms | 0.0ms/0.0ms/341.1ms | 3416.7ms/8949.0ms/9926.2ms |
-| full-workload-security-rings-evaluation-20261013-173102/klastos-n1000/measurements/unhardened | PASS | 50/57.2/57.2 | 3405.3ms/16703.3ms/18515.4ms | -/-/- | - | admission=680,appclass_operator=320 | 0.0ms/5082.7ms/12780.6ms | 6233.9ms/11360.1ms/11663.2ms | 2302.2ms/5131.9ms/6041.5ms |
