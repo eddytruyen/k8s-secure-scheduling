@@ -98,6 +98,7 @@ import select
 import signal
 import subprocess
 import sys
+import threading
 import time
 from datetime import datetime, timezone
 
@@ -143,14 +144,18 @@ def parse_ts(s):
 
 class Watcher:
     def __init__(self, label_selector, kubeconfig=None, context=None,
-                 idle_timeout=30.0, stderr_path=None):
+                 idle_timeout=30.0, stderr_path=None, resync_interval=20.0):
         self.records = {}  # (namespace, name) -> {"created", "scheduled", "class"}
         self._stop = False
         self._cmd = ["kubectl", "get", "pods", "-A", "-l", label_selector, "--watch", "-o", "json"]
+        # Same selector, one-shot: the resync LIST (see _resync_once).
+        self._list_cmd = ["kubectl", "get", "pods", "-A", "-l", label_selector, "-o", "json"]
         if kubeconfig:
             self._cmd += ["--kubeconfig", kubeconfig]
+            self._list_cmd += ["--kubeconfig", kubeconfig]
         if context:
             self._cmd += ["--context", context]
+            self._list_cmd += ["--context", context]
         self.proc = None
         self._reconnects = 0
         # Watchdog state. _last_event_at is monotonic (immune to wall-clock
@@ -159,6 +164,15 @@ class Watcher:
         self._last_event_at = time.monotonic()
         self._idle_respawns = 0
         self._gaps = []
+        # Resync state. records is mutated from both the watch loop and
+        # the resync thread, so every mutation goes through _lock
+        # (reentrant: _handle recurses for a kind:List payload).
+        self._lock = threading.RLock()
+        self._resync_interval = resync_interval
+        self._resyncs = 0
+        self._resync_failures = 0
+        self._resync_first_seen = 0
+        self._resync_thread = None
         # kubectl's own stderr was previously inherited, so it landed in
         # whatever log the orchestrator happened to redirect - and when
         # this failure was investigated, nothing was there to find.
@@ -166,6 +180,10 @@ class Watcher:
         # instead of silent.
         self._stderr = open(stderr_path, "a", buffering=1) if stderr_path else subprocess.DEVNULL
         self._spawn()
+        if self._resync_interval and self._resync_interval > 0:
+            self._resync_thread = threading.Thread(target=self._resync_loop,
+                                                   daemon=True)
+            self._resync_thread.start()
 
     def _spawn(self):
         self.proc = subprocess.Popen(self._cmd, stdout=subprocess.PIPE,
@@ -194,6 +212,42 @@ class Watcher:
                 proc.stdout.close()
         except Exception:
             pass
+
+    def _resync_loop(self):
+        """Periodic full LIST, merged into the same records dict.
+
+        Independent of the watch stream on purpose: it is the only recovery
+        path that works when kubectl is neither erroring (so no EOF to
+        reconnect on) nor silent (so the idle watchdog never fires), which is
+        exactly the failure that lost 2 of 4 classes on three baseline arms.
+
+        A pod created AND deleted entirely between two resyncs is still
+        missed; at a 20s interval against pods that live minutes, that is a
+        far smaller hole than the one it closes.
+        """
+        while not self._stop:
+            deadline = time.monotonic() + self._resync_interval
+            while not self._stop and time.monotonic() < deadline:
+                time.sleep(0.5)
+            if self._stop:
+                return
+            self._resync_once()
+
+    def _resync_once(self):
+        try:
+            out = subprocess.run(self._list_cmd, stdout=subprocess.PIPE,
+                                 stderr=self._stderr, text=True, timeout=180)
+            if out.returncode != 0 or not out.stdout:
+                self._resync_failures += 1
+                return
+            obj = json.loads(out.stdout)
+        except Exception:
+            # A failed resync is a lost safety net, not a lost run - the
+            # watch stream is still primary. Counted, never fatal.
+            self._resync_failures += 1
+            return
+        self._resyncs += 1
+        self._handle(obj, source="resync")
 
     def run(self):
         """Runs until request_stop() is called. A watch stream can end on
@@ -269,7 +323,7 @@ class Watcher:
                 return "wedged"
         return "stop"
 
-    def _handle(self, pod):
+    def _handle(self, pod, source="watch"):
         # A respawned `kubectl get --watch` LISTs before it watches, and
         # that initial payload can arrive as a single List object rather
         # than as individual pods. Unwrapping it is what makes a mid-class
@@ -277,10 +331,11 @@ class Watcher:
         # already existed at reconnect time.
         if isinstance(pod, dict) and pod.get("kind") == "List":
             for item in (pod.get("items") or []):
-                self._handle(item)
+                self._handle(item, source=source)
             return
         received_at = datetime.now(timezone.utc)
-        try:
+        with self._lock:
+          try:
             meta = pod["metadata"]
             # Keyed by UID, not (namespace, name): confirmed live this
             # session that ClusterLoader2 assigns pods explicit,
@@ -297,6 +352,11 @@ class Watcher:
             labels = meta.get("labels", {}) or {}
             gen_name = meta.get("generateName")
             cls = canonical_class(gen_name) if gen_name else labels.get("data-sovereignty", "vanilla")
+            if source == "resync" and key not in self.records:
+                # The watch should have delivered this pod and did not.
+                # Surfaced in the output so a deaf watch is visible
+                # rather than inferred from a short class list.
+                self._resync_first_seen += 1
             rec = self.records.setdefault(key, {
                 "namespace": meta["namespace"], "name": meta["name"],
                 "created_api": None, "scheduled_api": None,
@@ -310,7 +370,12 @@ class Watcher:
             if created_api:
                 rec["created_api"] = created_api
             if rec["first_seen"] is None:
-                rec["first_seen"] = received_at
+                # A resync-discovered pod has been alive for an unknown
+                # while, so observation time would overstate its latency.
+                # Its API creationTimestamp is what the watch would have
+                # seen. Watch-path behaviour is unchanged.
+                rec["first_seen"] = (created_api if (source == "resync" and created_api)
+                                     else received_at)
             # Tracks the LATEST observed value, not the first: this can
             # legitimately change over a pod's life (OPA's admission-time
             # fast path writes "admission" at CREATE; appclass_operator's
@@ -345,8 +410,9 @@ class Watcher:
                     if t and (rec["scheduled_api"] is None or t < rec["scheduled_api"]):
                         rec["scheduled_api"] = t
                     if rec["scheduled_seen"] is None:
-                        rec["scheduled_seen"] = received_at
-        except Exception:
+                        rec["scheduled_seen"] = (t if (source == "resync" and t)
+                                                 else received_at)
+          except Exception:
             pass  # malformed/unexpected event shape - skip, don't crash the watcher
 
     def request_stop(self):
@@ -493,6 +559,13 @@ def dump(watcher, output_path):
             # in "summary" when a run's output looks short.
             "idle_respawns": watcher._idle_respawns,
             "watch_gaps": watcher._gaps,
+            "resyncs": watcher._resyncs,
+            "resync_failures": watcher._resync_failures,
+            # 0 when the watch is healthy. >0 means the watch stream
+            # failed to deliver that many pods and the periodic LIST
+            # caught them - the direct measure of the silent-deafness
+            # failure this resync exists for.
+            "pods_first_seen_via_resync": watcher._resync_first_seen,
             "classes_observed": sorted(k for k in summary if k != "__all__"),
             "pods": per_pod,
         }, f, indent=1)
@@ -507,6 +580,10 @@ def main():
     ap.add_argument("--idle-timeout", type=float, default=30.0,
                     help="respawn kubectl after this many seconds with no "
                          "watch event (default 30; 0 disables the watchdog)")
+    ap.add_argument("--resync-interval", type=float, default=20.0,
+                    help="full LIST every this many seconds as a safety "
+                         "net against a watch that stops delivering new "
+                         "pods without erroring (default 20; 0 disables)")
     args = ap.parse_args()
 
     # Sidecar next to the output rather than inherited, so it survives
@@ -514,7 +591,8 @@ def main():
     stderr_path = os.path.splitext(args.output)[0] + ".watch-stderr.log"
     watcher = Watcher(args.label, args.kubeconfig, args.context,
                       idle_timeout=(args.idle_timeout or float("inf")),
-                      stderr_path=stderr_path)
+                      stderr_path=stderr_path,
+                      resync_interval=args.resync_interval)
 
     def handle_signal(signum, frame):
         watcher.request_stop()
@@ -529,6 +607,13 @@ def main():
     # Surface a lost-data gap on the orchestrator's own stderr. A silent
     # stream previously produced a short-but-plausible result file that
     # looked complete; the point of detecting it is to say so.
+    if watcher._resync_first_seen:
+        print("WARNING: watch stream missed %d pod(s) in %s - recovered by "
+              "periodic resync (%d resyncs, %d failed). The watch is not "
+              "delivering reliably; the data is complete but the stream is not."
+              % (watcher._resync_first_seen, args.output, watcher._resyncs,
+                 watcher._resync_failures), file=sys.stderr)
+
     long_gaps = [g for g in watcher._gaps if g["idle_seconds"] > 60]
     if long_gaps:
         observed = sorted(k for k in json.load(open(args.output))["summary"]
