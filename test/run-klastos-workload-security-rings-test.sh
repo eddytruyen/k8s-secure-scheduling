@@ -25,6 +25,8 @@ set -euo pipefail
 NODES="${NODES:-100}"
 CL2_SCHEDULER_THROUGHPUT_PODS="${CL2_SCHEDULER_THROUGHPUT_PODS:-1000}"
 CLASSIFICATION_SOURCE="${CLASSIFICATION_SOURCE:-rbac}"
+# basic | hierarchical | metricselector - see apply-shared-policy.sh.
+POLICY_VARIANT="${POLICY_VARIANT:-basic}"
 CLASSES="${CLASSES:-sensitive unhardened}"
 NAMESPACE="${NAMESPACE:-workload-security-rings-eval}"
 
@@ -50,8 +52,8 @@ if [ ! -d "$HARNESS_DIR" ]; then
   exit 1
 fi
 
-echo -e "[*] Apply shared KLASTOS classification schema (CLASSIFICATION_SOURCE=$CLASSIFICATION_SOURCE)"
-CLASSIFICATION_SOURCE="$CLASSIFICATION_SOURCE" NAMESPACE="$NAMESPACE" "$HARNESS_DIR/apply-shared-policy.sh"
+echo -e "[*] Apply shared KLASTOS classification schema (CLASSIFICATION_SOURCE=$CLASSIFICATION_SOURCE, POLICY_VARIANT=$POLICY_VARIANT)"
+CLASSIFICATION_SOURCE="$CLASSIFICATION_SOURCE" POLICY_VARIANT="$POLICY_VARIANT" NAMESPACE="$NAMESPACE" "$HARNESS_DIR/apply-shared-policy.sh"
 echo
 
 for CLASS in $CLASSES; do
@@ -85,5 +87,5 @@ for CLASS in $CLASSES; do
 done
 
 echo -e "\n[*] Remove shared KLASTOS classification schema"
-NAMESPACE="$NAMESPACE" "$HARNESS_DIR/delete-shared-policy.sh"
+POLICY_VARIANT="$POLICY_VARIANT" NAMESPACE="$NAMESPACE" "$HARNESS_DIR/delete-shared-policy.sh"
 echo

@@ -31,6 +31,7 @@ N_STEPS="${N_STEPS:-20 100 1000}"
 NODES="${NODES:-100}"
 CLASSES="${CLASSES:-sensitive unhardened}"
 CLASSIFICATION_SOURCE="${CLASSIFICATION_SOURCE:-rbac}"
+POLICY_VARIANT="${POLICY_VARIANT:-basic}"
 KLASTOS_REPO="${KLASTOS_REPO:-$HOME/githubrepos/klastos}"
 RUN_BASELINE="${RUN_BASELINE:-false}"
 RUN_KLASTOS="${RUN_KLASTOS:-true}"
@@ -43,6 +44,7 @@ echo "=== Experiment 1 full evaluation (workload-security-rings) ==="
 echo "Steps (N):              $N_STEPS"
 echo "Classes:                $CLASSES"
 echo "Classification source:  $CLASSIFICATION_SOURCE (KLASTOS arm only)"
+echo "Policy variant:         $POLICY_VARIANT (KLASTOS arm only)"
 echo "Run KLASTOS:  $RUN_KLASTOS"
 echo "Run baseline: $RUN_BASELINE"
 echo "Results:      $RESULT_ROOT"
@@ -102,6 +104,7 @@ for N in $N_STEPS; do
        CL2_SCHEDULER_THROUGHPUT_PODS="$N" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD" \
        CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT="$ENABLE_VIOLATIONS" \
        CLASSES="$CLASSES" CLASSIFICATION_SOURCE="$CLASSIFICATION_SOURCE" \
+       POLICY_VARIANT="$POLICY_VARIANT" \
        "$SCRIPT_DIR/run-klastos-workload-security-rings-test.sh" \
        > "$STEP_DIR/run.log" 2>&1; then
       cp -r "$SCRIPT_DIR/result/use-case/workload-security-rings-klastos-test" "$STEP_DIR/measurements"
