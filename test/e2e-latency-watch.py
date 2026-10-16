@@ -352,10 +352,13 @@ class Watcher:
             labels = meta.get("labels", {}) or {}
             gen_name = meta.get("generateName")
             cls = canonical_class(gen_name) if gen_name else labels.get("data-sovereignty", "vanilla")
-            if source == "resync" and key not in self.records:
-                # The watch should have delivered this pod and did not.
-                # Surfaced in the output so a deaf watch is visible
-                # rather than inferred from a short class list.
+            # The watch should have delivered this pod and did not.
+            # Surfaced in the output so a deaf watch is visible rather
+            # than inferred from a short class list - and marked on the
+            # record, because such a pod's timings are not comparable
+            # with a watch-observed one's (see dump()).
+            was_new_via_resync = (source == "resync" and key not in self.records)
+            if was_new_via_resync:
                 self._resync_first_seen += 1
             rec = self.records.setdefault(key, {
                 "namespace": meta["namespace"], "name": meta["name"],
@@ -366,7 +369,10 @@ class Watcher:
                 "classified_at": None,
                 "ever_gated": False,
                 "gate_released_at": None,
+                "recovered_via_resync": False,
             })
+            if was_new_via_resync:
+                rec["recovered_via_resync"] = True
             if created_api:
                 rec["created_api"] = created_api
             if rec["first_seen"] is None:
@@ -390,7 +396,12 @@ class Watcher:
             # First appearance of the class-keys annotation at all (either
             # path writes it) - the end of the "classification" phase,
             # start of "gate-release"/"scheduling" below.
-            if annotations.get("scheduling.diktyo.x-k8s.io/class-keys") and rec["classified_at"] is None:
+            # Only a watch event times a phase. A resync observation says
+            # "this annotation exists NOW", not when it appeared, so using
+            # it here would charge the whole resync delay to classification.
+            if (source == "watch"
+                    and annotations.get("scheduling.diktyo.x-k8s.io/class-keys")
+                    and rec["classified_at"] is None):
                 rec["classified_at"] = received_at
             # Gate-state transition tracking: a pod that's never gated at
             # all (OPA's admission-time fast path, is_ready=true at CREATE)
@@ -399,11 +410,15 @@ class Watcher:
             # classified_at instead (see dump()). Only a pod OBSERVED with
             # a non-empty schedulingGates at some point, then later
             # observed with none, gets a real gate_released_at.
-            gates = (pod.get("spec", {}) or {}).get("schedulingGates")
-            if gates:
-                rec["ever_gated"] = True
-            elif rec["ever_gated"] and rec["gate_released_at"] is None:
-                rec["gate_released_at"] = received_at
+            # Same reasoning as classified_at: the gated -> ungated
+            # transition is only meaningful when actually witnessed. A
+            # resync sees one side of it and cannot date the crossing.
+            if source == "watch":
+                gates = (pod.get("spec", {}) or {}).get("schedulingGates")
+                if gates:
+                    rec["ever_gated"] = True
+                elif rec["ever_gated"] and rec["gate_released_at"] is None:
+                    rec["gate_released_at"] = received_at
             for cond in (pod.get("status", {}) or {}).get("conditions", []) or []:
                 if cond.get("type") == "PodScheduled" and cond.get("status") == "True":
                     t = parse_ts(cond.get("lastTransitionTime"))
@@ -450,6 +465,7 @@ def dump(watcher, output_path):
         classified_at, gate_released_at = rec["classified_at"], rec["gate_released_at"]
         cls = rec["class"]
         src = rec["classification_source"]
+        recovered = rec.get("recovered_via_resync", False)
         latency = (
             (scheduled_seen - first_seen).total_seconds()
             if (first_seen and scheduled_seen) else None
@@ -507,19 +523,29 @@ def dump(watcher, output_path):
             "gate_release_seconds": gate_release_seconds,
             "scheduling_seconds": scheduling_seconds,
             "ever_gated": rec["ever_gated"],
+            # True = the watch never delivered this pod; it was recovered
+            # by a periodic LIST. Present in the pod list for
+            # completeness, excluded from every percentile below.
+            "recovered_via_resync": recovered,
             # API-embedded timestamps, second-precision only - kept for
             # cross-checking, not used for the actual latency computation.
             "created_api": rec["created_api"].isoformat() if rec["created_api"] else None,
             "scheduled_api": rec["scheduled_api"].isoformat() if rec["scheduled_api"] else None,
         })
-        if latency is not None:
-            by_class.setdefault(cls, []).append(latency)
-        if classification_seconds is not None:
-            by_class_phases["classification"].setdefault(cls, []).append(classification_seconds)
-        if gate_release_seconds is not None:
-            by_class_phases["gate_release"].setdefault(cls, []).append(gate_release_seconds)
-        if scheduling_seconds is not None:
-            by_class_phases["scheduling"].setdefault(cls, []).append(scheduling_seconds)
+        # A recovered pod contributes to completeness (it is in per_pod and
+        # in classes_observed) but never to a percentile: its latency is
+        # second-quantized API arithmetic and its phases are undatable.
+        # Mixing the two bases silently shifts the distribution - measured
+        # at 2x on classification p50 and 16x on scheduling p99.
+        if not recovered:
+            if latency is not None:
+                by_class.setdefault(cls, []).append(latency)
+            if classification_seconds is not None:
+                by_class_phases["classification"].setdefault(cls, []).append(classification_seconds)
+            if gate_release_seconds is not None:
+                by_class_phases["gate_release"].setdefault(cls, []).append(gate_release_seconds)
+            if scheduling_seconds is not None:
+                by_class_phases["scheduling"].setdefault(cls, []).append(scheduling_seconds)
         src_key = src or "none"
         classification_source_summary.setdefault(cls, {}).setdefault(src_key, 0)
         classification_source_summary[cls][src_key] += 1
@@ -566,6 +592,11 @@ def dump(watcher, output_path):
             # caught them - the direct measure of the silent-deafness
             # failure this resync exists for.
             "pods_first_seen_via_resync": watcher._resync_first_seen,
+            # Same pods, counted where it matters for reading the
+            # percentiles: this many are in "pods" but in no percentile.
+            "pods_excluded_from_percentiles": sum(
+                1 for r in watcher.records.values()
+                if r.get("recovered_via_resync")),
             "classes_observed": sorted(k for k in summary if k != "__all__"),
             "pods": per_pod,
         }, f, indent=1)
@@ -609,10 +640,15 @@ def main():
     # looked complete; the point of detecting it is to say so.
     if watcher._resync_first_seen:
         print("WARNING: watch stream missed %d pod(s) in %s - recovered by "
-              "periodic resync (%d resyncs, %d failed). The watch is not "
-              "delivering reliably; the data is complete but the stream is not."
+              "periodic resync (%d resyncs, %d failed). Those pods are in "
+              "\"pods\" and in classes_observed, but are EXCLUDED from every "
+              "percentile: their timestamps come from the second-precision "
+              "API, and their phase boundaries were never witnessed. Treat "
+              "this arm's percentiles as covering %d pods, not %d."
               % (watcher._resync_first_seen, args.output, watcher._resyncs,
-                 watcher._resync_failures), file=sys.stderr)
+                 watcher._resync_failures,
+                 len(watcher.records) - watcher._resync_first_seen,
+                 len(watcher.records)), file=sys.stderr)
 
     long_gaps = [g for g in watcher._gaps if g["idle_seconds"] > 60]
     if long_gaps:
