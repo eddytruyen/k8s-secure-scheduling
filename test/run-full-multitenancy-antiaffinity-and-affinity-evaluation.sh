@@ -14,15 +14,27 @@
 # e2e-latency-watch.py, which only runs inside a *-evaluation.sh wrapper
 # like this one.
 #
-# KLASTOS-only, no RUN_BASELINE arm - same reason the concurrent script has
-# none: the thing under test is the added same-tenant interClass Affinity
-# term (c2, strict: false), which has no Gatekeeper equivalent at all
-# (Gatekeeper's mutation/constraint pair has no placement-preference
-# concept, only node-selector validation). There is nothing to compare it
-# against on the baseline side. Compare this run's numbers against
-# run-full-multitenancy-antiaffinity-evaluation.sh's own KLASTOS arm
-# instead, to isolate the effect of adding the affinity term on top of the
-# unchanged anti-affinity one - same N, same profile, same classes.
+# RUN_BASELINE=true runs Gatekeeper's binding-review constraint
+# (use-case-demos/multi-tenancy/policy-antiaffinity/, kinds: ["Binding"] on
+# pods/binding - it rejects a Binding that would place a second tenant on an
+# occupied node), the same baseline run-full-multitenancy-antiaffinity-
+# evaluation.sh uses.
+#
+# The concurrent counterpart of this variant has no baseline arm, on the
+# grounds that the added same-tenant Affinity term has no Gatekeeper
+# equivalent. That reasoning does not carry here: a baseline does not have to
+# match KLASTOS term for term, it has to enforce the same security property,
+# and "different tenants never share a node" is exactly what the binding
+# review enforces. The affinity term is additional KLASTOS capability the
+# baseline simply lacks - a capability difference worth reporting, not a
+# reason to drop the comparison.
+#
+# Two readings are therefore available, and both are worth having:
+#   - against this run's own baseline arm: what the whole mechanism costs
+#     versus Gatekeeper, for the same guarantee.
+#   - against run-full-multitenancy-antiaffinity-evaluation.sh's KLASTOS arm
+#     at the same N and profile: what the affinity term alone costs, on top
+#     of the unchanged anti-affinity one.
 #
 # Otherwise identical in structure to
 # run-full-multitenancy-antiaffinity-evaluation.sh; see that script's header
@@ -31,7 +43,7 @@
 #
 # Usage:
 #   ./run-full-multitenancy-antiaffinity-and-affinity-evaluation.sh
-#   N_STEPS="20 100 1000" ./run-full-multitenancy-antiaffinity-and-affinity-evaluation.sh
+#   N_STEPS="20 100 1000" RUN_BASELINE=true ./run-full-multitenancy-antiaffinity-and-affinity-evaluation.sh
 #   N_STEPS=1000 ./run-repeated-script.sh ./run-full-multitenancy-antiaffinity-and-affinity-evaluation.sh 5
 
 set -euo pipefail
@@ -40,6 +52,7 @@ N_STEPS="${N_STEPS:-20 100 1000}"
 NODES="${NODES:-100}"
 CLASSES="${CLASSES:-uc1 uc2}"
 KLASTOS_REPO="${KLASTOS_REPO:-$HOME/githubrepos/klastos}"
+RUN_BASELINE="${RUN_BASELINE:-false}"
 RUN_KLASTOS="${RUN_KLASTOS:-true}"
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
@@ -50,7 +63,7 @@ echo "=== Experiment 1 full evaluation (multi-tenancy, anti-affinity + affinity 
 echo "Steps (N):    $N_STEPS"
 echo "Classes:      $CLASSES"
 echo "Run KLASTOS:  $RUN_KLASTOS"
-echo "Run baseline: n/a (KLASTOS-only - no Gatekeeper equivalent for the affinity term)"
+echo "Run baseline: $RUN_BASELINE"
 echo "Results:      $RESULT_ROOT"
 echo ""
 
@@ -86,6 +99,33 @@ for N in $N_STEPS; do
        "$SCRIPT_DIR/run-klastos-multitenancy-test.sh" \
        > "$STEP_DIR/run.log" 2>&1; then
       cp -r "$SCRIPT_DIR/result/use-case/multi-tenancy-klastos-test" "$STEP_DIR/measurements"
+      echo "    OK - log: $STEP_DIR/run.log"
+    else
+      echo "    FAILED at N=$N - see $STEP_DIR/run.log"
+      FAILED=true
+    fi
+
+    kill -TERM "$WATCHER_PID" 2>/dev/null || true
+    wait "$WATCHER_PID" 2>/dev/null || true
+  fi
+
+  if [ "$RUN_BASELINE" = true ]; then
+    echo "[*] Gatekeeper baseline (reactive binding-time policy), N=$N"
+    STEP_DIR="$RESULT_ROOT/baseline-n$N"
+    mkdir -p "$STEP_DIR"
+
+    python3 "$SCRIPT_DIR/e2e-latency-watch.py" --output "$STEP_DIR/e2e-latency.json" &
+    WATCHER_PID=$!
+    sleep 1
+
+    # Same binding-review constraint the antiaffinity driver uses: the
+    # affinity term has no counterpart, but tenant separation - the property
+    # actually under comparison - does.
+    if NODES="$NODES" TEST=multi-tenancy BASELINE=false POLICY_VARIANT=antiaffinity \
+       CL2_SCHEDULER_THROUGHPUT_PODS="$N" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD" \
+       "$SCRIPT_DIR/run-use-case-test.sh" \
+       > "$STEP_DIR/run.log" 2>&1; then
+      cp -r "$SCRIPT_DIR/result/use-case/multi-tenancy-test" "$STEP_DIR/measurements"
       echo "    OK - log: $STEP_DIR/run.log"
     else
       echo "    FAILED at N=$N - see $STEP_DIR/run.log"
