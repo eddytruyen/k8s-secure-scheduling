@@ -13,13 +13,21 @@ declare -a TENANTS=("uc1" "uc2") # "uc3" "uc4")
 
 declare -a SECURITY_RINGS=("sensitive" "unhardened")
 
+# NOTE: takes the key FIRST, then the node names as separate arguments.
+# The previous signature was unlabel_nodes <nodes> <key> and was called as
+# `unlabel_nodes ${nodes} <key>` - an unquoted array expansion, so $1 was
+# only nodes[0] and $2 was nodes[1] rather than the key. DELETE=true
+# therefore unlabelled exactly one node and silently left the other 99
+# carrying the previous policy's labels. That is the failure mode behind
+# the 2026-10-16 incident where a stale topology.kubernetes.io/region
+# hijacked Hierarchical segmentation.
 function unlabel_nodes {
-    nodes=$1
-    key=$2
-
-    for node in "${nodes[@]}"
+    local key=$1
+    shift
+    local node
+    for node in "$@"
     do
-        kubectl label nodes ${node} ${key}-
+        kubectl label nodes "${node}" "${key}-" >/dev/null 2>&1 || true
     done
 }
 
@@ -71,14 +79,14 @@ else
     echo -e '[*] Remove node labels'
     case "$POLICY" in
         'data-sovereignty')
-            unlabel_nodes ${nodes} topology.kubernetes.io/region
+            unlabel_nodes topology.kubernetes.io/region "${nodes[@]}"
             ;;
         'multi-tenancy')
-            unlabel_nodes ${nodes} tenant
-            unlabel_nodes ${nodes} topology.kubernetes.io/tenant
+            unlabel_nodes tenant "${nodes[@]}"
+            unlabel_nodes topology.kubernetes.io/tenant "${nodes[@]}"
             ;;
         'workload-security-rings')
-            unlabel_nodes ${nodes} security-ring
+            unlabel_nodes security-ring "${nodes[@]}"
             ;;
         *)
             echo "Unknown policy: $POLICY"
