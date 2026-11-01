@@ -78,6 +78,13 @@ ${nodes_yaml}
 EOF
 
 kubectl config use-context "kind-${CLUSTER_NAME}"
+
+# --- Step 1b: widen the kube-apiserver liveness probe so a transient etcd
+# fsync stall cannot get a healthy apiserver SIGKILLed mid-sweep (exit 137,
+# which is NOT an OOM - see patch-apiserver-probe.sh for the full diagnosis).
+# Must run on every rebuild, since each campaign experiment recreates the
+# cluster from scratch and kubeadm regenerates the static pod manifest. ---
+CLUSTER_NAME="$CLUSTER_NAME" bash "$SCRIPT_DIR/patch-apiserver-probe.sh"
 echo ""
 
 # --- Step 2: untaint control-plane node(s) — no real worker nodes exist in
