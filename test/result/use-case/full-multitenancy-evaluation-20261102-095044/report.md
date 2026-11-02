@@ -1,0 +1,19 @@
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| full-multitenancy-evaluation-20261102-095044/baseline-n1000/measurements/pod-uc1-tenant | PASS | 40/47.4/47.4 | 12.0ms/20.5ms/68.1ms | 0.5ms/1.0ms/3.0ms | 3.0ms | none=1000 | -/-/- | -/-/- | 12.0ms/20.5ms/68.1ms |
+| full-multitenancy-evaluation-20261102-095044/baseline-n1000/measurements/pod-uc2-tenant | PASS | 40/47.4/47.4 | 12.0ms/20.0ms/53.6ms | 0.5ms/1.0ms/3.1ms | 3.4ms | none=1000 | -/-/- | -/-/- | 12.0ms/20.0ms/53.6ms |
+| full-multitenancy-evaluation-20261102-095044/baseline-n1000/measurements/vanilla | PASS | 40/41/78 | 12.6ms/21.4ms/69.1ms | 0.5ms/0.9ms/2.7ms | 2.8ms | none=1000 | -/-/- | -/-/- | 12.6ms/21.4ms/69.1ms |
+| full-multitenancy-evaluation-20261102-095044/klastos-n1000/measurements/uc1 | PASS | 40/47.6/47.6 | 12.2ms/21.7ms/1258.9ms | -/-/- | - | admission=941,appclass_operator=59 | 0.0ms/0.0ms/1134.8ms | 203.2ms/677.4ms/920.3ms | 12.0ms/19.8ms/29.1ms |
+| full-multitenancy-evaluation-20261102-095044/klastos-n1000/measurements/uc2 | PASS | 40/47.4/47.4 | 12.2ms/21.3ms/1386.7ms | -/-/- | - | admission=943,appclass_operator=57 | 0.0ms/0.0ms/1168.0ms | 222.2ms/851.1ms/1094.5ms | 12.0ms/19.0ms/26.7ms |
+
+### E2E latency by classification source
+
+| Run | Source | Pods | p50 | p90 | p99 | max |
+|---|---|---|---|---|---|---|
+| full-multitenancy-evaluation-20261102-095044/baseline-n1000/measurements/pod-uc1-tenant | none | 1000 | 12.0ms | 20.5ms | 68.1ms | 81.7ms |
+| full-multitenancy-evaluation-20261102-095044/baseline-n1000/measurements/pod-uc2-tenant | none | 1000 | 12.0ms | 20.0ms | 53.6ms | 67.7ms |
+| full-multitenancy-evaluation-20261102-095044/baseline-n1000/measurements/vanilla | none | 1000 | 12.6ms | 21.4ms | 69.1ms | 84.4ms |
+| full-multitenancy-evaluation-20261102-095044/klastos-n1000/measurements/uc1 | admission | 941 | 11.8ms | 18.7ms | 27.6ms | 64.7ms |
+| full-multitenancy-evaluation-20261102-095044/klastos-n1000/measurements/uc1 | appclass_operator | 59 | 959.1ms | 1330.9ms | 1453.7ms | 1455.0ms |
+| full-multitenancy-evaluation-20261102-095044/klastos-n1000/measurements/uc2 | admission | 943 | 11.9ms | 18.8ms | 26.7ms | 49.0ms |
+| full-multitenancy-evaluation-20261102-095044/klastos-n1000/measurements/uc2 | appclass_operator | 57 | 1170.6ms | 1515.5ms | 1683.2ms | 1759.8ms |

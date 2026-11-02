@@ -1,0 +1,5 @@
+stats.md / stats.csv EXCLUDE repeat 3 entirely (full-multitenancy-evaluation-20261102-093816, started 09:38).
+Reason: etcd stalled during that repeat (09:42-09:43: 175+43 apply requests slow, up to 3.56 s; also seen
+at :42 on 22:42 and 23:42 the previous night and on the idle cluster at 10:10-10:16). Repeat 3 shows the
+large outliers (baseline uc1 p50 117 ms/p99 2281 ms, baseline uc2 p90 338 ms, klastos uc1 p90 107 ms).
+Remaining 4 repeats: 092551, 093203, 094432, 095044. Originals (all 5): stats.with-outlier.md / .csv.

@@ -1,0 +1,6 @@
+run,status,throughput_p50,throughput_p90,throughput_p99,e2e_p50_ms,e2e_p90_ms,e2e_p99_ms,admission_p50_ms,admission_p90_ms,admission_p99_ms,validation_p99_ms,classification_source,classify_p50_ms,classify_p90_ms,classify_p99_ms,gate_p50_ms,gate_p90_ms,gate_p99_ms,sched_phase_p50_ms,sched_phase_p90_ms,sched_phase_p99_ms
+full-multitenancy-evaluation-20261102-092551/baseline-n1000/measurements/pod-uc1-tenant,PASS,40,47.2,47.2,12.4,22.6,66.1,0.5,1.0,3.0,3.1,none=1000,,,,,,,12.4,22.6,66.1
+full-multitenancy-evaluation-20261102-092551/baseline-n1000/measurements/pod-uc2-tenant,PASS,40,47.2,47.2,12.6,21.4,72.9,0.5,1.0,3.4,3.8,none=1000,,,,,,,12.6,21.4,72.9
+full-multitenancy-evaluation-20261102-092551/baseline-n1000/measurements/vanilla,PASS,40,41,77,12.6,22.4,65.7,0.5,0.9,2.1,2.4,none=1000,,,,,,,12.6,22.4,65.7
+full-multitenancy-evaluation-20261102-092551/klastos-n1000/measurements/uc1,PASS,40,46.8,46.8,11.9,20.9,1464.4,,,,,"admission=937,appclass_operator=63",0.0,0.0,1371.0,234.1,720.5,1390.5,11.5,18.2,25.7
+full-multitenancy-evaluation-20261102-092551/klastos-n1000/measurements/uc2,PASS,40,47.4,47.4,12.8,23.9,1741.0,,,,,"admission=940,appclass_operator=60",0.0,0.0,1314.0,240.2,988.6,1238.3,12.4,20.2,32.2

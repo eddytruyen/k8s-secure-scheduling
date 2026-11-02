@@ -1,0 +1,37 @@
+=== Experiment 1 full evaluation (multi-tenancy) ===
+Steps (N):    1000
+Classes:      uc1 uc2
+Run KLASTOS:  true
+Run baseline: true
+Results:      /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261102-093203
+
+--- Step: N=1000 (threshold=100 pods/sec) ---
+[*] KLASTOS harness, N=1000
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261102-093203/klastos-n1000/run.log
+[*] Gatekeeper baseline, N=1000
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261102-093203/baseline-n1000/run.log
+
+=== All steps passed ===
+Results under: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261102-093203
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| full-multitenancy-evaluation-20261102-093203/baseline-n1000/measurements/pod-uc1-tenant | PASS | 40/47.2/47.2 | 13.2ms/23.5ms/52.3ms | 0.5ms/0.9ms/2.2ms | 2.7ms | none=1000 | -/-/- | -/-/- | 13.2ms/23.5ms/52.3ms |
+| full-multitenancy-evaluation-20261102-093203/baseline-n1000/measurements/pod-uc2-tenant | PASS | 40/47.4/47.4 | 12.5ms/21.5ms/71.3ms | 0.6ms/1.0ms/3.6ms | 3.8ms | none=1000 | -/-/- | -/-/- | 12.5ms/21.5ms/71.3ms |
+| full-multitenancy-evaluation-20261102-093203/baseline-n1000/measurements/vanilla | PASS | 40/41/77 | 12.2ms/20.5ms/64.8ms | 0.5ms/0.9ms/1.8ms | 2.4ms | none=1000 | -/-/- | -/-/- | 12.2ms/20.5ms/64.8ms |
+| full-multitenancy-evaluation-20261102-093203/klastos-n1000/measurements/uc1 | PASS | 40/47.6/47.6 | 12.8ms/23.7ms/1586.8ms | -/-/- | - | admission=931,appclass_operator=69 | 0.0ms/0.0ms/1452.8ms | 216.0ms/537.7ms/1063.9ms | 12.6ms/20.7ms/33.0ms |
+| full-multitenancy-evaluation-20261102-093203/klastos-n1000/measurements/uc2 | PASS | 40/47.6/47.6 | 12.8ms/23.4ms/1450.5ms | -/-/- | - | admission=942,appclass_operator=58 | 0.0ms/0.0ms/1207.0ms | 367.1ms/787.2ms/916.5ms | 12.4ms/20.7ms/34.7ms |
+
+### E2E latency by classification source
+
+| Run | Source | Pods | p50 | p90 | p99 | max |
+|---|---|---|---|---|---|---|
+| full-multitenancy-evaluation-20261102-093203/baseline-n1000/measurements/pod-uc1-tenant | none | 1000 | 13.2ms | 23.5ms | 52.3ms | 69.0ms |
+| full-multitenancy-evaluation-20261102-093203/baseline-n1000/measurements/pod-uc2-tenant | none | 1000 | 12.5ms | 21.5ms | 71.3ms | 161.2ms |
+| full-multitenancy-evaluation-20261102-093203/baseline-n1000/measurements/vanilla | none | 1000 | 12.2ms | 20.5ms | 64.8ms | 78.5ms |
+| full-multitenancy-evaluation-20261102-093203/klastos-n1000/measurements/uc1 | admission | 931 | 12.3ms | 19.9ms | 29.7ms | 173.8ms |
+| full-multitenancy-evaluation-20261102-093203/klastos-n1000/measurements/uc1 | appclass_operator | 69 | 1327.8ms | 1645.9ms | 2073.0ms | 2279.2ms |
+| full-multitenancy-evaluation-20261102-093203/klastos-n1000/measurements/uc2 | admission | 942 | 12.4ms | 20.6ms | 33.7ms | 55.7ms |
+| full-multitenancy-evaluation-20261102-093203/klastos-n1000/measurements/uc2 | appclass_operator | 58 | 1254.3ms | 1528.1ms | 1693.5ms | 1793.6ms |
+
+Report: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261102-093203/report.md
+CSV:    /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261102-093203/report.csv
