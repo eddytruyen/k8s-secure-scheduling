@@ -1,0 +1,27 @@
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| full-evaluation-20261101-220111/baseline-n1000/measurements/pod-eu-region | PASS | 40/41/77 | 13.0ms/22.4ms/97.7ms | 0.5ms/1.0ms/3.7ms | 3.2ms | none=1000 | -/-/- | -/-/- | 13.0ms/22.4ms/97.7ms |
+| full-evaluation-20261101-220111/baseline-n1000/measurements/pod-italynorth-region | PASS | 40/42/77 | 11.8ms/20.4ms/85.4ms | 0.6ms/1.0ms/3.4ms | 4.9ms | none=1000 | -/-/- | -/-/- | 11.8ms/20.4ms/85.4ms |
+| full-evaluation-20261101-220111/baseline-n1000/measurements/pod-us-region | PASS | 40/41/77 | 12.3ms/22.9ms/116.8ms | 0.6ms/1.0ms/3.6ms | 4.7ms | none=1000 | -/-/- | -/-/- | 12.3ms/22.9ms/116.8ms |
+| full-evaluation-20261101-220111/baseline-n1000/measurements/vanilla | PASS | 40/41/78 | 12.2ms/20.8ms/65.2ms | 0.5ms/1.0ms/3.6ms | 2.9ms | none=1000 | -/-/- | -/-/- | 12.2ms/20.8ms/65.2ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/eu | PASS | 40/42/69 | 11.9ms/21.5ms/1159.7ms | -/-/- | - | admission=945,appclass_operator=55 | 0.0ms/0.0ms/1101.1ms | 287.9ms/613.1ms/751.3ms | 11.7ms/18.9ms/31.0ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/italynorth | PASS | 40/43/65 | 13.0ms/23.2ms/1228.6ms | -/-/- | - | admission=943,appclass_operator=57 | 0.0ms/0.0ms/1013.8ms | 216.5ms/685.4ms/1446.0ms | 12.8ms/20.0ms/28.8ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/us | PASS | 40/45/57 | 13.0ms/23.2ms/1121.4ms | -/-/- | - | admission=942,appclass_operator=58 | 0.0ms/0.0ms/1095.4ms | 0.0ms/0.0ms/0.0ms | 12.9ms/21.4ms/31.3ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/vanilla | PASS | 40/41/70 | 12.0ms/21.3ms/1391.3ms | -/-/- | - | admission=944,appclass_operator=56 | 0.0ms/0.0ms/1378.4ms | 215.2ms/537.9ms/622.1ms | 11.8ms/18.6ms/34.0ms |
+
+### E2E latency by classification source
+
+| Run | Source | Pods | p50 | p90 | p99 | max |
+|---|---|---|---|---|---|---|
+| full-evaluation-20261101-220111/baseline-n1000/measurements/pod-eu-region | none | 1000 | 13.0ms | 22.4ms | 97.7ms | 129.1ms |
+| full-evaluation-20261101-220111/baseline-n1000/measurements/pod-italynorth-region | none | 1000 | 11.8ms | 20.4ms | 85.4ms | 118.4ms |
+| full-evaluation-20261101-220111/baseline-n1000/measurements/pod-us-region | none | 1000 | 12.3ms | 23.0ms | 121.1ms | 839.6ms |
+| full-evaluation-20261101-220111/baseline-n1000/measurements/vanilla | none | 1000 | 12.2ms | 20.8ms | 65.2ms | 70.9ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/eu | admission | 945 | 11.6ms | 18.7ms | 31.2ms | 41.8ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/eu | appclass_operator | 55 | 953.5ms | 1240.0ms | 1295.1ms | 1372.8ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/italynorth | admission | 943 | 12.7ms | 19.8ms | 28.1ms | 39.2ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/italynorth | appclass_operator | 57 | 841.3ms | 1272.2ms | 2013.1ms | 2189.0ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/us | admission | 942 | 12.6ms | 20.4ms | 28.5ms | 59.1ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/us | appclass_operator | 58 | 825.5ms | 1230.8ms | 1696.9ms | 1768.8ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/vanilla | admission | 944 | 11.7ms | 18.2ms | 27.9ms | 51.5ms |
+| full-evaluation-20261101-220111/klastos-n1000/measurements/vanilla | appclass_operator | 56 | 845.1ms | 1516.9ms | 1629.9ms | 1674.2ms |

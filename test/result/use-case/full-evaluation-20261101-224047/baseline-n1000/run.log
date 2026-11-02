@@ -1,0 +1,572 @@
+[*] Allow Gatekeeper to reject workloads that create pods violating constraints
+expansiontemplate.expansion.gatekeeper.sh/expand-deployments created
+
+[*] Use Gatekeeper to mutate the node affinity/selector config
+modifyset.mutations.gatekeeper.sh/add-eu-region-node-affinity created
+modifyset.mutations.gatekeeper.sh/add-us-region-node-affinity created
+
+[*] Use Gatekeeper to validate the node affinity/selector config
+[+] Add constraint template
+constrainttemplate.templates.gatekeeper.sh/k8srequirespecificnodeaffinity created
+[+] Add constraints
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh/ensure-data-sovereignty created
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh/warn-unknown-eu-region created
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh/warn-unknown-us-region created
+
+[*] Run data-sovereignty test
+I1101 22:46:47.507186  748194 dns_performance-k8s-hostnames.go:58] Registering measurement: DNS Performance for K8s Hostnames
+I1101 22:46:47.507234  748194 network_performance_measurement.go:90] Registering Network Performance Measurement
+I1101 22:46:47.512138  748194 clusterloader.go:272] Listening on 8000
+I1101 22:46:47.547248  748194 clusterloader.go:174] ClusterConfig.MasterName set to secure-sched-control-plane
+E1101 22:46:47.576118  748194 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1101 22:46:47.602253  748194 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.18.0.2]
+I1101 22:46:47.602317  748194 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/config RunFromCluster:false Nodes:100 Provider:0xc000014660 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.18.0.2] MasterName:secure-sched-control-plane DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/data-sovereignty-test ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:false EnableServer:true EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[]}
+I1101 22:46:47.630286  748194 cluster.go:75] Listing cluster nodes:
+I1101 22:46:47.630476  748194 cluster.go:87] Name: kwok-node-1, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630504  748194 cluster.go:87] Name: kwok-node-10, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630517  748194 cluster.go:87] Name: kwok-node-100, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630528  748194 cluster.go:87] Name: kwok-node-11, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630539  748194 cluster.go:87] Name: kwok-node-12, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630549  748194 cluster.go:87] Name: kwok-node-13, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630560  748194 cluster.go:87] Name: kwok-node-14, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630572  748194 cluster.go:87] Name: kwok-node-15, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630594  748194 cluster.go:87] Name: kwok-node-16, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630636  748194 cluster.go:87] Name: kwok-node-17, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630832  748194 cluster.go:87] Name: kwok-node-18, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.630858  748194 cluster.go:87] Name: kwok-node-19, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631382  748194 cluster.go:87] Name: kwok-node-2, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631422  748194 cluster.go:87] Name: kwok-node-20, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631435  748194 cluster.go:87] Name: kwok-node-21, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631446  748194 cluster.go:87] Name: kwok-node-22, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631456  748194 cluster.go:87] Name: kwok-node-23, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631465  748194 cluster.go:87] Name: kwok-node-24, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631487  748194 cluster.go:87] Name: kwok-node-25, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631496  748194 cluster.go:87] Name: kwok-node-26, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631506  748194 cluster.go:87] Name: kwok-node-27, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631515  748194 cluster.go:87] Name: kwok-node-28, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631525  748194 cluster.go:87] Name: kwok-node-29, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631534  748194 cluster.go:87] Name: kwok-node-3, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631543  748194 cluster.go:87] Name: kwok-node-30, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631553  748194 cluster.go:87] Name: kwok-node-31, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631562  748194 cluster.go:87] Name: kwok-node-32, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631572  748194 cluster.go:87] Name: kwok-node-33, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631581  748194 cluster.go:87] Name: kwok-node-34, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631590  748194 cluster.go:87] Name: kwok-node-35, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631600  748194 cluster.go:87] Name: kwok-node-36, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631609  748194 cluster.go:87] Name: kwok-node-37, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631618  748194 cluster.go:87] Name: kwok-node-38, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631627  748194 cluster.go:87] Name: kwok-node-39, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631637  748194 cluster.go:87] Name: kwok-node-4, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631646  748194 cluster.go:87] Name: kwok-node-40, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631655  748194 cluster.go:87] Name: kwok-node-41, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631664  748194 cluster.go:87] Name: kwok-node-42, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631674  748194 cluster.go:87] Name: kwok-node-43, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631683  748194 cluster.go:87] Name: kwok-node-44, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631692  748194 cluster.go:87] Name: kwok-node-45, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631702  748194 cluster.go:87] Name: kwok-node-46, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631711  748194 cluster.go:87] Name: kwok-node-47, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631737  748194 cluster.go:87] Name: kwok-node-48, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631747  748194 cluster.go:87] Name: kwok-node-49, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631761  748194 cluster.go:87] Name: kwok-node-5, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631771  748194 cluster.go:87] Name: kwok-node-50, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631780  748194 cluster.go:87] Name: kwok-node-51, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631789  748194 cluster.go:87] Name: kwok-node-52, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631799  748194 cluster.go:87] Name: kwok-node-53, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631808  748194 cluster.go:87] Name: kwok-node-54, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631817  748194 cluster.go:87] Name: kwok-node-55, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631831  748194 cluster.go:87] Name: kwok-node-56, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631840  748194 cluster.go:87] Name: kwok-node-57, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631850  748194 cluster.go:87] Name: kwok-node-58, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631859  748194 cluster.go:87] Name: kwok-node-59, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631868  748194 cluster.go:87] Name: kwok-node-6, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631877  748194 cluster.go:87] Name: kwok-node-60, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631886  748194 cluster.go:87] Name: kwok-node-61, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631896  748194 cluster.go:87] Name: kwok-node-62, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631905  748194 cluster.go:87] Name: kwok-node-63, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631914  748194 cluster.go:87] Name: kwok-node-64, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631923  748194 cluster.go:87] Name: kwok-node-65, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631932  748194 cluster.go:87] Name: kwok-node-66, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631942  748194 cluster.go:87] Name: kwok-node-67, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631951  748194 cluster.go:87] Name: kwok-node-68, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631960  748194 cluster.go:87] Name: kwok-node-69, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631969  748194 cluster.go:87] Name: kwok-node-7, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631979  748194 cluster.go:87] Name: kwok-node-70, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631988  748194 cluster.go:87] Name: kwok-node-71, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.631998  748194 cluster.go:87] Name: kwok-node-72, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632007  748194 cluster.go:87] Name: kwok-node-73, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632016  748194 cluster.go:87] Name: kwok-node-74, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632025  748194 cluster.go:87] Name: kwok-node-75, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632035  748194 cluster.go:87] Name: kwok-node-76, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632044  748194 cluster.go:87] Name: kwok-node-77, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632061  748194 cluster.go:87] Name: kwok-node-78, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632071  748194 cluster.go:87] Name: kwok-node-79, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632083  748194 cluster.go:87] Name: kwok-node-8, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632092  748194 cluster.go:87] Name: kwok-node-80, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632101  748194 cluster.go:87] Name: kwok-node-81, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632111  748194 cluster.go:87] Name: kwok-node-82, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632120  748194 cluster.go:87] Name: kwok-node-83, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632129  748194 cluster.go:87] Name: kwok-node-84, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632139  748194 cluster.go:87] Name: kwok-node-85, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632152  748194 cluster.go:87] Name: kwok-node-86, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632190  748194 cluster.go:87] Name: kwok-node-87, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632200  748194 cluster.go:87] Name: kwok-node-88, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632209  748194 cluster.go:87] Name: kwok-node-89, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632217  748194 cluster.go:87] Name: kwok-node-9, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632226  748194 cluster.go:87] Name: kwok-node-90, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632234  748194 cluster.go:87] Name: kwok-node-91, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632242  748194 cluster.go:87] Name: kwok-node-92, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632250  748194 cluster.go:87] Name: kwok-node-93, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632258  748194 cluster.go:87] Name: kwok-node-94, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632266  748194 cluster.go:87] Name: kwok-node-95, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632274  748194 cluster.go:87] Name: kwok-node-96, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632283  748194 cluster.go:87] Name: kwok-node-97, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632291  748194 cluster.go:87] Name: kwok-node-98, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632299  748194 cluster.go:87] Name: kwok-node-99, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1101 22:46:47.632308  748194 cluster.go:87] Name: secure-sched-control-plane, clusterIP: 172.18.0.2, externalIP: , isSchedulable: true
+I1101 22:46:47.657330  748194 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1101 22:46:47.664280  748194 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1101 22:46:47.672003  748194 prometheus.go:509] Using internal master ips ([172.18.0.2]) to monitor master's components
+I1101 22:46:47.672106  748194 prometheus.go:227] Setting up prometheus stack
+I1101 22:46:47.716763  748194 framework.go:276] Applying templates for "*.yaml"
+I1101 22:46:47.717113  748194 framework.go:287] Applying 0prometheus-operator-0alertmanagerConfigCustomResourceDefinition.yaml
+I1101 22:46:47.857169  748194 framework.go:287] Applying 0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml
+I1101 22:46:48.130164  748194 framework.go:287] Applying 0prometheus-operator-0podmonitorCustomResourceDefinition.yaml
+I1101 22:46:48.179252  748194 framework.go:287] Applying 0prometheus-operator-0probeCustomResourceDefinition.yaml
+I1101 22:46:48.207003  748194 framework.go:287] Applying 0prometheus-operator-0prometheusCustomResourceDefinition.yaml
+I1101 22:46:48.462943  748194 framework.go:287] Applying 0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml
+I1101 22:46:48.481489  748194 framework.go:287] Applying 0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml
+I1101 22:46:48.529634  748194 framework.go:287] Applying 0prometheus-operator-0thanosrulerCustomResourceDefinition.yaml
+I1101 22:46:48.820334  748194 framework.go:287] Applying 0prometheus-operator-clusterRole.yaml
+I1101 22:46:48.843438  748194 framework.go:287] Applying 0prometheus-operator-clusterRoleBinding.yaml
+I1101 22:46:48.856464  748194 framework.go:287] Applying 0prometheus-operator-deployment.yaml
+I1101 22:46:48.882979  748194 framework.go:287] Applying 0prometheus-operator-service.yaml
+I1101 22:46:48.896530  748194 framework.go:287] Applying 0prometheus-operator-serviceAccount.yaml
+I1101 22:46:48.911990  748194 framework.go:287] Applying 0prometheus-operator-serviceMonitor.yaml
+I1101 22:46:48.926261  748194 framework.go:287] Applying 0ssd-storage-class.yaml
+I1101 22:46:48.937446  748194 framework.go:287] Applying grafana-dashboardDatasources.yaml
+I1101 22:46:48.950407  748194 framework.go:287] Applying grafana-dashboardDefinitions.yaml
+I1101 22:46:49.409526  748194 framework.go:287] Applying grafana-dashboardSources.yaml
+I1101 22:46:49.423015  748194 framework.go:287] Applying grafana-deployment.yaml
+I1101 22:46:49.451337  748194 framework.go:287] Applying grafana-service.yaml
+I1101 22:46:49.474667  748194 framework.go:287] Applying grafana-serviceAccount.yaml
+I1101 22:46:49.485862  748194 framework.go:287] Applying grafana-serviceMonitor.yaml
+I1101 22:46:49.499146  748194 framework.go:287] Applying prometheus-clusterRole.yaml
+I1101 22:46:49.512223  748194 framework.go:287] Applying prometheus-clusterRoleBinding.yaml
+I1101 22:46:49.529878  748194 framework.go:287] Applying prometheus-prometheus.yaml
+I1101 22:46:49.553810  748194 framework.go:287] Applying prometheus-resourceQuota.yaml
+I1101 22:46:49.567444  748194 framework.go:287] Applying prometheus-roleBindingConfig.yaml
+I1101 22:46:49.581110  748194 framework.go:287] Applying prometheus-roleConfig.yaml
+I1101 22:46:49.593645  748194 framework.go:287] Applying prometheus-rules.yaml
+I1101 22:46:49.621593  748194 framework.go:287] Applying prometheus-service.yaml
+I1101 22:46:49.647713  748194 framework.go:287] Applying prometheus-serviceAccount.yaml
+I1101 22:46:49.658156  748194 framework.go:287] Applying prometheus-serviceMonitor.yaml
+I1101 22:46:49.674667  748194 framework.go:287] Applying prometheus-windows-scrape-configs.yaml
+I1101 22:46:49.687134  748194 framework.go:276] Applying templates for "default/*.yaml"
+I1101 22:46:49.687226  748194 framework.go:287] Applying default/kube-proxy-service.yaml
+I1101 22:46:49.702672  748194 framework.go:287] Applying default/prometheus-podMonitorAnet.yaml
+W1101 22:46:49.703000  748194 framework.go:291] Skipping empty manifest default/prometheus-podMonitorAnet.yaml
+I1101 22:46:49.703024  748194 framework.go:287] Applying default/prometheus-podMonitorCiliumAgent.yaml
+W1101 22:46:49.703374  748194 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumAgent.yaml
+I1101 22:46:49.703398  748194 framework.go:287] Applying default/prometheus-podMonitorCiliumOperator.yaml
+W1101 22:46:49.703615  748194 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumOperator.yaml
+I1101 22:46:49.703631  748194 framework.go:287] Applying default/prometheus-podMonitorDNSPerf.yaml
+W1101 22:46:49.703806  748194 framework.go:291] Skipping empty manifest default/prometheus-podMonitorDNSPerf.yaml
+I1101 22:46:49.703822  748194 framework.go:287] Applying default/prometheus-podMonitorKubeNetworkPolicies.yaml
+W1101 22:46:49.703980  748194 framework.go:291] Skipping empty manifest default/prometheus-podMonitorKubeNetworkPolicies.yaml
+I1101 22:46:49.703996  748194 framework.go:287] Applying default/prometheus-podMonitorNetPolicyClient.yaml
+W1101 22:46:49.704256  748194 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNetPolicyClient.yaml
+I1101 22:46:49.704281  748194 framework.go:287] Applying default/prometheus-podMonitorNodeLocalDNS.yaml
+W1101 22:46:49.704499  748194 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNodeLocalDNS.yaml
+I1101 22:46:49.704520  748194 framework.go:287] Applying default/prometheus-serviceMonitorCoreDNS.yaml
+I1101 22:46:49.722831  748194 framework.go:287] Applying default/prometheus-serviceMonitorKubeProxy.yaml
+I1101 22:46:49.737627  748194 framework.go:287] Applying default/prometheus-serviceMonitorKubelet.yaml
+W1101 22:46:49.737959  748194 framework.go:291] Skipping empty manifest default/prometheus-serviceMonitorKubelet.yaml
+I1101 22:46:49.737985  748194 framework.go:287] Applying default/prometheus-serviceMonitorLegacyKubeDNS.yaml
+I1101 22:46:49.760628  748194 prometheus.go:360] Exposing kube-apiserver metrics in the cluster
+I1101 22:46:49.802838  748194 framework.go:276] Applying templates for "master-ip/*.yaml"
+I1101 22:46:49.802945  748194 framework.go:287] Applying master-ip/master-endpoints.yaml
+I1101 22:46:49.816880  748194 framework.go:287] Applying master-ip/master-service.yaml
+I1101 22:46:49.831755  748194 framework.go:287] Applying master-ip/master-serviceMonitor.yaml
+W1101 22:46:49.849637  748194 warnings.go:70] unknown field "spec.selector.k8s-app"
+I1101 22:46:49.849838  748194 prometheus.go:439] Waiting for Prometheus stack to become healthy...
+I1101 22:46:49.882026  748194 util.go:104] All 11 expected targets are ready
+I1101 22:46:49.882112  748194 prometheus.go:299] Prometheus stack set up successfully
+I1101 22:46:49.882140  748194 exec_service.go:86] Exec service: setting up service!
+I1101 22:46:49.913482  748194 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1101 22:46:49.913546  748194 framework.go:287] Applying manifest/exec_deployment.yaml
+I1101 22:46:49.947776  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1101 22:46:49.995315  748194 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949650784s
+I1101 22:46:59.996375  748194 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1101 22:46:59.996439  748194 exec_service.go:122] Exec service: service set up successfully!
+W1101 22:46:59.996500  748194 imagepreload.go:92] No images specified. Skipping image preloading
+I1101 22:47:00.007253  748194 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/data-sovereignty-test/generatedConfig_direct-scheduler-throughput.yaml
+I1101 22:47:00.013947  748194 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/data-sovereignty-test/generatedConfig_direct-scheduler-throughput.yaml
+I1101 22:47:00.019626  748194 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/data-sovereignty-test/generatedConfig_direct-scheduler-throughput.yaml
+I1101 22:47:00.024069  748194 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/data-sovereignty-test/generatedConfig_direct-scheduler-throughput.yaml
+I1101 22:47:00.024083  748194 clusterloader.go:243] --------------------------------------------------------------------------------
+I1101 22:47:00.024090  748194 clusterloader.go:244] Running vanilla(use-case/config.yaml)
+I1101 22:47:00.024097  748194 clusterloader.go:245] --------------------------------------------------------------------------------
+I1101 22:47:00.024107  748194 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-m7lvc5
+I1101 22:47:00.046131  748194 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1101 22:47:00.071019  748194 prometheus_measurement.go:87] GatekeeperValidationRequestDuration has started
+I1101 22:47:00.071638  748194 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1101 22:47:00.071743  748194 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1101 22:47:00.072483  748194 prometheus_measurement.go:87] GatekeeperMutationRequestDuration has started
+I1101 22:47:00.074004  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1101 22:47:00.087516  748194 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1101 22:47:00.122431  748194 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1101 22:47:00.128992  748194 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1101 22:47:00.129028  748194 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1101 22:47:24.145788  748194 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1101 22:47:24.145822  748194 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1101 22:47:24.207592  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1101 22:47:24.248859  748194 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.898975104s
+I1101 22:47:29.251696  748194 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1101 22:47:29.251807  748194 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1101 22:47:29.251850  748194 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1101 22:47:29.255264  748194 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1101 22:47:29.255284  748194 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1101 22:47:29.255348  748194 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-01T22:47:29Z
+I1101 22:47:29.255930  748194 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1101 22:47:29.256485  748194 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1101 22:47:29.256511  748194 prometheus_measurement.go:91] GatekeeperMutationRequestDuration gathering results
+I1101 22:47:29.256560  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.18404579s
+I1101 22:47:29.256586  748194 prometheus.go:112] Executing "histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:47:29Z
+I1101 22:47:29.256517  748194 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-01T22:47:29Z
+I1101 22:47:29.257507  748194 prometheus_measurement.go:91] GatekeeperValidationRequestDuration gathering results
+I1101 22:47:29.257540  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.186487016s
+I1101 22:47:29.257553  748194 prometheus.go:112] Executing "histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:47:29Z
+I1101 22:47:29.258311  748194 prometheus_measurement.go:91] GatekeeperConstraintTemplateIngestionDuration gathering results
+I1101 22:47:29.267389  748194 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-01T22:47:29Z
+I1101 22:47:29.273259  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc50, value: 0.0005134222728382006, threshold: none
+I1101 22:47:29.273307  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.18404579s
+I1101 22:47:29.273326  748194 prometheus.go:112] Executing "histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:47:29Z
+I1101 22:47:29.274140  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc50, value: 0.0005400939439691327, threshold: none
+I1101 22:47:29.274166  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.186487016s
+I1101 22:47:29.274176  748194 prometheus.go:112] Executing "histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:47:29Z
+I1101 22:47:29.279884  748194 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1101 22:47:29.287958  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc90, value: 0.0009241600911087612, threshold: none
+I1101 22:47:29.287988  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.18404579s
+I1101 22:47:29.287999  748194 prometheus.go:112] Executing "histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:47:29Z
+I1101 22:47:29.288826  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc90, value: 0.0009721690991444388, threshold: none
+I1101 22:47:29.288857  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.186487016s
+I1101 22:47:29.288870  748194 prometheus.go:112] Executing "histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:47:29Z
+I1101 22:47:29.300162  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc99, value: 0.0019137668161435034, threshold: none
+I1101 22:47:29.300207  748194 generic_query_measurement.go:208] bounded query: gatekeeper_mutation_request_duration_seconds_sum, duration: 29.18404579s
+I1101 22:47:29.300223  748194 prometheus.go:112] Executing "gatekeeper_mutation_request_duration_seconds_sum" at 2026-11-01T22:47:29Z
+I1101 22:47:29.304308  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc99, value: 0.002824485981308398, threshold: none
+I1101 22:47:29.304332  748194 generic_query_measurement.go:208] bounded query: gatekeeper_validation_request_duration_seconds_sum, duration: 29.186487016s
+I1101 22:47:29.304339  748194 prometheus.go:112] Executing "gatekeeper_validation_request_duration_seconds_sum" at 2026-11-01T22:47:29Z
+I1101 22:47:29.315789  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 86.68851846299953, threshold: none
+I1101 22:47:29.315828  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 82.83371684200013, threshold: none
+I1101 22:47:29.315837  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 77.90822570799894, threshold: none
+I1101 22:47:29.316159  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 182.43589043699663, threshold: none
+I1101 22:47:29.316212  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 180.45388111499912, threshold: none
+I1101 22:47:29.316228  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 174.6959673420065, threshold: none
+I1101 22:47:29.316242  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 0.9987017119999998, threshold: none
+I1101 22:47:29.316254  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 0.008138698, threshold: none
+I1101 22:47:29.329251  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:47:29Z
+I1101 22:47:29.358748  748194 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:47:29Z
+I1101 22:47:29.367077  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:47:29Z
+I1101 22:47:29.385050  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:47:29Z
+I1101 22:47:29.402373  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:47:29Z
+I1101 22:47:29.426622  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:DELETE Scope:namespace Latency:perc50: 33.333333ms, perc90: 5.1488s, perc99: 5.86178s Count:0 SlowCount:0}; threshold: 30s
+I1101 22:47:29.426728  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: WARNING Top latency metric: {Resource:k8srequirespecificnodeaffinity Subresource: Verb:POST Scope:resource Latency:perc50: 37.5ms, perc90: 2.7s, perc99: 2.97s Count:0 SlowCount:0}; threshold: 1s
+I1101 22:47:29.426745  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:cluster Latency:perc50: 29.287686ms, perc90: 78.667258ms, perc99: 275.905ms Count:35 SlowCount:0}; threshold: 30s
+I1101 22:47:29.426757  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:LIST Scope:cluster Latency:perc50: 150ms, perc90: 190ms, perc99: 199ms Count:1 SlowCount:0}; threshold: 30s
+I1101 22:47:29.426782  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:POST Scope:resource Latency:perc50: 37.375ms, perc90: 109.349999ms, perc99: 189.585ms Count:0 SlowCount:0}; threshold: 1s
+I1101 22:47:29.427154  748194 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1101 22:47:29.427193  748194 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1101 22:47:30.479492  748194 request.go:700] Waited for 1.004485497s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-m7lvc5-1/pods/direct-scheduler-throughput-pod-402
+I1101 22:47:31.489285  748194 request.go:700] Waited for 2.004905927s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-m7lvc5-1/pods/direct-scheduler-throughput-pod-901
+I1101 22:47:32.499090  748194 request.go:700] Waited for 2.959204982s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-m7lvc5-1/pods/direct-scheduler-throughput-pod-926
+I1101 22:47:33.508669  748194 request.go:700] Waited for 3.956321496s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-m7lvc5-1/pods/direct-scheduler-throughput-pod-611
+I1101 22:47:34.509130  748194 request.go:700] Waited for 4.950407784s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-m7lvc5-1/pods/direct-scheduler-throughput-pod-708
+I1101 22:47:35.509371  748194 request.go:700] Waited for 5.943674645s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-m7lvc5-1/pods/direct-scheduler-throughput-pod-787
+I1101 22:47:36.518491  748194 request.go:700] Waited for 6.94523506s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-m7lvc5-1/pods/direct-scheduler-throughput-pod-90
+I1101 22:47:37.436739  748194 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1101 22:47:52.453903  748194 simple_test_executor.go:402] Resources cleanup time: 15.014446203s
+I1101 22:47:52.453934  748194 clusterloader.go:253] --------------------------------------------------------------------------------
+I1101 22:47:52.453938  748194 clusterloader.go:254] Test Finished
+I1101 22:47:52.453941  748194 clusterloader.go:255]   Test: vanilla(use-case/config.yaml)
+I1101 22:47:52.453945  748194 clusterloader.go:256]   Status: Success
+I1101 22:47:52.453948  748194 clusterloader.go:260] --------------------------------------------------------------------------------
+I1101 22:47:52.453963  748194 clusterloader.go:243] --------------------------------------------------------------------------------
+I1101 22:47:52.453967  748194 clusterloader.go:244] Running pod-eu-region(use-case/config.yaml)
+I1101 22:47:52.453970  748194 clusterloader.go:245] --------------------------------------------------------------------------------
+I1101 22:47:52.453977  748194 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-hxecom
+I1101 22:47:52.477642  748194 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1101 22:47:52.480629  748194 prometheus_measurement.go:87] GatekeeperMutationRequestDuration has started
+I1101 22:47:52.480662  748194 prometheus_measurement.go:87] GatekeeperValidationRequestDuration has started
+I1101 22:47:52.483378  748194 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1101 22:47:52.484649  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1101 22:47:52.484893  748194 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1101 22:47:52.512441  748194 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1101 22:47:52.531219  748194 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1101 22:47:52.584951  748194 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1101 22:47:52.585007  748194 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1101 22:48:16.603204  748194 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1101 22:48:16.603248  748194 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1101 22:48:16.691297  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1101 22:48:16.704927  748194 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.899486898s
+I1101 22:48:21.707145  748194 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1101 22:48:21.707236  748194 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1101 22:48:21.707275  748194 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1101 22:48:21.710122  748194 prometheus_measurement.go:91] GatekeeperConstraintTemplateIngestionDuration gathering results
+I1101 22:48:21.710843  748194 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1101 22:48:21.711062  748194 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1101 22:48:21.711548  748194 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1101 22:48:21.711593  748194 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-01T22:48:21Z
+I1101 22:48:21.712094  748194 prometheus_measurement.go:91] GatekeeperMutationRequestDuration gathering results
+I1101 22:48:21.712124  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.231448397s
+I1101 22:48:21.712144  748194 prometheus.go:112] Executing "histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:48:21Z
+I1101 22:48:21.713677  748194 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1101 22:48:21.713712  748194 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-01T22:48:21Z
+I1101 22:48:21.714848  748194 prometheus_measurement.go:91] GatekeeperValidationRequestDuration gathering results
+I1101 22:48:21.714883  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234172419s
+I1101 22:48:21.714901  748194 prometheus.go:112] Executing "histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:48:21Z
+I1101 22:48:21.724784  748194 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-01T22:48:21Z
+I1101 22:48:21.730838  748194 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1101 22:48:21.731413  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc50, value: 0.0005358096281280486, threshold: none
+I1101 22:48:21.731443  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.231448397s
+I1101 22:48:21.731459  748194 prometheus.go:112] Executing "histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:48:21Z
+I1101 22:48:21.736760  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc50, value: 0.0005691540461990426, threshold: none
+I1101 22:48:21.736797  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234172419s
+I1101 22:48:21.736815  748194 prometheus.go:112] Executing "histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:48:21Z
+I1101 22:48:21.740858  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc90, value: 0.0009644573306304877, threshold: none
+I1101 22:48:21.740904  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.231448397s
+I1101 22:48:21.740921  748194 prometheus.go:112] Executing "histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:48:21Z
+I1101 22:48:21.745689  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc90, value: 0.0012732192331391407, threshold: none
+I1101 22:48:21.745723  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234172419s
+I1101 22:48:21.745739  748194 prometheus.go:112] Executing "histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:48:21Z
+I1101 22:48:21.746909  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc99, value: 0.0029815088711243644, threshold: none
+I1101 22:48:21.746926  748194 generic_query_measurement.go:208] bounded query: gatekeeper_mutation_request_duration_seconds_sum, duration: 29.231448397s
+I1101 22:48:21.746934  748194 prometheus.go:112] Executing "gatekeeper_mutation_request_duration_seconds_sum" at 2026-11-01T22:48:21Z
+I1101 22:48:21.751440  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 88.83736151299954, threshold: none
+I1101 22:48:21.751467  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 82.97268049700017, threshold: none
+I1101 22:48:21.751477  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 78.24981950999903, threshold: none
+I1101 22:48:21.754027  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc99, value: 0.004079673153398152, threshold: none
+I1101 22:48:21.754054  748194 generic_query_measurement.go:208] bounded query: gatekeeper_validation_request_duration_seconds_sum, duration: 29.234172419s
+I1101 22:48:21.754066  748194 prometheus.go:112] Executing "gatekeeper_validation_request_duration_seconds_sum" at 2026-11-01T22:48:21Z
+I1101 22:48:21.760760  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 184.18426763299672, threshold: none
+I1101 22:48:21.760776  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 181.03415297799867, threshold: none
+I1101 22:48:21.760781  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 176.24175914700666, threshold: none
+I1101 22:48:21.760785  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 0.9987017119999998, threshold: none
+I1101 22:48:21.760790  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 0.008138698, threshold: none
+I1101 22:48:21.770329  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:48:21Z
+I1101 22:48:21.793640  748194 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:48:21Z
+I1101 22:48:21.801155  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:48:21Z
+I1101 22:48:21.823834  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:48:21Z
+I1101 22:48:21.833620  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:48:21Z
+I1101 22:48:21.856873  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:LIST Scope:cluster Latency:perc50: 150ms, perc90: 190ms, perc99: 199ms Count:1 SlowCount:0}; threshold: 30s
+I1101 22:48:21.856956  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:cluster Latency:perc50: 30.71557ms, perc90: 73.057258ms, perc99: 97.044999ms Count:35 SlowCount:0}; threshold: 30s
+I1101 22:48:21.856987  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:configmaps Subresource: Verb:POST Scope:resource Latency:perc50: 28.535714ms, perc90: 59.85ms, perc99: 95.535ms Count:0 SlowCount:0}; threshold: 1s
+I1101 22:48:21.857012  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:DELETE Scope:resource Latency:perc50: 26.579787ms, perc90: 47.843617ms, perc99: 93.416052ms Count:0 SlowCount:0}; threshold: 1s
+I1101 22:48:21.857034  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:networktopologies Subresource: Verb:DELETE Scope:namespace Latency:perc50: 25ms, perc90: 45ms, perc99: 49.5ms Count:0 SlowCount:0}; threshold: 30s
+I1101 22:48:21.857433  748194 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1101 22:48:21.857470  748194 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1101 22:48:22.868880  748194 request.go:700] Waited for 1.000051255s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-hxecom-1/pods/direct-scheduler-throughput-pod-205
+I1101 22:48:23.878886  748194 request.go:700] Waited for 2.00707151s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-hxecom-1/pods/direct-scheduler-throughput-pod-828
+I1101 22:48:24.879062  748194 request.go:700] Waited for 3.002897429s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-hxecom-1/pods/direct-scheduler-throughput-pod-529
+I1101 22:48:25.879243  748194 request.go:700] Waited for 3.999890698s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-hxecom-1/pods/direct-scheduler-throughput-pod-495
+I1101 22:48:26.887754  748194 request.go:700] Waited for 4.992918376s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-hxecom-1/pods/direct-scheduler-throughput-pod-333
+I1101 22:48:27.887928  748194 request.go:700] Waited for 5.979571496s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-hxecom-1/pods/direct-scheduler-throughput-pod-739
+I1101 22:48:28.888060  748194 request.go:700] Waited for 6.971839119s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-hxecom-1/pods/direct-scheduler-throughput-pod-915
+I1101 22:48:29.842635  748194 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1101 22:48:44.862713  748194 simple_test_executor.go:402] Resources cleanup time: 15.019191223s
+I1101 22:48:44.862773  748194 clusterloader.go:253] --------------------------------------------------------------------------------
+I1101 22:48:44.862787  748194 clusterloader.go:254] Test Finished
+I1101 22:48:44.862799  748194 clusterloader.go:255]   Test: pod-eu-region(use-case/config.yaml)
+I1101 22:48:44.862836  748194 clusterloader.go:256]   Status: Success
+I1101 22:48:44.862849  748194 clusterloader.go:260] --------------------------------------------------------------------------------
+I1101 22:48:44.862877  748194 clusterloader.go:243] --------------------------------------------------------------------------------
+I1101 22:48:44.862891  748194 clusterloader.go:244] Running pod-us-region(use-case/config.yaml)
+I1101 22:48:44.862904  748194 clusterloader.go:245] --------------------------------------------------------------------------------
+I1101 22:48:44.862923  748194 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-fx672m
+I1101 22:48:44.889564  748194 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1101 22:48:44.897215  748194 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1101 22:48:44.898027  748194 prometheus_measurement.go:87] GatekeeperMutationRequestDuration has started
+I1101 22:48:44.899726  748194 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1101 22:48:44.900207  748194 prometheus_measurement.go:87] GatekeeperValidationRequestDuration has started
+I1101 22:48:44.902950  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1101 22:48:44.927818  748194 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1101 22:48:44.949635  748194 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1101 22:48:45.007804  748194 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1101 22:48:45.007868  748194 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1101 22:49:09.019244  748194 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1101 22:49:09.019280  748194 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1101 22:49:09.076634  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1101 22:49:09.124100  748194 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.899191149s
+I1101 22:49:14.126850  748194 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1101 22:49:14.126948  748194 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1101 22:49:14.126987  748194 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1101 22:49:14.132604  748194 prometheus_measurement.go:91] GatekeeperConstraintTemplateIngestionDuration gathering results
+I1101 22:49:14.132651  748194 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1101 22:49:14.132707  748194 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-01T22:49:14Z
+I1101 22:49:14.132980  748194 prometheus_measurement.go:91] GatekeeperMutationRequestDuration gathering results
+I1101 22:49:14.133013  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234944552s
+I1101 22:49:14.133034  748194 prometheus.go:112] Executing "histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:49:14Z
+I1101 22:49:14.133578  748194 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1101 22:49:14.133619  748194 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-01T22:49:14Z
+I1101 22:49:14.133940  748194 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1101 22:49:14.134541  748194 prometheus_measurement.go:91] GatekeeperValidationRequestDuration gathering results
+I1101 22:49:14.134565  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234326017s
+I1101 22:49:14.134606  748194 prometheus.go:112] Executing "histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:49:14Z
+I1101 22:49:14.134909  748194 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1101 22:49:14.143832  748194 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-01T22:49:14Z
+I1101 22:49:14.146334  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc50, value: 0.0005420711974110033, threshold: none
+I1101 22:49:14.146368  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234944552s
+I1101 22:49:14.146384  748194 prometheus.go:112] Executing "histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:49:14Z
+I1101 22:49:14.149588  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc50, value: 0.0005831704207394815, threshold: none
+I1101 22:49:14.149612  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234326017s
+I1101 22:49:14.149623  748194 prometheus.go:112] Executing "histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:49:14Z
+I1101 22:49:14.156549  748194 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1101 22:49:14.157802  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc90, value: 0.000975728155339806, threshold: none
+I1101 22:49:14.157827  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234944552s
+I1101 22:49:14.157838  748194 prometheus.go:112] Executing "histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:49:14Z
+I1101 22:49:14.160983  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc90, value: 0.0014716129032258068, threshold: none
+I1101 22:49:14.161000  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.234326017s
+I1101 22:49:14.161009  748194 prometheus.go:112] Executing "histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:49:14Z
+I1101 22:49:14.168151  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc99, value: 0.003170945945945959, threshold: none
+I1101 22:49:14.168171  748194 generic_query_measurement.go:208] bounded query: gatekeeper_mutation_request_duration_seconds_sum, duration: 29.234944552s
+I1101 22:49:14.168180  748194 prometheus.go:112] Executing "gatekeeper_mutation_request_duration_seconds_sum" at 2026-11-01T22:49:14Z
+I1101 22:49:14.169584  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc99, value: 0.004411142857142846, threshold: none
+I1101 22:49:14.169617  748194 generic_query_measurement.go:208] bounded query: gatekeeper_validation_request_duration_seconds_sum, duration: 29.234326017s
+I1101 22:49:14.169649  748194 prometheus.go:112] Executing "gatekeeper_validation_request_duration_seconds_sum" at 2026-11-01T22:49:14Z
+I1101 22:49:14.173795  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 89.30851253199945, threshold: none
+I1101 22:49:14.173826  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 82.98232634100016, threshold: none
+I1101 22:49:14.173838  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 78.24981950999903, threshold: none
+I1101 22:49:14.173852  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 184.4011266309968, threshold: none
+I1101 22:49:14.173880  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 181.29494843499887, threshold: none
+I1101 22:49:14.173922  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 176.52307216700666, threshold: none
+I1101 22:49:14.173933  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 0.9987017119999998, threshold: none
+I1101 22:49:14.173943  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 0.008138698, threshold: none
+I1101 22:49:14.191801  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:49:14Z
+I1101 22:49:14.217472  748194 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:49:14Z
+I1101 22:49:14.243710  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:49:14Z
+I1101 22:49:14.264974  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:49:14Z
+I1101 22:49:14.284763  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:49:14Z
+I1101 22:49:14.316435  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:DELETE Scope:namespace Latency:perc50: 50ms, perc90: 7.582s, perc99: 7.9402s Count:0 SlowCount:0}; threshold: 30s
+I1101 22:49:14.316465  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:cluster Latency:perc50: 34.23528ms, perc90: 82.79908ms, perc99: 134.63147ms Count:36 SlowCount:0}; threshold: 30s
+I1101 22:49:14.316473  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:LIST Scope:cluster Latency:perc50: 75ms, perc90: 95ms, perc99: 99.5ms Count:1 SlowCount:0}; threshold: 30s
+I1101 22:49:14.316480  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:nodes Subresource: Verb:LIST Scope:cluster Latency:perc50: 28.121527ms, perc90: 54.949999ms, perc99: 95.495ms Count:3 SlowCount:0}; threshold: 30s
+I1101 22:49:14.316486  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:DELETE Scope:resource Latency:perc50: 26.580707ms, perc90: 47.845273ms, perc99: 93.417874ms Count:0 SlowCount:0}; threshold: 1s
+I1101 22:49:14.316613  748194 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1101 22:49:14.316640  748194 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1101 22:49:15.337307  748194 request.go:700] Waited for 1.00772108s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-fx672m-1/pods/direct-scheduler-throughput-pod-143
+I1101 22:49:16.337784  748194 request.go:700] Waited for 2.005068656s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-fx672m-1/pods/direct-scheduler-throughput-pod-250
+I1101 22:49:17.337974  748194 request.go:700] Waited for 3.002361299s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-fx672m-1/pods/direct-scheduler-throughput-pod-497
+I1101 22:49:18.347140  748194 request.go:700] Waited for 4.009407162s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-fx672m-1/pods/direct-scheduler-throughput-pod-540
+I1101 22:49:19.348072  748194 request.go:700] Waited for 5.008170999s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-fx672m-1/pods/direct-scheduler-throughput-pod-634
+I1101 22:49:20.357331  748194 request.go:700] Waited for 6.015711941s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-fx672m-1/pods/direct-scheduler-throughput-pod-747
+I1101 22:49:21.368094  748194 request.go:700] Waited for 7.024871431s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-fx672m-1/pods/direct-scheduler-throughput-pod-914
+I1101 22:49:22.327140  748194 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1101 22:49:37.345415  748194 simple_test_executor.go:402] Resources cleanup time: 15.017599649s
+I1101 22:49:37.345480  748194 clusterloader.go:253] --------------------------------------------------------------------------------
+I1101 22:49:37.345496  748194 clusterloader.go:254] Test Finished
+I1101 22:49:37.345508  748194 clusterloader.go:255]   Test: pod-us-region(use-case/config.yaml)
+I1101 22:49:37.345521  748194 clusterloader.go:256]   Status: Success
+I1101 22:49:37.345533  748194 clusterloader.go:260] --------------------------------------------------------------------------------
+I1101 22:49:37.345557  748194 clusterloader.go:243] --------------------------------------------------------------------------------
+I1101 22:49:37.345570  748194 clusterloader.go:244] Running pod-italynorth-region(use-case/config.yaml)
+I1101 22:49:37.345583  748194 clusterloader.go:245] --------------------------------------------------------------------------------
+I1101 22:49:37.345602  748194 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-j6yv0m
+I1101 22:49:37.370604  748194 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1101 22:49:37.373641  748194 prometheus_measurement.go:87] GatekeeperMutationRequestDuration has started
+I1101 22:49:37.373665  748194 prometheus_measurement.go:87] GatekeeperValidationRequestDuration has started
+I1101 22:49:37.374750  748194 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1101 22:49:37.376026  748194 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1101 22:49:37.378133  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1101 22:49:37.400493  748194 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1101 22:49:37.424571  748194 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1101 22:49:37.472424  748194 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1101 22:49:37.472489  748194 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1101 22:50:01.493039  748194 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1101 22:50:01.493112  748194 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1101 22:50:01.566476  748194 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1101 22:50:01.596242  748194 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.899429525s
+I1101 22:50:06.598083  748194 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1101 22:50:06.598192  748194 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1101 22:50:06.598235  748194 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1101 22:50:06.602299  748194 prometheus_measurement.go:91] GatekeeperMutationRequestDuration gathering results
+I1101 22:50:06.602355  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.228667535s
+I1101 22:50:06.602382  748194 prometheus.go:112] Executing "histogram_quantile(0.50, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:50:06Z
+I1101 22:50:06.602597  748194 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1101 22:50:06.603599  748194 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1101 22:50:06.603650  748194 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-01T22:50:06Z
+I1101 22:50:06.603854  748194 prometheus_measurement.go:91] GatekeeperConstraintTemplateIngestionDuration gathering results
+I1101 22:50:06.603872  748194 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1101 22:50:06.604059  748194 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1101 22:50:06.604104  748194 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-01T22:50:06Z
+I1101 22:50:06.604841  748194 prometheus_measurement.go:91] GatekeeperValidationRequestDuration gathering results
+I1101 22:50:06.604880  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.231167863s
+I1101 22:50:06.604901  748194 prometheus.go:112] Executing "histogram_quantile(0.50, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:50:06Z
+I1101 22:50:06.614782  748194 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-01T22:50:06Z
+I1101 22:50:06.619243  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc50, value: 0.0005599622285174693, threshold: none
+I1101 22:50:06.619289  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.228667535s
+I1101 22:50:06.619313  748194 prometheus.go:112] Executing "histogram_quantile(0.90, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:50:06Z
+I1101 22:50:06.624359  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc50, value: 0.0006215970961887477, threshold: none
+I1101 22:50:06.624415  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.231167863s
+I1101 22:50:06.624432  748194 prometheus.go:112] Executing "histogram_quantile(0.90, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:50:06Z
+I1101 22:50:06.627948  748194 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1101 22:50:06.633013  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc90, value: 0.001105470852017935, threshold: none
+I1101 22:50:06.633043  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.228667535s
+I1101 22:50:06.633059  748194 prometheus.go:112] Executing "histogram_quantile(0.99, sum(rate(gatekeeper_mutation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:50:06Z
+I1101 22:50:06.634921  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc90, value: 0.001843800322061192, threshold: none
+I1101 22:50:06.634963  748194 generic_query_measurement.go:208] bounded query: histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le)), duration: 29.231167863s
+I1101 22:50:06.634980  748194 prometheus.go:112] Executing "histogram_quantile(0.99, sum(rate(gatekeeper_validation_request_duration_seconds_bucket[5m])) by (le))" at 2026-11-01T22:50:06Z
+I1101 22:50:06.645783  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Perc99, value: 0.003478290598290579, threshold: none
+I1101 22:50:06.645807  748194 generic_query_measurement.go:208] bounded query: gatekeeper_mutation_request_duration_seconds_sum, duration: 29.228667535s
+I1101 22:50:06.645819  748194 prometheus.go:112] Executing "gatekeeper_mutation_request_duration_seconds_sum" at 2026-11-01T22:50:06Z
+I1101 22:50:06.649011  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Perc99, value: 0.0049560975609755885, threshold: none
+I1101 22:50:06.649029  748194 generic_query_measurement.go:208] bounded query: gatekeeper_validation_request_duration_seconds_sum, duration: 29.231167863s
+I1101 22:50:06.649038  748194 prometheus.go:112] Executing "gatekeeper_validation_request_duration_seconds_sum" at 2026-11-01T22:50:06Z
+I1101 22:50:06.661167  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 91.72138639799891, threshold: none
+I1101 22:50:06.661196  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 82.99252442300018, threshold: none
+I1101 22:50:06.661204  748194 generic_query_measurement.go:144] metric: GatekeeperMutationRequestDuration: Sum, value: 78.37916761099905, threshold: none
+I1101 22:50:06.661385  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 186.13656714399698, threshold: none
+I1101 22:50:06.661422  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 183.78444168799908, threshold: none
+I1101 22:50:06.661436  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 176.84175666600672, threshold: none
+I1101 22:50:06.661448  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 0.9987017119999998, threshold: none
+I1101 22:50:06.661461  748194 generic_query_measurement.go:144] metric: GatekeeperValidationRequestDuration: Sum, value: 0.008138698, threshold: none
+I1101 22:50:06.663562  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:50:06Z
+I1101 22:50:06.683028  748194 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:50:06Z
+I1101 22:50:06.688301  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:50:06Z
+I1101 22:50:06.711239  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:50:06Z
+I1101 22:50:06.725391  748194 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-01T22:50:06Z
+I1101 22:50:06.739981  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:DELETE Scope:namespace Latency:perc50: 50ms, perc90: 5.8s, perc99: 5.98s Count:0 SlowCount:0}; threshold: 30s
+I1101 22:50:06.740014  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:LIST Scope:cluster Latency:perc50: 150ms, perc90: 190ms, perc99: 199ms Count:0 SlowCount:0}; threshold: 30s
+I1101 22:50:06.740026  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:cluster Latency:perc50: 31.720065ms, perc90: 83.575ms, perc99: 177.895ms Count:31 SlowCount:0}; threshold: 30s
+I1101 22:50:06.740033  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:DELETE Scope:resource Latency:perc50: 25.075019ms, perc90: 45.135035ms, perc99: 49.648538ms Count:0 SlowCount:0}; threshold: 1s
+I1101 22:50:06.740041  748194 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:leases Subresource: Verb:DELETE Scope:namespace Latency:perc50: 25ms, perc90: 45ms, perc99: 49.5ms Count:0 SlowCount:0}; threshold: 30s
+I1101 22:50:06.740216  748194 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1101 22:50:06.740236  748194 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1101 22:50:07.761438  748194 request.go:700] Waited for 1.00480939s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-j6yv0m-1/pods/direct-scheduler-throughput-pod-290
+I1101 22:50:08.761981  748194 request.go:700] Waited for 2.000652506s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-j6yv0m-1/pods/direct-scheduler-throughput-pod-302
+I1101 22:50:09.771498  748194 request.go:700] Waited for 3.005533114s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-j6yv0m-1/pods/direct-scheduler-throughput-pod-359
+I1101 22:50:10.777235  748194 request.go:700] Waited for 4.008250409s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-j6yv0m-1/pods/direct-scheduler-throughput-pod-320
+I1101 22:50:11.777289  748194 request.go:700] Waited for 4.997388312s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-j6yv0m-1/pods/direct-scheduler-throughput-pod-586
+I1101 22:50:12.787451  748194 request.go:700] Waited for 5.997846772s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-j6yv0m-1/pods/direct-scheduler-throughput-pod-696
+I1101 22:50:13.796970  748194 request.go:700] Waited for 6.993634865s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/test-j6yv0m-1/pods/direct-scheduler-throughput-pod-694
+I1101 22:50:14.725346  748194 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1101 22:50:29.744177  748194 simple_test_executor.go:402] Resources cleanup time: 15.01806096s
+I1101 22:50:29.744479  748194 clusterloader.go:253] --------------------------------------------------------------------------------
+I1101 22:50:29.744526  748194 clusterloader.go:254] Test Finished
+I1101 22:50:29.744540  748194 clusterloader.go:255]   Test: pod-italynorth-region(use-case/config.yaml)
+I1101 22:50:29.744554  748194 clusterloader.go:256]   Status: Success
+I1101 22:50:29.744567  748194 clusterloader.go:260] --------------------------------------------------------------------------------
+
+JUnit report was created: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/data-sovereignty-test/junit.xml
+I1101 22:50:29.745595  748194 prometheus.go:307] Get snapshot from Prometheus
+I1101 22:50:29.745617  748194 exec_service.go:130] Exec service: tearing down service
+Look into /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/data-sovereignty-test for the measurements
+
+[*] Delete Gatekeeper resources
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh "warn-unknown-eu-region" deleted
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh "warn-unknown-us-region" deleted
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh "ensure-data-sovereignty" deleted
+constrainttemplate.templates.gatekeeper.sh "k8srequirespecificnodeaffinity" deleted
+modifyset.mutations.gatekeeper.sh "add-eu-region-node-affinity" deleted
+modifyset.mutations.gatekeeper.sh "add-us-region-node-affinity" deleted
+expansiontemplate.expansion.gatekeeper.sh "expand-deployments" deleted
+

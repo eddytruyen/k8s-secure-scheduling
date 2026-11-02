@@ -1,0 +1,9 @@
+run,status,throughput_p50,throughput_p90,throughput_p99,e2e_p50_ms,e2e_p90_ms,e2e_p99_ms,admission_p50_ms,admission_p90_ms,admission_p99_ms,validation_p99_ms,classification_source,classify_p50_ms,classify_p90_ms,classify_p99_ms,gate_p50_ms,gate_p90_ms,gate_p99_ms,sched_phase_p50_ms,sched_phase_p90_ms,sched_phase_p99_ms
+full-evaluation-20261101-220111/baseline-n1000/measurements/pod-eu-region,PASS,40,41,77,13.0,22.4,97.7,0.5,1.0,3.7,3.2,none=1000,,,,,,,13.0,22.4,97.7
+full-evaluation-20261101-220111/baseline-n1000/measurements/pod-italynorth-region,PASS,40,42,77,11.8,20.4,85.4,0.6,1.0,3.4,4.9,none=1000,,,,,,,11.8,20.4,85.4
+full-evaluation-20261101-220111/baseline-n1000/measurements/pod-us-region,PASS,40,41,77,12.3,22.9,116.8,0.6,1.0,3.6,4.7,none=1000,,,,,,,12.3,22.9,116.8
+full-evaluation-20261101-220111/baseline-n1000/measurements/vanilla,PASS,40,41,78,12.2,20.8,65.2,0.5,1.0,3.6,2.9,none=1000,,,,,,,12.2,20.8,65.2
+full-evaluation-20261101-220111/klastos-n1000/measurements/eu,PASS,40,42,69,11.9,21.5,1159.7,,,,,"admission=945,appclass_operator=55",0.0,0.0,1101.1,287.9,613.1,751.3,11.7,18.9,31.0
+full-evaluation-20261101-220111/klastos-n1000/measurements/italynorth,PASS,40,43,65,13.0,23.2,1228.6,,,,,"admission=943,appclass_operator=57",0.0,0.0,1013.8,216.5,685.4,1446.0,12.8,20.0,28.8
+full-evaluation-20261101-220111/klastos-n1000/measurements/us,PASS,40,45,57,13.0,23.2,1121.4,,,,,"admission=942,appclass_operator=58",0.0,0.0,1095.4,0.0,0.0,0.0,12.9,21.4,31.3
+full-evaluation-20261101-220111/klastos-n1000/measurements/vanilla,PASS,40,41,70,12.0,21.3,1391.3,,,,,"admission=944,appclass_operator=56",0.0,0.0,1378.4,215.2,537.9,622.1,11.8,18.6,34.0

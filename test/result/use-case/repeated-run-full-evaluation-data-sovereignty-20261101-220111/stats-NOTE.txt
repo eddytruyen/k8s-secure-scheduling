@@ -1,0 +1,5 @@
+stats.md / stats.csv exclude ONE cell-row: klastos-n1000/measurements/eu from repeat 5
+(full-evaluation-20261101-224047). During that burst (22:42:29-22:42:53) etcd was stalled
+(apply/ReadIndex requests 1-2.6 s, ~263 slow requests in 22:4x; scheduler, gate and watcher
+healthy; apiserver p99 0.05s -> 2.3s). The klastos eu row therefore shows n=4; all other rows
+use all 5 repeats. Originals (all 5 repeats): stats.with-outlier.md / stats.with-outlier.csv.

@@ -1,0 +1,46 @@
+=== Experiment 1 full evaluation ===
+Steps (N):    1000
+Classes:      vanilla eu us italynorth
+Run KLASTOS:  true
+Run baseline: true
+Results:      /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20261101-222059
+
+--- Step: N=1000 (threshold=100 pods/sec) ---
+[*] KLASTOS harness, N=1000
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20261101-222059/klastos-n1000/run.log
+[*] Gatekeeper baseline, N=1000
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20261101-222059/baseline-n1000/run.log
+WARNING: watch stream missed 19 pod(s) in /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20261101-222059/baseline-n1000/e2e-latency.json - recovered by periodic resync (11 resyncs, 0 failed). Those pods are in "pods" and in classes_observed, but are EXCLUDED from every percentile: their timestamps come from the second-precision API, and their phase boundaries were never witnessed. Treat this arm's percentiles as covering 3981 pods, not 4000.
+
+=== All steps passed ===
+Results under: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20261101-222059
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| full-evaluation-20261101-222059/baseline-n1000/measurements/pod-eu-region | PASS | 40/41/78 | 12.6ms/21.9ms/90.7ms | 0.5ms/1.0ms/2.9ms | 3.9ms | none=1000 | -/-/- | -/-/- | 12.6ms/21.9ms/90.7ms |
+| full-evaluation-20261101-222059/baseline-n1000/measurements/pod-italynorth-region | PASS | 40/41/77 | 12.1ms/20.7ms/67.9ms | 0.6ms/1.2ms/3.8ms | 5.2ms | none=1000 | -/-/- | -/-/- | 12.1ms/20.7ms/67.9ms |
+| full-evaluation-20261101-222059/baseline-n1000/measurements/pod-us-region | PASS | 40/41/78 | 11.5ms/18.9ms/56.8ms | 0.6ms/1.2ms/3.7ms | 5.0ms | none=1000 | -/-/- | -/-/- | 11.5ms/18.9ms/56.8ms |
+| full-evaluation-20261101-222059/baseline-n1000/measurements/vanilla | PASS | 40/41/78 | 13.2ms/23.2ms/71.5ms | 0.5ms/0.9ms/1.9ms | 2.6ms | none=1000 | -/-/- | -/-/- | 13.2ms/23.2ms/71.5ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/eu | PASS | 40/41/64 | 11.5ms/20.4ms/1053.6ms | -/-/- | - | admission=944,appclass_operator=56 | 0.0ms/0.0ms/878.2ms | 192.5ms/497.6ms/565.6ms | 11.3ms/17.7ms/25.4ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/italynorth | PASS | 40/41/72 | 12.2ms/21.8ms/1377.2ms | -/-/- | - | admission=941,appclass_operator=59 | 0.0ms/0.0ms/1356.7ms | 216.6ms/411.9ms/683.7ms | 11.9ms/18.6ms/26.6ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/us | PASS | 40/41/90 | 13.0ms/23.8ms/1283.8ms | -/-/- | - | admission=942,appclass_operator=58 | 0.0ms/0.0ms/773.9ms | 484.7ms/781.3ms/912.8ms | 12.6ms/20.2ms/30.6ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/vanilla | PASS | 40/40/105 | 11.8ms/22.1ms/1398.6ms | -/-/- | - | admission=928,appclass_operator=72 | 0.0ms/0.0ms/1380.3ms | 169.4ms/448.3ms/507.1ms | 11.4ms/18.6ms/26.0ms |
+
+### E2E latency by classification source
+
+| Run | Source | Pods | p50 | p90 | p99 | max |
+|---|---|---|---|---|---|---|
+| full-evaluation-20261101-222059/baseline-n1000/measurements/pod-eu-region | none | 1000 | 12.6ms | 21.9ms | 90.7ms | 162.2ms |
+| full-evaluation-20261101-222059/baseline-n1000/measurements/pod-italynorth-region | none | 1000 | 12.1ms | 20.7ms | 67.9ms | 89.0ms |
+| full-evaluation-20261101-222059/baseline-n1000/measurements/pod-us-region | none | 1000 | 11.5ms | 19.2ms | 77.2ms | 1181.3ms |
+| full-evaluation-20261101-222059/baseline-n1000/measurements/vanilla | none | 1000 | 13.2ms | 23.2ms | 71.5ms | 154.7ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/eu | admission | 944 | 11.4ms | 17.5ms | 25.4ms | 50.6ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/eu | appclass_operator | 56 | 771.5ms | 1085.5ms | 1161.0ms | 1209.3ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/italynorth | admission | 941 | 11.9ms | 18.2ms | 26.8ms | 68.9ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/italynorth | appclass_operator | 59 | 921.7ms | 1450.8ms | 1567.0ms | 1599.0ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/us | admission | 942 | 12.5ms | 19.9ms | 30.6ms | 103.6ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/us | appclass_operator | 58 | 1038.3ms | 1317.8ms | 1425.7ms | 1440.8ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/vanilla | admission | 928 | 11.4ms | 18.6ms | 26.0ms | 47.1ms |
+| full-evaluation-20261101-222059/klastos-n1000/measurements/vanilla | appclass_operator | 72 | 1170.1ms | 1477.6ms | 1596.8ms | 1712.4ms |
+
+Report: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20261101-222059/report.md
+CSV:    /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-evaluation-20261101-222059/report.csv
