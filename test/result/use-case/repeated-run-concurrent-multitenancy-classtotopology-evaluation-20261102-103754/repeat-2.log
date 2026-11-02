@@ -1,0 +1,29 @@
+=== Experiment 1 CONCURRENT evaluation (multi-tenancy, classToTopology variant) ===
+Steps (N per class): 1000
+Run KLASTOS:  true
+Run baseline: true
+Results:      /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-multitenancy-classtotopology-evaluation-20261102-104227
+
+--- Step: N=1000 per class (threshold=100 pods/sec, violations=off) ---
+[*] KLASTOS harness (classToTopology, CONCURRENT), N=1000 per class
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-multitenancy-classtotopology-evaluation-20261102-104227/klastos-n1000/run.log
+[*] Gatekeeper baseline (standard mutation+nodeSelector, CONCURRENT), N=1000 per class
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-multitenancy-classtotopology-evaluation-20261102-104227/baseline-n1000/run.log
+
+=== All steps passed ===
+Results under: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-multitenancy-classtotopology-evaluation-20261102-104227
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| concurrent-multitenancy-classtotopology-evaluation-20261102-104227/baseline-n1000/measurements | PASS | 40/40.2/47.4 | 12.4ms/20.4ms/107.7ms | -/-/- | - | none=2000 | -/-/- | -/-/- | 12.4ms/20.4ms/107.7ms |
+| concurrent-multitenancy-classtotopology-evaluation-20261102-104227/klastos-n1000/measurements | PASS | 35.4/58.2/74 | 212.8ms/2360.1ms/3925.2ms | -/-/- | - | admission=1927,appclass_operator=73 | 0.0ms/0.0ms/1225.2ms | 142.3ms/447.4ms/712.2ms | 199.7ms/2353.5ms/3886.1ms |
+
+### E2E latency by classification source
+
+| Run | Source | Pods | p50 | p90 | p99 | max |
+|---|---|---|---|---|---|---|
+| concurrent-multitenancy-classtotopology-evaluation-20261102-104227/baseline-n1000/measurements | none | 2000 | 12.4ms | 20.4ms | 107.7ms | 132.9ms |
+| concurrent-multitenancy-classtotopology-evaluation-20261102-104227/klastos-n1000/measurements | admission | 1927 | 207.0ms | 2364.6ms | 3888.0ms | 6911.1ms |
+| concurrent-multitenancy-classtotopology-evaluation-20261102-104227/klastos-n1000/measurements | appclass_operator | 73 | 1081.3ms | 1690.6ms | 4761.6ms | 4845.9ms |
+
+Report: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-multitenancy-classtotopology-evaluation-20261102-104227/report.md
+CSV:    /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-multitenancy-classtotopology-evaluation-20261102-104227/report.csv

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <testsuite name="ClusterLoaderV2" tests="0" failures="0" errors="0" time="82.537">
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput overall (/home/ubuntu/githubrepos/k8s-secure-scheduling/test/concurrent-test/multi-tenancy-classtotopology/config-klastos-concurrent.yaml)" classname="ClusterLoaderV2" time="82.527085142"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [00] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.074016664"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [01] - APIAvailability" classname="ClusterLoaderV2" time="0.022794803"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [02] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.022833935"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [03] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.098700539"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 01] Creating scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.021645408"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 02] create scheduler throughput pods (both classes, concurrently alive)" classname="ClusterLoaderV2" time="49.020947204"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 03] Waiting for scheduler throughput pods to be created [00] - WaitForDirectSchedulerThroughputPods" classname="ClusterLoaderV2" time="5.158430773"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [00] - APIAvailability" classname="ClusterLoaderV2" time="0.008465302"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [01] - APIResponsivenessPrometheus" classname="ClusterLoaderV2" time="0.191532018"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [02] - SchedulingMetrics" classname="ClusterLoaderV2" time="0.085552705"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [03] - DirectSchedulingThroughput" classname="ClusterLoaderV2" time="0.010380104"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 04] Collecting scheduler throughput measurements [04] - SchedulingThroughputPrometheus" classname="ClusterLoaderV2" time="0.028276089"></testcase>
+      <testcase name="klastos-multitenancy-classtotopology-concurrent-scheduler-throughput: [step: 05] Delete scheduler throughput pods (both classes)" classname="ClusterLoaderV2" time="18.011911548"></testcase>
+  </testsuite>
