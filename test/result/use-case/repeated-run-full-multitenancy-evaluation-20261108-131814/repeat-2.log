@@ -1,0 +1,29 @@
+=== Experiment 1 full evaluation (multi-tenancy) ===
+Steps (N):    1000
+Classes:      uc1 uc2
+Run KLASTOS:  true
+Run baseline: false
+Results:      /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261108-132132
+
+--- Step: N=1000 (threshold=100 pods/sec) ---
+[*] KLASTOS harness, N=1000
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261108-132132/klastos-n1000/run.log
+
+=== All steps passed ===
+Results under: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261108-132132
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| full-multitenancy-evaluation-20261108-132132/klastos-n1000/measurements/uc1 | PASS | 40/47.4/47.4 | 9.7ms/18.5ms/2640.5ms | -/-/- | - | admission=936,appclass_operator=64 | 0.0ms/0.0ms/2363.6ms | 266.7ms/1549.5ms/1598.2ms | 9.3ms/15.1ms/24.6ms |
+| full-multitenancy-evaluation-20261108-132132/klastos-n1000/measurements/uc2 | PASS | 40/47/47 | 9.7ms/17.7ms/1650.8ms | -/-/- | - | admission=937,appclass_operator=63 | 0.0ms/0.0ms/1528.2ms | 399.9ms/835.9ms/1358.4ms | 9.3ms/14.7ms/23.7ms |
+
+### E2E latency by classification source
+
+| Run | Source | Pods | p50 | p90 | p99 | max |
+|---|---|---|---|---|---|---|
+| full-multitenancy-evaluation-20261108-132132/klastos-n1000/measurements/uc1 | admission | 936 | 9.4ms | 15.1ms | 24.8ms | 45.7ms |
+| full-multitenancy-evaluation-20261108-132132/klastos-n1000/measurements/uc1 | appclass_operator | 64 | 1788.7ms | 2759.2ms | 2851.6ms | 3096.1ms |
+| full-multitenancy-evaluation-20261108-132132/klastos-n1000/measurements/uc2 | admission | 937 | 9.4ms | 14.5ms | 23.0ms | 36.0ms |
+| full-multitenancy-evaluation-20261108-132132/klastos-n1000/measurements/uc2 | appclass_operator | 63 | 1330.2ms | 1737.4ms | 2091.9ms | 2327.9ms |
+
+Report: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261108-132132/report.md
+CSV:    /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/full-multitenancy-evaluation-20261108-132132/report.csv
