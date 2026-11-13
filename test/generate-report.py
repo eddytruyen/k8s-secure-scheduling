@@ -55,8 +55,10 @@ Known measurement files read (all optional — missing ones render as "-"):
 Each row also gives the number of pods behind the e2e column and behind each
 phase column ("Pods e2e/classif./gate/sched"; *_pods in the CSV). The phase
 percentiles cover only pods whose transitions the watcher witnessed; when a
-phase covers under 95% of the e2e pods the cell says "phases partial", and the
-phases describe a subset that does not add up to the e2e (measured 2026-11-12:
+phase covers under 95% of the pods it applies to (classification: pods with a
+classification source; gate: pods that were gated; scheduling: pods with an
+e2e) the cell says "phases partial", and the phases describe a subset that
+does not add up to the e2e (measured 2026-11-12:
 gate phase over 146 of 2000 pods, p50 4 s, against ~118 s for all pods rebuilt
 from the UCSS log).
 
@@ -223,6 +225,27 @@ def load_phase_latency(dirpath, class_key):
     return {phase: (per_class.get(class_key) or {}) for phase, per_class in phases.items()}
 
 
+def load_phase_eligible(dirpath, class_key):
+    """How many pods each phase COULD cover, from the per-pod records: the
+    pods with an e2e latency (not resync-recovered) for which the phase
+    applies. Classification: pods carrying a classification source.
+    Gate release: pods that were gated at all (an admission fast-path pod
+    never is). Scheduling: every pod with an e2e. A phase whose count falls
+    short of this was lost by the watcher, not absent by design."""
+    data = _find_e2e_latency_data(dirpath)
+    if not data:
+        return {}
+    pods = [p for p in (data.get("pods") or [])
+            if (class_key == "__all__" or p.get("class") == class_key)
+            and p.get("latency_seconds") is not None
+            and not p.get("recovered_via_resync")]
+    return {
+        "classification": sum(1 for p in pods if p.get("classification_source")),
+        "gate_release": sum(1 for p in pods if p.get("ever_gated")),
+        "scheduling": len(pods),
+    }
+
+
 def load_json(path):
     if not path or not os.path.exists(path):
         return None
@@ -384,6 +407,7 @@ def summarize(label, dirpath, identifier):
         e2e = load_e2e_latency(dirpath, class_key) or {}
     classification_source = load_classification_source(dirpath, class_key)
     phases = load_phase_latency(dirpath, class_key)
+    eligible = load_phase_eligible(dirpath, class_key)
     classification_phase = phases.get("classification") or {}
     gate_release_phase = phases.get("gate_release") or {}
     scheduling_phase = phases.get("scheduling") or {}
@@ -414,6 +438,7 @@ def summarize(label, dirpath, identifier):
         "classify_count": classification_phase.get("count"),
         "gate_count": gate_release_phase.get("count"),
         "sched_phase_count": scheduling_phase.get("count"),
+        "phase_eligible": eligible,
         "source_latency": load_source_latency(dirpath, class_key),
     }
 
@@ -456,12 +481,16 @@ def fmt_count(n):
 
 def fmt_pod_counts(r):
     """"e2e/classify/gate/sched" pod counts, flagged when a phase column
-    covers under 95% of the e2e pods: its percentiles then describe a subset
-    (typically the fastest pods, released before the watcher lost the
-    stream) and do not add up to the e2e column."""
+    covers under 95% of the pods it applies to (see load_phase_eligible):
+    its percentiles then describe a subset (typically the fastest pods,
+    released before the watcher lost the stream) and do not add up to the
+    e2e column. A phase that applies to no pod (a baseline arm has no
+    classification or gate; a fast-path pod is never gated) is not flagged."""
     counts = [r.get("e2e_count"), r.get("classify_count"), r.get("gate_count"), r.get("sched_phase_count")]
-    e2e_n = counts[0] or 0
-    partial = any(n is not None and e2e_n and n < 0.95 * e2e_n for n in counts[1:])
+    elig = r.get("phase_eligible") or {}
+    partial = any(
+        (elig.get(ph) or 0) > 0 and (n or 0) < 0.95 * elig[ph]
+        for ph, n in (("classification", counts[1]), ("gate_release", counts[2]), ("scheduling", counts[3])))
     return "/".join(fmt_count(n) for n in counts) + (" ⚠ phases partial" if partial else "")
 
 
