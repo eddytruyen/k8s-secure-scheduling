@@ -70,17 +70,33 @@ Measured (5x run-full-evaluation.sh, 2026-10-15): the baseline arm
 recorded only the first 2 of 4 sequential classes in 3 of 5 repeats,
 ~6000 pods of latency data lost per affected repeat, with the reconnect
 counter frozen because reconnecting was only ever triggered by EOF. An
---idle-timeout watchdog now treats "no event for N seconds" as a dead
-stream and respawns kubectl. Respawning is lossless for pods that still
-exist, because `kubectl get --watch` LISTs before it watches: the new
-stream re-delivers every live pod, and records are keyed by UID and
-merged, so a pod observed before the gap keeps its original first_seen.
-The watchdog also fires during the genuine ~60s lull between two
-sequential classes; that respawn is harmless and gives each class a
-fresh stream, so it is left to fire rather than suppressed. Respawns
-caused by the watchdog are counted separately (idle_respawns) and every
-gap is recorded (watch_gaps), so a run that lost data says so in its own
-result file instead of looking complete.
+--idle-timeout watchdog checks a stream that has been silent for N
+seconds: it LISTs the pods and compares their resourceVersions with the
+last ones the watch delivered. Only if the API has changes the stream
+never delivered is the stream dead and kubectl respawned; otherwise the
+silence is a genuine lull (counted in idle_lulls) and the stream is kept.
+
+Why the check (measured 2026-11-12, experiment 9, N=1000): UCSS often
+releases nothing for 30-60s after its first burst. The old watchdog took
+that lull for a dead stream and respawned kubectl; the replacement stream
+then delivered none of the remaining releases, so 1794 of 2000 pods got
+no gate-release or scheduling phase while every pod still got an e2e,
+and the phase percentiles silently covered only the fastest 7% of pods.
+
+A respawn uses `--watch-only` and then one LIST ("relist"). Records are
+keyed by UID and merged, so a pod observed before the gap keeps its
+original first_seen. A transition that happened while the stream was
+dead (class-keys appeared, gate cleared) was never witnessed: the relist
+marks it unwitnessed, so it gets no phase time rather than the respawn
+time. Respawns are counted (reconnects, idle_respawns) and every gap is
+recorded (watch_gaps), so a run that lost data says so in its own result
+file instead of looking complete.
+
+Parsing: kubectl pretty-prints one object at a time, ending with "}" in
+column 0, so an object is parsed once, when that line arrives. The stream
+is read with os.read on the raw pipe: select() on a buffered reader can
+report "nothing to read" while whole lines sit in Python's buffer, which
+held the last events before a lull back until the watchdog fired.
 
 Usage (wrap a harness invocation with it - the harness creates AND
 deletes the pods, so the watcher must be running for the pods' entire
@@ -163,7 +179,16 @@ class Watcher:
         self._idle_timeout = idle_timeout
         self._last_event_at = time.monotonic()
         self._idle_respawns = 0
+        self._idle_lulls = 0        # silent stream, but nothing undelivered: kept
         self._gaps = []
+        # uid -> resourceVersion of the last watch event for that pod; the
+        # idle check compares a LIST against it (see _undelivered).
+        self._seen_rv = {}
+        # Changes a LIST showed that the stream had not delivered yet, and
+        # until when the stream may still deliver them (in-flight grace).
+        self._suspect = None
+        self._suspect_deadline = 0.0
+        self._grace = 3.0
         # Resync state. records is mutated from both the watch loop and
         # the resync thread, so every mutation goes through _lock
         # (reentrant: _handle recurses for a kind:List payload).
@@ -185,9 +210,11 @@ class Watcher:
                                                    daemon=True)
             self._resync_thread.start()
 
-    def _spawn(self):
-        self.proc = subprocess.Popen(self._cmd, stdout=subprocess.PIPE,
-                                     stderr=self._stderr, text=True, bufsize=1)
+    def _spawn(self, watch_only=False):
+        # Binary and unbuffered: the reader uses os.read on the raw pipe.
+        cmd = self._cmd + (["--watch-only"] if watch_only else [])
+        self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                                     stderr=self._stderr, bufsize=0)
         self._last_event_at = time.monotonic()
 
     def _kill_current(self):
@@ -233,21 +260,84 @@ class Watcher:
                 return
             self._resync_once()
 
-    def _resync_once(self):
+    def _list(self):
+        """One LIST of the watched pods, or None on any failure."""
         try:
             out = subprocess.run(self._list_cmd, stdout=subprocess.PIPE,
                                  stderr=self._stderr, text=True, timeout=180)
             if out.returncode != 0 or not out.stdout:
-                self._resync_failures += 1
-                return
-            obj = json.loads(out.stdout)
+                return None
+            return json.loads(out.stdout)
         except Exception:
+            return None
+
+    def _resync_once(self, source="resync"):
+        obj = self._list()
+        if obj is None:
             # A failed resync is a lost safety net, not a lost run - the
             # watch stream is still primary. Counted, never fatal.
             self._resync_failures += 1
             return
         self._resyncs += 1
-        self._handle(obj, source="resync")
+        self._handle(obj, source=source)
+
+    @staticmethod
+    def _rv_newer_or_equal(seen, listed):
+        """resourceVersions are opaque strings, but etcd-backed ones are
+        integers; compare numerically when both are, else by equality."""
+        if seen is None:
+            return False
+        try:
+            return int(seen) >= int(listed)
+        except (TypeError, ValueError):
+            return seen == listed
+
+    def _undelivered(self):
+        """uid -> resourceVersion of every pod whose current state (per a
+        fresh LIST) the watch has not delivered; None if the LIST failed."""
+        obj = self._list()
+        if obj is None:
+            return None
+        with self._lock:
+            return {
+                (it.get("metadata") or {}).get("uid"): (it.get("metadata") or {}).get("resourceVersion")
+                for it in (obj.get("items") or [])
+                if not self._rv_newer_or_equal(
+                    self._seen_rv.get((it.get("metadata") or {}).get("uid")),
+                    (it.get("metadata") or {}).get("resourceVersion"))
+            }
+
+    def _idle_check(self):
+        """Called while the stream has been silent past the idle timeout.
+        Returns True if the stream is dead (respawn), False to keep it.
+
+        A silent stream is only dead if the API changed underneath it. The
+        first call LISTs and remembers the changes the stream has not
+        delivered; the stream then gets self._grace seconds to deliver
+        them (an event may be in flight at LIST time). Only changes still
+        undelivered after that make the stream dead."""
+        now = time.monotonic()
+        if self._suspect is None:
+            missing = self._undelivered()
+            if missing is None:
+                return True        # cannot verify: respawn, as before
+            if not missing:
+                self._idle_lulls += 1
+                self._last_event_at = now
+                return False
+            self._suspect, self._suspect_deadline = missing, now + self._grace
+            return False
+        if now < self._suspect_deadline:
+            return False
+        with self._lock:
+            still = [u for u, rv in self._suspect.items()
+                     if not self._rv_newer_or_equal(self._seen_rv.get(u), rv)]
+        self._suspect = None
+        if still:
+            return True
+        self._idle_lulls += 1
+        self._last_event_at = now
+        return False
 
     def run(self):
         """Runs until request_stop() is called. A watch stream can end on
@@ -276,7 +366,13 @@ class Watcher:
                 "pods_seen_so_far": len(self.records),
             })
             self._kill_current()
-            self._spawn()
+            self._suspect = None
+            # Watch first, then LIST: a change between the two is in the
+            # LIST, the stream, or both (merged by UID) - never in neither.
+            # The LIST ("relist") is not timed: what changed during the gap
+            # was not witnessed (see _handle).
+            self._spawn(watch_only=True)
+            self._resync_once(source="relist")
 
     # A pretty-printed `kubectl get -o json` LIST of 3000 pods is ~15MB;
     # 64MB is well clear of any legitimate payload while still bounding a
@@ -284,43 +380,47 @@ class Watcher:
     _MAX_BUF = 64 * 1024 * 1024
 
     def _read_until_eof_or_stop(self):
-        """Returns why it stopped: "eof", "idle", "wedged" or "stop"."""
-        decoder = json.JSONDecoder()
-        buf = ""
-        fd = self.proc.stdout
+        """Returns why it stopped: "eof", "idle", "wedged" or "stop".
+
+        kubectl prints one pretty-printed object at a time, closed by "}"
+        in column 0, so an object is parsed exactly once, when that line
+        arrives. (The previous reader attempted a parse after every line
+        while the buffer was under 1MB, i.e. always: ~25ms of CPU per 10KB
+        pod, a ceiling of ~40 events/s.) Reads the raw pipe with os.read:
+        select() on a buffered reader can say "nothing to read" while whole
+        lines already sit in its buffer."""
+        fd = self.proc.stdout.fileno()
+        pending = b""          # bytes after the last newline
+        lines, size = [], 0    # lines of the object being received
         while not self._stop:
             ready, _, _ = select.select([fd], [], [], 0.5)
             if not ready:
-                # The failure this watchdog exists for: kubectl alive,
-                # stream silent, no EOF ever delivered. Without this
-                # branch the loop spins here for the rest of the run.
-                if time.monotonic() - self._last_event_at > self._idle_timeout:
+                # Silent stream: dead (kubectl alive, no EOF, nothing
+                # delivered) or a genuine lull - _idle_check decides.
+                if (time.monotonic() - self._last_event_at > self._idle_timeout
+                        and self._idle_check()):
                     return "idle"
                 continue
-            line = fd.readline()
-            if not line:
+            chunk = os.read(fd, 1 << 16)
+            if not chunk:
                 return "eof"  # let run() reconnect
-            buf += line
-            # Only attempt a parse when the buffer plausibly ends a
-            # top-level object. kubectl pretty-prints, so a closing "}" in
-            # column 0 ends one. Attempting raw_decode on every line
-            # instead is quadratic in the buffer: a 15MB initial LIST
-            # (what a respawn mid-class receives) arrives over ~400k
-            # lines, each re-scanning everything accumulated so far.
-            if not (line.startswith("}") or len(buf) < 1024 * 1024):
-                continue
-            stripped = buf.strip()
-            while stripped:
-                try:
-                    obj, idx = decoder.raw_decode(stripped)
-                except json.JSONDecodeError:
-                    break
-                self._handle(obj)
-                self._last_event_at = time.monotonic()
-                stripped = stripped[idx:].strip()
-            buf = stripped
-            if len(buf) > self._MAX_BUF:
-                return "wedged"
+            pending += chunk
+            *complete, pending = pending.split(b"\n")
+            for line in complete:
+                lines.append(line)
+                size += len(line) + 1
+                if line.startswith(b"}"):
+                    try:
+                        obj = json.loads(b"\n".join(lines))
+                    except ValueError:
+                        obj = None     # not the end of a top-level object
+                    if obj is not None:
+                        lines, size = [], 0
+                        self._handle(obj)
+                        self._last_event_at = time.monotonic()
+                        continue
+                if size > self._MAX_BUF:
+                    return "wedged"
         return "stop"
 
     def _handle(self, pod, source="watch"):
@@ -357,7 +457,10 @@ class Watcher:
             # than inferred from a short class list - and marked on the
             # record, because such a pod's timings are not comparable
             # with a watch-observed one's (see dump()).
-            was_new_via_resync = (source == "resync" and key not in self.records)
+            # "relist" is the LIST right after a respawn: a resync, plus it
+            # marks transitions that happened while the stream was dead.
+            listed = source in ("resync", "relist")
+            was_new_via_resync = (listed and key not in self.records)
             if was_new_via_resync:
                 self._resync_first_seen += 1
             rec = self.records.setdefault(key, {
@@ -370,7 +473,11 @@ class Watcher:
                 "ever_gated": False,
                 "gate_released_at": None,
                 "recovered_via_resync": False,
+                "classified_unwitnessed": False,
+                "gate_release_unwitnessed": False,
             })
+            if source == "watch":
+                self._seen_rv[key] = meta.get("resourceVersion")
             if was_new_via_resync:
                 rec["recovered_via_resync"] = True
             if created_api:
@@ -380,7 +487,7 @@ class Watcher:
                 # while, so observation time would overstate its latency.
                 # Its API creationTimestamp is what the watch would have
                 # seen. Watch-path behaviour is unchanged.
-                rec["first_seen"] = (created_api if (source == "resync" and created_api)
+                rec["first_seen"] = (created_api if (listed and created_api)
                                      else received_at)
             # Tracks the LATEST observed value, not the first: this can
             # legitimately change over a pod's life (OPA's admission-time
@@ -399,9 +506,15 @@ class Watcher:
             # Only a watch event times a phase. A resync observation says
             # "this annotation exists NOW", not when it appeared, so using
             # it here would charge the whole resync delay to classification.
-            if (source == "watch"
-                    and annotations.get("scheduling.diktyo.x-k8s.io/class-keys")
-                    and rec["classified_at"] is None):
+            has_keys = bool(annotations.get("scheduling.diktyo.x-k8s.io/class-keys"))
+            # After a respawn, a pod the relist already shows classified was
+            # classified while the stream was dead: the next watch event is
+            # not the moment it happened, so it must not time the phase.
+            if source == "relist" and has_keys and rec["classified_at"] is None:
+                rec["classified_unwitnessed"] = True
+            if (source == "watch" and has_keys
+                    and rec["classified_at"] is None
+                    and not rec["classified_unwitnessed"]):
                 rec["classified_at"] = received_at
             # Gate-state transition tracking: a pod that's never gated at
             # all (OPA's admission-time fast path, is_ready=true at CREATE)
@@ -413,11 +526,16 @@ class Watcher:
             # Same reasoning as classified_at: the gated -> ungated
             # transition is only meaningful when actually witnessed. A
             # resync sees one side of it and cannot date the crossing.
+            gates = (pod.get("spec", {}) or {}).get("schedulingGates")
+            # Same for the gate: cleared while the stream was dead.
+            if (source == "relist" and not gates and rec["ever_gated"]
+                    and rec["gate_released_at"] is None):
+                rec["gate_release_unwitnessed"] = True
             if source == "watch":
-                gates = (pod.get("spec", {}) or {}).get("schedulingGates")
                 if gates:
                     rec["ever_gated"] = True
-                elif rec["ever_gated"] and rec["gate_released_at"] is None:
+                elif (rec["ever_gated"] and rec["gate_released_at"] is None
+                        and not rec["gate_release_unwitnessed"]):
                     rec["gate_released_at"] = received_at
             for cond in (pod.get("status", {}) or {}).get("conditions", []) or []:
                 if cond.get("type") == "PodScheduled" and cond.get("status") == "True":
@@ -425,7 +543,7 @@ class Watcher:
                     if t and (rec["scheduled_api"] is None or t < rec["scheduled_api"]):
                         rec["scheduled_api"] = t
                     if rec["scheduled_seen"] is None:
-                        rec["scheduled_seen"] = (t if (source == "resync" and t)
+                        rec["scheduled_seen"] = (t if (listed and t)
                                                  else received_at)
           except Exception:
             pass  # malformed/unexpected event shape - skip, don't crash the watcher
@@ -527,6 +645,11 @@ def dump(watcher, output_path):
             # by a periodic LIST. Present in the pod list for
             # completeness, excluded from every percentile below.
             "recovered_via_resync": recovered,
+            # True = that transition happened while the watch stream was
+            # dead (seen first by the post-respawn relist), so its phase
+            # has no time rather than a wrong one.
+            "classified_unwitnessed": rec.get("classified_unwitnessed", False),
+            "gate_release_unwitnessed": rec.get("gate_release_unwitnessed", False),
             # API-embedded timestamps, second-precision only - kept for
             # cross-checking, not used for the actual latency computation.
             "created_api": rec["created_api"].isoformat() if rec["created_api"] else None,
@@ -584,6 +707,14 @@ def dump(watcher, output_path):
             # gap list can be checked against the classes actually present
             # in "summary" when a run's output looks short.
             "idle_respawns": watcher._idle_respawns,
+            # Silent-stream checks that found nothing undelivered (a real
+            # lull, e.g. UCSS releasing nothing for a while): stream kept.
+            "idle_lulls": watcher._idle_lulls,
+            # How many pods each column's percentiles cover. The phase
+            # columns cover only pods whose transitions the watch saw, so
+            # compare these with summary.__all__.count before reading the
+            # phases as a breakdown of the e2e.
+            "phase_coverage": {ph: phase_summary[ph]["__all__"]["count"] for ph in phase_summary},
             "watch_gaps": watcher._gaps,
             "resyncs": watcher._resyncs,
             "resync_failures": watcher._resync_failures,
