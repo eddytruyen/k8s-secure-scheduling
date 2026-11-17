@@ -15,6 +15,10 @@
 #   klastos  KLASTOS stack (Profile 2). AppClass tenant-class (tenant = namespace, identity_namespace
 #            AppInfoDefinition) and experiment 9's CSC (classSelector All, scope Workload).
 #            klastos experiment1/multi-tenancy/harness-many-tenants/.
+#   klastospc  KLASTOS stack, the same two terms both STRICT and classSelector In with the step's G tenant classes
+#            named: the true-isolation idiom, which UCSS pre-compiles into one dedicated node per tenant class
+#            (Nestor-paper class-scheduling-operator DESIGN.md 1c), so the tenants skip the interclass release path.
+#            apply-step-policy.sh <prefix> <G> <S> precompiled.
 #   kyverno  Kyverno stack. Label tenant-isolation/tenant=<namespace>, a REQUIRED pod anti-affinity against labelled
 #            pods of other tenants (experiment 8's term) and a PREFERRED pod affinity to the own tenant's pods.
 #            One policy for all tenants. klastos experiment1/kyverno-baseline/policies/multi-tenancy-many-tenants.yaml.
@@ -30,7 +34,9 @@
 #         labels) first. For KLASTOS the sticky AppClass status then lets the webhook resolve the class at
 #         admission, and the AppClass operator's AppInfos exist. The webhook still only GATES an interclass pod (it
 #         annotates only non-interclass pods), so the AppClass operator writes the class-keys in both modes: warm
-#         saves the per-appgroup AppInfo work, not the annotation round trip. Kyverno and Gatekeeper keep no state
+#         saves the per-appgroup AppInfo work, not the annotation round trip. In klastospc the tenant classes are
+#         topology classes, not interclass ones, so there the webhook can take its fast path for a warm pod:
+#         annotate it at admission and admit it without a gate (csi-gate-webhook README, step 5). Kyverno and Gatekeeper keep no state
 #         per application, so for them warm differs from cold only in cluster caches.
 #   Every step uses namespaces no earlier step used (prefix mt14-<c|w><HHMMSS>-), so no step is warmed by another.
 #
@@ -43,6 +49,7 @@
 #
 # Usage:
 #   RUN_KLASTOS=true ./run-concurrent-multitenancy-many-tenants-evaluation.sh
+#   ARM=klastospc ./run-concurrent-multitenancy-many-tenants-evaluation.sh
 #   ARM=kyverno MT14_GROUPS="40 100" MT14_MODES=cold ./run-concurrent-multitenancy-many-tenants-evaluation.sh
 #   DRY_RUN=true ARM=gkinj ./run-concurrent-multitenancy-many-tenants-evaluation.sh
 
@@ -63,7 +70,10 @@ if [ -z "$ARM" ]; then
     echo "RUN_BASELINE=true: this experiment has no reactive Gatekeeper arm; use ARM=kyverno or ARM=gkinj" >&2; exit 1
   else ARM=klastos; fi
 fi
-case "$ARM" in klastos|kyverno|gkinj) ;; *) echo "ARM must be klastos, kyverno or gkinj" >&2; exit 1 ;; esac
+case "$ARM" in klastos|klastospc|kyverno|gkinj) ;; *) echo "ARM must be klastos, klastospc, kyverno or gkinj" >&2; exit 1 ;; esac
+# KL: the arm runs on the KLASTOS stack; CSC_VARIANT: the CSC of apply-step-policy.sh
+KL=false; CSC_VARIANT=reactive
+case "$ARM" in klastos) KL=true ;; klastospc) KL=true; CSC_VARIANT=precompiled ;; esac
 for m in $MT14_MODES; do case "$m" in cold|warm) ;; *) echo "MT14_MODES: cold and/or warm, got '$m'" >&2; exit 1 ;; esac; done
 for G in $MT14_GROUPS; do
   [ $((MT14_TOTAL_PODS % G)) -eq 0 ] && [ $((MT14_TOTAL_PODS / G)) -ge 2 ] \
@@ -83,14 +93,14 @@ log() { echo "[$(date -u +%H:%M:%S)] $*"; }
 if [ "$DRY_RUN" = true ]; then
   echo "DRY-RUN: arm $ARM, modes: $MT14_MODES, tenants: $MT14_GROUPS, $MT14_TOTAL_PODS pods per step"
   case "$ARM" in
-    klastos) echo "DRY-RUN: once: $HARNESS_DIR/apply-shared-policy.sh (AppInfoDefinition)" ;;
+    klastos|klastospc) echo "DRY-RUN: once: $HARNESS_DIR/apply-shared-policy.sh (AppInfoDefinition)" ;;
     kyverno) echo "DRY-RUN: once: $KYVERNO_DIR/apply-policy.sh $USE_CASE" ;;
     gkinj)   echo "DRY-RUN: once: $GKI_DIR/apply-policy.sh $USE_CASE" ;;
   esac
   for mode in $MT14_MODES; do for G in $MT14_GROUPS; do
     S=$((MT14_TOTAL_PODS / G))
     echo "DRY-RUN: step $ARM-$mode-g$G: $G tenants x $S pods ($(( (S + 1) / 2 )) a + $((S / 2)) b), namespaces mt14-${mode:0:1}<HHMMSS>-g1..g$G" \
-         "$(case "$ARM" in klastos) echo "+ apply-step-policy.sh (AppClass, CSC, $G AppGroups)" ;; gkinj) echo "+ apply-tenant-mutations.sh ($G Assigns)" ;; esac)"
+         "$(case "$ARM" in klastos|klastospc) echo "+ apply-step-policy.sh (AppClass, $CSC_VARIANT CSC, $G AppGroups)" ;; gkinj) echo "+ apply-tenant-mutations.sh ($G Assigns)" ;; esac)"
     [ "$mode" = warm ] && echo "DRY-RUN:   warm-up CL2 pass (not measured), wait for its pods to be gone, settle ${WARMUP_SETTLE_SECONDS}s"
     echo "DRY-RUN:   measured CL2 pass with the e2e-latency watcher; isolation check; delete the namespaces"
   done; done
@@ -105,7 +115,7 @@ preflight() {
   [ -d "$HARNESS_DIR" ] || { echo "Preflight failed: $HARNESS_DIR not found (KLASTOS_REPO=$KLASTOS_REPO)" >&2; return 1; }
   local k=false; present kube-system pod/unified-operator && k=true
   case "$ARM" in
-    klastos)
+    klastos|klastospc)
       [ "$k" = true ] || { echo "Preflight failed: the KLASTOS stack (unified-operator) is not deployed" >&2; return 1; }
       present kube-system deployment/csi-admission || { echo "Preflight failed: csi-admission (Profile 2) is not deployed" >&2; return 1; }
       local other
@@ -161,8 +171,8 @@ YAML
   phases "$ra" "$rb" UniformQPS > "$d/.create"
   phases 0 0 default > "$d/.delete"
   awk -v total=$((G * S)) -v create="$d/.create" -v del="$d/.delete" '
-    /__CREATE_PHASES__/ { while ((getline l < create) > 0) print l; next }
-    /__DELETE_PHASES__/ { while ((getline l < del) > 0) print l; next }
+    /^__CREATE_PHASES__$/ { while ((getline l < create) > 0) print l; next }
+    /^__DELETE_PHASES__$/ { while ((getline l < del) > 0) print l; next }
     { gsub(/__TOTAL__/, total); print }' "$SCRIPT_DIR/config-concurrent.yaml.tmpl" > "$d/config.yaml"
   rm -f "$d/.create" "$d/.delete"
 }
@@ -191,7 +201,7 @@ delete_namespaces() {  # delete_namespaces <prefix>: synchronous, the next step 
   nss=$(kubectl get ns --no-headers -o custom-columns=N:.metadata.name | grep "^$1" || true)
   [ -z "$nss" ] && return 0
   # AppGroups carry a finalizer of the Diktyo controller; drop it so the namespace can go
-  if [ "$ARM" = klastos ]; then
+  if [ "$KL" = true ]; then
     for ns in $nss; do echo "$ns"; done | xargs -P 16 -I{} sh -c \
       'for a in $(kubectl -n {} get appgroups -o name 2>/dev/null); do kubectl -n {} patch $a --type=merge -p "{\"metadata\":{\"finalizers\":null}}" >/dev/null 2>&1; done'
   fi
@@ -214,7 +224,7 @@ wait_pods_gone() {  # wait_pods_gone <prefix> [timeout]
 # in the 2026-11-16 benchmark sweep: G=10 measured 12.8 s p50 behind 1227 delete events).
 settle() {
   local last="" stable=0 i rv
-  if [ "$ARM" = klastos ]; then
+  if [ "$KL" = true ]; then
     for i in $(seq 1 180); do
       rv=$(kubectl get csi cluster-scheduling-info -o jsonpath='{.metadata.resourceVersion}' 2>/dev/null || echo none)
       if [ "$rv" = "$last" ]; then stable=$((stable + 1)); else stable=0; last="$rv"; fi
@@ -280,7 +290,7 @@ mkdir -p "$RESULT_ROOT"
   echo "arm: $ARM"; echo "modes: $MT14_MODES"; echo "tenants: $MT14_GROUPS"; echo "pods_per_step: $MT14_TOTAL_PODS"
   echo "cl2_uniform_qps: ${CL2_UNIFORM_QPS:-default}"; echo "warmup_settle_seconds: $WARMUP_SETTLE_SECONDS"
   case "$ARM" in
-    klastos) kubectl -n kube-system get pods unified-operator appclass-operator -o jsonpath='{range .items[*]}{.metadata.name}: {.status.containerStatuses[0].imageID}{"\n"}{end}' 2>/dev/null
+    klastos|klastospc) kubectl -n kube-system get pods unified-operator appclass-operator -o jsonpath='{range .items[*]}{.metadata.name}: {.status.containerStatuses[0].imageID}{"\n"}{end}' 2>/dev/null
              kubectl -n kube-system get pods -l app=csi-admission -o jsonpath='{range .items[*]}{.metadata.name}: {.status.containerStatuses[0].imageID}{"\n"}{end}' 2>/dev/null ;;
     kyverno) kubectl -n kyverno get deployment kyverno-admission-controller -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}' ;;
     gkinj)   kubectl -n gatekeeper-system get deployment gatekeeper-controller-manager -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}' ;;
@@ -289,7 +299,7 @@ mkdir -p "$RESULT_ROOT"
   echo "k8s-secure-scheduling: $(git -C "$TEST_DIR" rev-parse --short HEAD 2>/dev/null)"
 } > "$RESULT_ROOT/ARM.txt" 2>&1
 # kyverno-baseline/run-kyverno-evaluation.sh writes ENGINE.txt; keep the same file for the two baselines
-[ "$ARM" = klastos ] || { [ "$ARM" = kyverno ] && echo kyverno || echo gatekeeper-injected; } > "$RESULT_ROOT/ENGINE.txt"
+[ "$KL" = true ] || { [ "$ARM" = kyverno ] && echo kyverno || echo gatekeeper-injected; } > "$RESULT_ROOT/ENGINE.txt"
 
 # shellcheck source=../lib/common.sh
 source "$SCRIPT_DIR/../lib/common.sh"
@@ -303,7 +313,7 @@ cleanup() {
   log "cleanup: namespaces mt14-*, $ARM policy"
   delete_namespaces mt14-
   case "$ARM" in
-    klastos) "$HARNESS_DIR/delete-step-policy.sh" >/dev/null 2>&1 || true
+    klastos|klastospc) "$HARNESS_DIR/delete-step-policy.sh" >/dev/null 2>&1 || true
              "$HARNESS_DIR/delete-shared-policy.sh" >/dev/null 2>&1 || true ;;
     kyverno) "$KYVERNO_DIR/delete-policy.sh" "$USE_CASE" >/dev/null 2>&1 || true ;;
     gkinj)   "$GKI_DIR/delete-policy.sh" "$USE_CASE" >/dev/null 2>&1 || true ;;
@@ -314,7 +324,7 @@ trap cleanup EXIT
 # leftovers of a killed run would share the cluster with this one
 delete_namespaces mt14-
 case "$ARM" in
-  klastos) "$HARNESS_DIR/apply-shared-policy.sh" ;;
+  klastos|klastospc) "$HARNESS_DIR/apply-shared-policy.sh" ;;
   kyverno) "$KYVERNO_DIR/apply-policy.sh" "$USE_CASE" ;;
   gkinj)   "$GKI_DIR/delete-tenant-mutations.sh"; "$GKI_DIR/apply-policy.sh" "$USE_CASE" ;;
 esac
@@ -340,12 +350,13 @@ for mode in $MT14_MODES; do
     if ! {
       create_namespaces "$PREFIX" "$G"
       case "$ARM" in
-        klastos) "$HARNESS_DIR/apply-step-policy.sh" "$PREFIX" "$G" "$S" ;;
+        klastos|klastospc) "$HARNESS_DIR/apply-step-policy.sh" "$PREFIX" "$G" "$S" "$CSC_VARIANT" ;;
         gkinj)   "$GKI_DIR/apply-tenant-mutations.sh" "$PREFIX" "$G" ;;
       esac
     } > "$STEP_DIR/setup.log" 2>&1; then
       echo "    FAILED: setup (see $STEP_DIR/setup.log)"; ok=false
     fi
+    [ "$CSC_VARIANT" != precompiled ] || grep -h "^isolation pins:" "$STEP_DIR/setup.log" | sed 's/^/    /' || true
 
     if [ "$ok" = true ] && [ "$mode" = warm ]; then
       log "warm-up pass (not measured)"
@@ -372,13 +383,13 @@ for mode in $MT14_MODES; do
       concurrent_run_step "$STEP_DIR" "$TOTAL" "$THRESHOLD" measured || ok=false
       check_isolation "$STEP_DIR" "$PREFIX" "$TOTAL" | sed 's/^/    /'
       grep -q "^ISOLATION OK" "$STEP_DIR/isolation.txt" || ok=false
-      [ "$ARM" != klastos ] || capture_klastos_logs "$STEP_DIR" "$SINCE"
+      [ "$KL" != true ] || capture_klastos_logs "$STEP_DIR" "$SINCE"
     fi
 
     # teardown of the step, not measured
     delete_namespaces "$PREFIX"
     case "$ARM" in
-      klastos) "$HARNESS_DIR/delete-step-policy.sh" >> "$STEP_DIR/setup.log" 2>&1 || true ;;
+      klastos|klastospc) "$HARNESS_DIR/delete-step-policy.sh" >> "$STEP_DIR/setup.log" 2>&1 || true ;;
       gkinj)   "$GKI_DIR/delete-tenant-mutations.sh" >> "$STEP_DIR/setup.log" 2>&1 || true ;;
     esac
     [ "$ok" = true ] || FAILED_STEPS="$FAILED_STEPS $STEP"
