@@ -29,10 +29,21 @@ N_STEPS="${N_STEPS:-20 100 1000}"
 NODES="${NODES:-100}"
 KLASTOS_REPO="${KLASTOS_REPO:-$HOME/githubrepos/klastos}"
 
+# ARM=klastospc (campaign arm klastospc): the KLASTOS run uses the pre-compiled isolation harness
+# (klastos experiment1/multi-tenancy/harness-isolation-precompiled/: Same + Different, both strict, on the node pool
+# label topology.kubernetes.io/tenant, classes named), which UCSS pre-compiles into one pool per tenant. The
+# results go to a separate root (...-klastospc-evaluation-<ts>); the step directories keep their names.
+ARM="${ARM:-klastos}"
+case "$ARM" in klastos|klastospc) ;; *) echo "ARM must be klastos or klastospc, got $ARM" >&2; exit 1 ;; esac
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 TEST_DIR=$( cd -- "$SCRIPT_DIR/../.." &> /dev/null && pwd )
 HARNESS_DIR="$KLASTOS_REPO/experiment1/multi-tenancy/harness-antiaffinity-and-affinity"
 RESULT_ROOT="$TEST_DIR/result/use-case/concurrent-multitenancy-antiaffinity-and-affinity-evaluation-$(date +%Y%m%d-%H%M%S)"
+if [ "$ARM" = klastospc ]; then
+  HARNESS_DIR="$KLASTOS_REPO/experiment1/multi-tenancy/harness-isolation-precompiled"
+  RESULT_ROOT="$TEST_DIR/result/use-case/concurrent-multitenancy-antiaffinity-and-affinity-klastospc-evaluation-$(date +%Y%m%d-%H%M%S)"
+fi
 mkdir -p "$RESULT_ROOT"
 
 # shellcheck source=../lib/common.sh
@@ -40,6 +51,7 @@ source "$SCRIPT_DIR/../lib/common.sh"
 
 echo "=== Experiment 1 CONCURRENT evaluation (multi-tenancy, anti-affinity + affinity variant) ==="
 echo "Steps (N per class): $N_STEPS"
+echo "Arm:          $ARM ($HARNESS_DIR)"
 echo "Results:      $RESULT_ROOT"
 echo ""
 
