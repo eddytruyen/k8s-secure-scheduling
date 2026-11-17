@@ -1,5 +1,5 @@
-# Experiment 14 pod, workload a of its group. The group is the namespace (one tenant per namespace),
-# its AppGroup is <namespace>-app (created by the KLASTOS harness; the baselines ignore the labels).
+# Experiment 14 pod, workload a of its tenant. The tenant is the namespace,
+# its AppGroup is <namespace>-app (created by the KLASTOS harness; the baselines ignore the labels and add the tenant label).
 # No class-keys annotation: the class must be derived by classification (see Nestor-paper AGENTS.md).
 apiVersion: v1
 kind: Pod

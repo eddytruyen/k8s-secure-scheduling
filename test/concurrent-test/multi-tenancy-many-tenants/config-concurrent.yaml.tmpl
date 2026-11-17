@@ -1,13 +1,14 @@
-# Experiment 14 (many appgroups), one step. TEMPLATE: the driver
-# (run-concurrent-multitenancy-many-appgroups-evaluation.sh, gen_cl2) fills in
-#   __NAMESPACES__  the step's G namespaces (one group = one tenant = one namespace)
-#   __REPLICAS__    S/2: each replica creates one pod of workload a and one of workload b
-#   __TOTAL__       G x S
-# and writes the result next to copies of workload-a.yaml / workload-b.yaml. The SAME config is used by
-# every arm (klastos, kyverno, gkinj): the workload is identical, only the policy engine differs.
-# CL2 walks the namespace list in order, so the groups arrive one after another at the UniformQPS rate.
-# Throughput is one combined number over all groups (SchedulingThroughput is not group-aware); per-group
-# latency comes from e2e-latency.json (it records each pod's namespace).
+# Experiment 14 (many tenants), one step. TEMPLATE: the driver
+# (run-concurrent-multitenancy-many-tenants-evaluation.sh, gen_cl2) fills in
+#   __CREATE_PHASES__  one phase per tenant and workload (G tenants x workloads a, b), tuningSet UniformQPS
+#   __DELETE_PHASES__  the same phases with 0 replicas
+#   __TOTAL__          G x S = 2000 pods
+# and writes the result next to copies of workload-a.yaml / workload-b.yaml. The SAME config is used by every arm
+# (klastos, kyverno, gkinj): the workload is identical, only the policy engine differs.
+# Shape and settings are those of experiments 8 and 9 (../multi-tenancy-antiaffinity-and-affinity/
+# config-klastos-concurrent.yaml): one phase per class and workload, all phases of the step in parallel on the
+# shared UniformQPS budget (so tenants arrive interleaved), WaitForRunningPods timeout 5m. Throughput is one
+# combined number over all tenants; per-tenant latency comes from e2e-latency.json (it records each pod's namespace).
 
 {{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
 {{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
@@ -18,7 +19,7 @@
 {{$SCHEDULER_THROUGHPUT_THRESHOLD := DefaultParam .CL2_SCHEDULER_THROUGHPUT_THRESHOLD 30}}
 {{$enableViolations := DefaultParam .CL2_ENABLE_VIOLATIONS_FOR_SCHEDULING_THROUGHPUT true}}
 
-name: multitenancy-many-appgroups-concurrent-scheduler-throughput
+name: multitenancy-many-tenants-concurrent-scheduler-throughput
 namespace:
   enableExistingNamespaces: true
 tuningSets:
@@ -68,20 +69,9 @@ steps:
       labelSelector: group = direct-scheduler-throughput
       measurementInterval: 1s
 
-- name: create the pods of every group
+- name: create the pods of every tenant (all tenants concurrently alive)
   phases:
-  - namespaceList: [__NAMESPACES__]
-    replicasPerNamespace: __REPLICAS__
-    tuningSet: UniformQPS
-    objectBundle:
-    - basename: klastos-mt14-a
-      objectTemplatePath: workload-a.yaml
-      templateFillMap:
-        Group: direct-scheduler-throughput
-    - basename: klastos-mt14-b
-      objectTemplatePath: workload-b.yaml
-      templateFillMap:
-        Group: direct-scheduler-throughput
+__CREATE_PHASES__
 
 - name: Waiting for the pods to be running
   measurements:
@@ -89,7 +79,7 @@ steps:
     Method: WaitForRunningPods
     Params:
       action: gather
-      timeout: 10m
+      timeout: 5m
       desiredPodCount: __TOTAL__
       labelSelector: group = direct-scheduler-throughput
 
@@ -118,17 +108,6 @@ steps:
     Params:
       action: gather
 
-- name: Delete the pods of every group
+- name: Delete the pods of every tenant
   phases:
-  - namespaceList: [__NAMESPACES__]
-    replicasPerNamespace: 0
-    tuningSet: default
-    objectBundle:
-    - basename: klastos-mt14-a
-      objectTemplatePath: workload-a.yaml
-      templateFillMap:
-        Group: direct-scheduler-throughput
-    - basename: klastos-mt14-b
-      objectTemplatePath: workload-b.yaml
-      templateFillMap:
-        Group: direct-scheduler-throughput
+__DELETE_PHASES__

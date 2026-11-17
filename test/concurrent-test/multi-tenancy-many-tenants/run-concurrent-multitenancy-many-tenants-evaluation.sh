@@ -1,67 +1,60 @@
 #!/usr/bin/env bash
-# Experiment 14: many appgroups (Experiment 1 extension, research plan "Synthetic AppGroups N=10 to 500").
+# Experiment 14: many tenants (Experiment 1 extension, research plan "Synthetic AppGroups N=10 to 500").
 #
-# G groups x S pods. Each group is its own tenant (its own namespace), its own AppGroup and, for
-# KLASTOS, its own tenant class. The pods of one group must land in S DIFFERENT segments
-# (anti-affinity among same-tenant pods on topology.kubernetes.io/segment); different groups are
-# independent. This is the workload shape of Christoph Baumann's interclass-queue benchmark
-# (Nestor-paper full-example/benchmarks/interclass-queue/, copied to klastos
-# experiment1/many-appgroups/), moved into the Experiment 1 harness so that:
-#   - every arm creates the SAME pods with ClusterLoader2 at the campaign rate (CL2_UNIFORM_QPS),
-#     instead of the benchmark's parallel kubectl applies;
-#   - every arm is measured the same way: the e2e-latency watcher (creation -> scheduled);
-#   - Kyverno and Gatekeeper (injected anti-affinity) can run the same policy.
+# Experiments 8 and 9 isolate 2 tenants x N=1000 pods. Experiment 14 keeps their policy and their load and changes
+# only the structure: the same 2000 pods, created by ClusterLoader2 at the campaign rate (CL2_UNIFORM_QPS, 40/s),
+# split over G tenants of S = 2000/G pods. Each tenant is its own namespace, its own AppGroup (workloads a and b,
+# ceil(S/2) and floor(S/2) pods) and, for KLASTOS, its own tenant class.
+#
+# The rule is experiment 9's: pods of DIFFERENT tenants never share a node (strict anti-affinity on
+# kubernetes.io/hostname), and a tenant's pods prefer the same node (soft affinity), so each tenant packs onto
+# nodes of its own. A tenant of at most 110 pods fits on one KWOK node, so G is bounded by the 100 nodes: the
+# default sweep is G = 40, 50, 80, 100 (S = 50, 40, 25, 20); G = 100 needs exactly one node per tenant.
 #
 # Arms (ARM, or RUN_KLASTOS=true from run-campaign-n1000.sh):
-#   klastos  KLASTOS stack (Profile 2). Policy: AppClass tenant-class (tenant = namespace,
-#            identity_namespace AppInfoDefinition), one interClass AntiAffinity CSC (term: Same,
-#            topologyKey topology.kubernetes.io/segment, strict) listing the step's G classes, and a
-#            Manual Reactive NSP with S segments. klastos experiment1/multi-tenancy/harness-many-appgroups/.
-#   kyverno  Kyverno stack. Policy: label tenant-isolation/tenant=<namespace> and a REQUIRED pod
-#            anti-affinity on topology.kubernetes.io/segment against pods of the same namespace that
-#            carry the label. klastos experiment1/kyverno-baseline/policies/multi-tenancy-many-appgroups.yaml.
-#   gkinj    Gatekeeper with the same label and term injected by mutations.
-#            klastos experiment1/gatekeeper-injected-baseline/policies/many-appgroups/.
-#   For the two baselines the driver writes the segment labels itself, with the same partition the
-#   NSP computes (round robin over the sorted schedulable nodes into seg-0..seg-(S-1)).
+#   klastos  KLASTOS stack (Profile 2). AppClass tenant-class (tenant = namespace, identity_namespace
+#            AppInfoDefinition) and experiment 9's CSC (classSelector All, scope Workload).
+#            klastos experiment1/multi-tenancy/harness-many-tenants/.
+#   kyverno  Kyverno stack. Label tenant-isolation/tenant=<namespace>, a REQUIRED pod anti-affinity against labelled
+#            pods of other tenants (experiment 8's term) and a PREFERRED pod affinity to the own tenant's pods.
+#            One policy for all tenants. klastos experiment1/kyverno-baseline/policies/multi-tenancy-many-tenants.yaml.
+#   gkinj    Gatekeeper with the same label and terms injected by mutations; the anti-affinity term needs the
+#            tenant's own value, so it is one Assign per tenant, created per step (not measured).
+#            klastos experiment1/gatekeeper-injected-baseline/policies/many-tenants/ + apply-tenant-mutations.sh.
 #
-# Modes (MT14_MODES, default "cold warm"), the fairness question of the warm-up:
-#   cold  the measured pass is the first time the cluster sees these groups. For KLASTOS it includes
-#         classification: the webhook gates a pod it has no class for, the AppClass operator builds
-#         the AppInfo of each new appgroup, writes the class-keys, then UCSS releases.
-#   warm  an unmeasured warm-up pass creates and deletes the same pods (same namespaces, appgroups and
-#         workload labels) first, as the benchmark does. For KLASTOS the sticky AppClass status then
-#         lets the webhook resolve the class at admission, and the AppClass operator's AppInfos exist.
-#         The webhook still only GATES an interclass pod (it annotates only non-interclass pods), so the
-#         AppClass operator writes the class-keys in both modes: warm saves the per-appgroup AppInfo work,
-#         not the annotation round trip. Kyverno and Gatekeeper keep no state per application, so for
-#         them warm differs from cold only in cluster caches.
-#   Every step uses namespaces no earlier step used (prefix mt14-<c|w><HHMMSS>-), so no step is warmed
-#   by another, and the AppClass operator's AppInfo cache (keyed by appgroup) cannot hit.
+# Modes (MT14_MODES, default "cold warm"):
+#   cold  the measured pass is the first time the cluster sees these tenants. For KLASTOS it includes
+#         classification: the webhook gates a pod it has no class for, the AppClass operator builds the AppInfo of
+#         each new appgroup and writes the class-keys, then UCSS releases.
+#   warm  an unmeasured warm-up pass creates and deletes the same pods (same namespaces, appgroups and workload
+#         labels) first. For KLASTOS the sticky AppClass status then lets the webhook resolve the class at
+#         admission, and the AppClass operator's AppInfos exist. The webhook still only GATES an interclass pod (it
+#         annotates only non-interclass pods), so the AppClass operator writes the class-keys in both modes: warm
+#         saves the per-appgroup AppInfo work, not the annotation round trip. Kyverno and Gatekeeper keep no state
+#         per application, so for them warm differs from cold only in cluster caches.
+#   Every step uses namespaces no earlier step used (prefix mt14-<c|w><HHMMSS>-), so no step is warmed by another.
 #
-# Sweep: MT14_GROUPS (default "10 50 100 250 500") x MT14_GROUP_SIZE (default 4, must be even: each
-# CL2 replica creates one pod of workload a and one of workload b). Pods per step = G x S
-# (40 .. 2000 by default; 2000 = experiments 8 and 9).
+# A failed step is recorded and the sweep goes on with the next step (a G the cluster cannot place must not cost
+# the other steps); the run exits 1 at the end, so run-repeated-script.sh excludes the repeat from the stats.
 #
-# One step = one result directory <arm>-<mode>-g<G>/ (e2e-latency.json, run.log, measurements/;
+# One step = one result directory <arm>-<mode>-g<G>/ (e2e-latency.json, run.log, measurements/, isolation.txt;
 # for KLASTOS also logs/ with the UCSS, webhook, AppClass and scheduler logs of the measured pass, for
 # klastos experiment1/many-appgroups/analyze-admission-release.py).
 #
 # Usage:
-#   RUN_KLASTOS=true ./run-concurrent-multitenancy-many-appgroups-evaluation.sh
-#   ARM=kyverno MT14_GROUPS="10 100" MT14_MODES=cold ./run-concurrent-multitenancy-many-appgroups-evaluation.sh
-#   DRY_RUN=true ARM=gkinj ./run-concurrent-multitenancy-many-appgroups-evaluation.sh
+#   RUN_KLASTOS=true ./run-concurrent-multitenancy-many-tenants-evaluation.sh
+#   ARM=kyverno MT14_GROUPS="40 100" MT14_MODES=cold ./run-concurrent-multitenancy-many-tenants-evaluation.sh
+#   DRY_RUN=true ARM=gkinj ./run-concurrent-multitenancy-many-tenants-evaluation.sh
 
 set -euo pipefail
 
 NODES="${NODES:-100}"
 KLASTOS_REPO="${KLASTOS_REPO:-$HOME/githubrepos/klastos}"
-MT14_GROUPS="${MT14_GROUPS:-10 50 100 250 500}"
-MT14_GROUP_SIZE="${MT14_GROUP_SIZE:-4}"
+MT14_GROUPS="${MT14_GROUPS:-40 50 80 100}"
+MT14_TOTAL_PODS="${MT14_TOTAL_PODS:-2000}"
 MT14_MODES="${MT14_MODES:-cold warm}"
 WARMUP_SETTLE_SECONDS="${WARMUP_SETTLE_SECONDS:-30}"
 DRY_RUN="${DRY_RUN:-false}"
-SEG_KEY="topology.kubernetes.io/segment"
 
 ARM="${ARM:-}"
 if [ -z "$ARM" ]; then
@@ -71,34 +64,37 @@ if [ -z "$ARM" ]; then
   else ARM=klastos; fi
 fi
 case "$ARM" in klastos|kyverno|gkinj) ;; *) echo "ARM must be klastos, kyverno or gkinj" >&2; exit 1 ;; esac
-S="$MT14_GROUP_SIZE"
-[ $((S % 2)) -eq 0 ] && [ "$S" -ge 2 ] || { echo "MT14_GROUP_SIZE ($S) must be even and >= 2" >&2; exit 1; }
 for m in $MT14_MODES; do case "$m" in cold|warm) ;; *) echo "MT14_MODES: cold and/or warm, got '$m'" >&2; exit 1 ;; esac; done
+for G in $MT14_GROUPS; do
+  [ $((MT14_TOTAL_PODS % G)) -eq 0 ] && [ $((MT14_TOTAL_PODS / G)) -ge 2 ] \
+    || { echo "MT14_GROUPS: $G does not divide $MT14_TOTAL_PODS into tenants of at least 2 pods" >&2; exit 1; }
+done
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 TEST_DIR=$( cd -- "$SCRIPT_DIR/../.." &> /dev/null && pwd )
 EXP="$KLASTOS_REPO/experiment1"
-HARNESS_DIR="$EXP/multi-tenancy/harness-many-appgroups"
+HARNESS_DIR="$EXP/multi-tenancy/harness-many-tenants"
 KYVERNO_DIR="$EXP/kyverno-baseline"
 GKI_DIR="$EXP/gatekeeper-injected-baseline"
-USE_CASE=multi-tenancy-many-appgroups
+USE_CASE=multi-tenancy-many-tenants
 
 log() { echo "[$(date -u +%H:%M:%S)] $*"; }
 
 if [ "$DRY_RUN" = true ]; then
-  echo "DRY-RUN: arm $ARM, modes: $MT14_MODES, groups: $MT14_GROUPS, group size $S"
+  echo "DRY-RUN: arm $ARM, modes: $MT14_MODES, tenants: $MT14_GROUPS, $MT14_TOTAL_PODS pods per step"
   case "$ARM" in
-    klastos) echo "DRY-RUN: once: $HARNESS_DIR/apply-shared-policy.sh $S (AppInfoDefinition + Manual NSP)" ;;
-    kyverno) echo "DRY-RUN: once: label $SEG_KEY on the schedulable nodes; $KYVERNO_DIR/apply-policy.sh $USE_CASE" ;;
-    gkinj)   echo "DRY-RUN: once: label $SEG_KEY on the schedulable nodes; $GKI_DIR/apply-policy.sh $USE_CASE" ;;
+    klastos) echo "DRY-RUN: once: $HARNESS_DIR/apply-shared-policy.sh (AppInfoDefinition)" ;;
+    kyverno) echo "DRY-RUN: once: $KYVERNO_DIR/apply-policy.sh $USE_CASE" ;;
+    gkinj)   echo "DRY-RUN: once: $GKI_DIR/apply-policy.sh $USE_CASE" ;;
   esac
   for mode in $MT14_MODES; do for G in $MT14_GROUPS; do
-    echo "DRY-RUN: step $ARM-$mode-g$G ($((G * S)) pods): namespaces mt14-${mode:0:1}<HHMMSS>-g1..g$G" \
-         "$([ "$ARM" = klastos ] && echo "+ apply-step-policy.sh (AppClass, CSC for $G classes, AppGroups)")"
+    S=$((MT14_TOTAL_PODS / G))
+    echo "DRY-RUN: step $ARM-$mode-g$G: $G tenants x $S pods ($(( (S + 1) / 2 )) a + $((S / 2)) b), namespaces mt14-${mode:0:1}<HHMMSS>-g1..g$G" \
+         "$(case "$ARM" in klastos) echo "+ apply-step-policy.sh (AppClass, CSC, $G AppGroups)" ;; gkinj) echo "+ apply-tenant-mutations.sh ($G Assigns)" ;; esac)"
     [ "$mode" = warm ] && echo "DRY-RUN:   warm-up CL2 pass (not measured), wait for its pods to be gone, settle ${WARMUP_SETTLE_SECONDS}s"
-    echo "DRY-RUN:   measured CL2 pass with the e2e-latency watcher; delete the namespaces"
+    echo "DRY-RUN:   measured CL2 pass with the e2e-latency watcher; isolation check; delete the namespaces"
   done; done
-  echo "DRY-RUN: remove the policy and the $SEG_KEY labels; generate-report.py"
+  echo "DRY-RUN: remove the policy; generate-report.py"
   exit 0
 fi
 
@@ -127,35 +123,48 @@ preflight() {
   if pgrep -f "[c]lusterloader --|[e]2e-latency-watch" >/dev/null; then
     echo "Preflight failed: another clusterloader or e2e-latency watcher is running" >&2; return 1
   fi
-  local n; n=$(schedulable_nodes | wc -l)
-  [ "$n" -ge "$S" ] || { echo "Preflight failed: $n schedulable nodes, a group of $S needs $S segments" >&2; return 1; }
+  local n G; n=$(kubectl get nodes --no-headers | wc -l)
+  for G in $MT14_GROUPS; do
+    [ "$n" -ge "$G" ] || { echo "Preflight failed: $n nodes, $G tenants need a node each" >&2; return 1; }
+  done
 }
-
-# Schedulable worker nodes, sorted: the control-plane node of the kind cluster is untainted (the operators
-# run there), so it is excluded explicitly, as in the many-appgroups benchmark copy.
-schedulable_nodes() { kubectl get nodes -l '!node-role.kubernetes.io/control-plane' --no-headers -o custom-columns=N:.metadata.name | sort; }
-
-# The baselines get the partition the Manual NSP computes for KLASTOS: round robin into seg-0..seg-(S-1).
-label_segments() {
-  local i=0 n
-  while IFS= read -r n; do
-    echo "$n seg-$(( i % S ))"; i=$((i + 1))
-  done < <(schedulable_nodes) | xargs -P 16 -n 2 sh -c 'kubectl label node "$0" "'"$SEG_KEY"'=$1" --overwrite >/dev/null'
-  log "segment labels: $(kubectl get nodes -L "$SEG_KEY" --no-headers | awk '{print $NF}' | sort | uniq -c | tr -s ' ' | tr '\n' ' ')"
-}
-unlabel_segments() { kubectl label nodes --all "${SEG_KEY}-" >/dev/null 2>&1 || true; }
 
 # --- per-step pieces ------------------------------------------------------------------------------
-# CL2 config for one step: the namespace list is the step's G namespaces; one replica = one pod of
-# workload a + one of workload b, S/2 replicas per namespace. CL2 resolves objectTemplatePath relative
-# to the config, so the config and the two templates are written into the step's own cl2/ directory.
-gen_cl2() {  # gen_cl2 <dir> <prefix> <G>
-  local d="$1" prefix="$2" G="$3" g list=""
+# CL2 config for one step, from config-concurrent.yaml.tmpl: one phase per tenant and workload, as experiments 8 and
+# 9 have one per class and workload. The phases of a CL2 step run in parallel and share the global UniformQPS
+# budget (CL2_UNIFORM_QPS_GLOBAL=true in the campaign), so the tenants' pods arrive interleaved, as uc1 and uc2 do
+# there. CL2 resolves objectTemplatePath relative to the config, so the config and the two pod templates are
+# written into the step's own cl2/ directory.
+gen_cl2() {  # gen_cl2 <dir> <prefix> <G> <S>
+  local d="$1" prefix="$2" G="$3" S="$4" g ns w r
+  local ra=$(( (S + 1) / 2 )) rb=$((S / 2))
   mkdir -p "$d"
-  for g in $(seq 1 "$G"); do list="$list${list:+, }${prefix}g$g"; done
   cp "$SCRIPT_DIR/workload-a.yaml" "$SCRIPT_DIR/workload-b.yaml" "$d/"
-  sed -e "s/__NAMESPACES__/$list/" -e "s/__REPLICAS__/$((S / 2))/" -e "s/__TOTAL__/$((G * S))/" \
-      "$SCRIPT_DIR/config-concurrent.yaml.tmpl" > "$d/config.yaml"
+  phases() {  # phases <replicas a> <replicas b> <tuningSet>
+    for g in $(seq 1 "$G"); do
+      ns="${prefix}g$g"
+      for w in a b; do
+        if [ "$w" = a ]; then r="$1"; else r="$2"; fi
+        cat <<YAML
+  - namespaceList: [$ns]
+    replicasPerNamespace: $r
+    tuningSet: $3
+    objectBundle:
+    - basename: klastos-mt14-$w
+      objectTemplatePath: workload-$w.yaml
+      templateFillMap:
+        Group: direct-scheduler-throughput
+YAML
+      done
+    done
+  }
+  phases "$ra" "$rb" UniformQPS > "$d/.create"
+  phases 0 0 default > "$d/.delete"
+  awk -v total=$((G * S)) -v create="$d/.create" -v del="$d/.delete" '
+    /__CREATE_PHASES__/ { while ((getline l < create) > 0) print l; next }
+    /__DELETE_PHASES__/ { while ((getline l < del) > 0) print l; next }
+    { gsub(/__TOTAL__/, total); print }' "$SCRIPT_DIR/config-concurrent.yaml.tmpl" > "$d/config.yaml"
+  rm -f "$d/.create" "$d/.delete"
 }
 
 cl2() {  # cl2 <dir> <logname>
@@ -201,8 +210,8 @@ wait_pods_gone() {  # wait_pods_gone <prefix> [timeout]
 }
 
 # After the warm-up's deletions: wait until the KLASTOS operators stop writing (CSI resourceVersion stable for
-# 10 s), then a fixed settle. Without this, the measured pass of a small G competes with the warm-up's deletions
-# in UCSS (seen in the 2026-11-16 benchmark sweep: G=10 measured 12.8 s p50 behind 1227 delete events).
+# 10 s), then a fixed settle. Without this, the measured pass competes with the warm-up's deletions in UCSS (seen
+# in the 2026-11-16 benchmark sweep: G=10 measured 12.8 s p50 behind 1227 delete events).
 settle() {
   local last="" stable=0 i rv
   if [ "$ARM" = klastos ]; then
@@ -225,14 +234,15 @@ capture_klastos_logs() {  # capture_klastos_logs <dir> <since>
       --since-time="$since" --timestamps > "$d/webhook.log" 2>/dev/null || true
   sp=$(kubectl -n diktyo get pods -l component=scheduler --no-headers -o custom-columns=N:.metadata.name 2>/dev/null | head -1)
   [ -z "$sp" ] || kubectl -n diktyo logs "$sp" --since-time="$since" --timestamps > "$d/scheduler.log" 2>/dev/null || true
+  # CSI size at the end of the pass: it grows with tenant classes x nodes, and has to fit one etcd request (1.5 MiB)
+  kubectl get csi cluster-scheduling-info -o json 2>/dev/null | wc -c > "$d/csi-bytes.txt" || true
   return 0
 }
 
-# Correctness of a measured pass: CL2 deletes its pods at the end, so the bindings are recorded by a watch
-# during the pass (placements.txt: namespace, pod, node) and checked afterwards against the segment labels:
-# no two pods of a group (namespace) on the same segment, and every pod placed.
+# Correctness of a measured pass: CL2 deletes its pods at the end, so the bindings are recorded by a watch during
+# the pass (placements.txt: namespace, pod, node) and checked afterwards: no node hosts pods of two tenants
+# (namespaces), and every pod is placed. Also reported: nodes per tenant (1 = fully packed).
 start_placement_watch() {  # start_placement_watch <dir>; sets PW_PID
-  kubectl get nodes --no-headers -o custom-columns=N:.metadata.name,S:".metadata.labels.topology\.kubernetes\.io/segment" > "$1/node-segments.txt"
   kubectl get pods -A --watch --no-headers \
       -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,NODE:.spec.nodeName > "$1/placements.txt" 2>/dev/null &
   PW_PID=$!
@@ -242,28 +252,32 @@ check_isolation() {  # check_isolation <dir> <prefix> <expected pods>
   python3 - "$1" "$2" "$3" <<'PYCHECK' | tee "$1/isolation.txt"
 import collections, sys
 d, prefix, want = sys.argv[1], sys.argv[2], int(sys.argv[3])
-seg = dict(l.split()[:2] for l in open(d + "/node-segments.txt") if len(l.split()) >= 2)
 node = {}
 for l in open(d + "/placements.txt"):
     f = l.split()
     if len(f) == 3 and f[0].startswith(prefix) and f[2] != "<none>":
         node[(f[0], f[1])] = f[2]          # a pod binds once; the last bound node wins
-per = collections.defaultdict(collections.Counter)
+tenants_on = collections.defaultdict(set)
+nodes_of = collections.defaultdict(set)
 for (ns, _), n in node.items():
-    per[ns][seg.get(n, "?")] += 1
-bad = [ns for ns, c in per.items() if any(v > 1 for v in c.values()) or "?" in c or "<none>" in c]
-print("isolation: %d of %d pods placed; %d groups; groups with two pods on one segment (or an unsegmented node): %d%s"
-      % (len(node), want, len(per), len(bad), (" e.g. %s %s" % (bad[0], dict(per[bad[0]]))) if bad else ""))
-print("ISOLATION " + ("OK" if not bad and len(node) == want else "VIOLATED"))
+    tenants_on[n].add(ns)
+    nodes_of[ns].add(n)
+shared = sorted(n for n, t in tenants_on.items() if len(t) > 1)
+per = sorted(len(v) for v in nodes_of.values()) or [0]
+print("isolation: %d of %d pods placed; %d tenants on %d nodes; nodes per tenant min %d / median %d / max %d; "
+      "nodes hosting two tenants: %d%s"
+      % (len(node), want, len(nodes_of), len(tenants_on), per[0], per[len(per) // 2], per[-1], len(shared),
+         (" e.g. %s %s" % (shared[0], sorted(tenants_on[shared[0]]))) if shared else ""))
+print("ISOLATION " + ("OK" if not shared and len(node) == want else "VIOLATED"))
 PYCHECK
 }
 
 # --- run ------------------------------------------------------------------------------------------
 preflight
-RESULT_ROOT="$TEST_DIR/result/use-case/concurrent-multitenancy-many-appgroups-$ARM-evaluation-$(date +%Y%m%d-%H%M%S)"
+RESULT_ROOT="$TEST_DIR/result/use-case/concurrent-multitenancy-many-tenants-$ARM-evaluation-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$RESULT_ROOT"
 {
-  echo "arm: $ARM"; echo "modes: $MT14_MODES"; echo "groups: $MT14_GROUPS"; echo "group_size: $S"
+  echo "arm: $ARM"; echo "modes: $MT14_MODES"; echo "tenants: $MT14_GROUPS"; echo "pods_per_step: $MT14_TOTAL_PODS"
   echo "cl2_uniform_qps: ${CL2_UNIFORM_QPS:-default}"; echo "warmup_settle_seconds: $WARMUP_SETTLE_SECONDS"
   case "$ARM" in
     klastos) kubectl -n kube-system get pods unified-operator appclass-operator -o jsonpath='{range .items[*]}{.metadata.name}: {.status.containerStatuses[0].imageID}{"\n"}{end}' 2>/dev/null
@@ -280,13 +294,13 @@ mkdir -p "$RESULT_ROOT"
 # shellcheck source=../lib/common.sh
 source "$SCRIPT_DIR/../lib/common.sh"
 
-echo "=== Experiment 14: many appgroups ($ARM arm) ==="
-echo "Modes: $MT14_MODES   Groups: $MT14_GROUPS   Group size: $S"
+echo "=== Experiment 14: many tenants ($ARM arm) ==="
+echo "Modes: $MT14_MODES   Tenants: $MT14_GROUPS   Pods per step: $MT14_TOTAL_PODS"
 echo "Results:      $RESULT_ROOT"
 echo ""
 
 cleanup() {
-  log "cleanup: namespaces mt14-*, $ARM policy, $SEG_KEY labels"
+  log "cleanup: namespaces mt14-*, $ARM policy"
   delete_namespaces mt14-
   case "$ARM" in
     klastos) "$HARNESS_DIR/delete-step-policy.sh" >/dev/null 2>&1 || true
@@ -294,44 +308,52 @@ cleanup() {
     kyverno) "$KYVERNO_DIR/delete-policy.sh" "$USE_CASE" >/dev/null 2>&1 || true ;;
     gkinj)   "$GKI_DIR/delete-policy.sh" "$USE_CASE" >/dev/null 2>&1 || true ;;
   esac
-  unlabel_segments
 }
 trap cleanup EXIT
 
 # leftovers of a killed run would share the cluster with this one
 delete_namespaces mt14-
 case "$ARM" in
-  klastos) unlabel_segments; "$HARNESS_DIR/apply-shared-policy.sh" "$S" ;;
-  kyverno) label_segments; "$KYVERNO_DIR/apply-policy.sh" "$USE_CASE" ;;
-  gkinj)   label_segments; "$GKI_DIR/apply-policy.sh" "$USE_CASE" ;;
+  klastos) "$HARNESS_DIR/apply-shared-policy.sh" ;;
+  kyverno) "$KYVERNO_DIR/apply-policy.sh" "$USE_CASE" ;;
+  gkinj)   "$GKI_DIR/delete-tenant-mutations.sh"; "$GKI_DIR/apply-policy.sh" "$USE_CASE" ;;
 esac
 
-FAILED=false
+# The CL2 threshold and violations are those of experiments 8 and 9: concurrent_threshold_for gets N per class
+# there (1000 of 2000 pods), so it gets half the step's pods here. The campaign turns violations off anyway.
+THRESHOLD=$(concurrent_threshold_for $((MT14_TOTAL_PODS / 2)))
+FAILED_STEPS=""
 for mode in $MT14_MODES; do
   for G in $MT14_GROUPS; do
+    S=$((MT14_TOTAL_PODS / G))
     STEP="$ARM-$mode-g$G"
     STEP_DIR="$RESULT_ROOT/$STEP"
     PREFIX="mt14-${mode:0:1}$(date -u +%H%M%S)-"
     TOTAL=$((G * S))
-    THRESHOLD=$(concurrent_threshold_for "$TOTAL")
+    ok=true
     mkdir -p "$STEP_DIR"
-    echo "--- Step $STEP: $G groups x $S pods = $TOTAL pods, namespaces ${PREFIX}g1..g$G (threshold=$THRESHOLD pods/sec, violations=$(concurrent_violations_state)) ---"
-    echo "namespace_prefix: $PREFIX" > "$STEP_DIR/step.txt"
-    gen_cl2 "$STEP_DIR/cl2" "$PREFIX" "$G"
+    echo "--- Step $STEP: $G tenants x $S pods = $TOTAL pods, namespaces ${PREFIX}g1..g$G (threshold=$THRESHOLD pods/sec, violations=$(concurrent_violations_state)) ---"
+    printf 'namespace_prefix: %s\ntenants: %s\npods_per_tenant: %s\n' "$PREFIX" "$G" "$S" > "$STEP_DIR/step.txt"
+    gen_cl2 "$STEP_DIR/cl2" "$PREFIX" "$G" "$S"
 
-    # setup, not measured: namespaces (+ KLASTOS: AppClass, CSC for these G classes, AppGroups)
-    {
+    # setup, not measured: namespaces (+ KLASTOS: AppClass, CSC, AppGroups; + gkinj: one Assign per tenant)
+    if ! {
       create_namespaces "$PREFIX" "$G"
-      [ "$ARM" != klastos ] || "$HARNESS_DIR/apply-step-policy.sh" "$PREFIX" "$G" "$S"
-    } > "$STEP_DIR/setup.log" 2>&1 || { echo "    FAILED: setup (see $STEP_DIR/setup.log)"; FAILED=true; break 2; }
+      case "$ARM" in
+        klastos) "$HARNESS_DIR/apply-step-policy.sh" "$PREFIX" "$G" "$S" ;;
+        gkinj)   "$GKI_DIR/apply-tenant-mutations.sh" "$PREFIX" "$G" ;;
+      esac
+    } > "$STEP_DIR/setup.log" 2>&1; then
+      echo "    FAILED: setup (see $STEP_DIR/setup.log)"; ok=false
+    fi
 
-    if [ "$mode" = warm ]; then
+    if [ "$ok" = true ] && [ "$mode" = warm ]; then
       log "warm-up pass (not measured)"
       mkdir -p "$STEP_DIR/warmup"; cp -r "$STEP_DIR/cl2" "$STEP_DIR/warmup/cl2"
       export CL2_SCHEDULER_THROUGHPUT_PODS="$TOTAL" CL2_SCHEDULER_THROUGHPUT_THRESHOLD="$THRESHOLD"
       export CL2_PROMETHEUS_NODE_SELECTOR='node-role.kubernetes.io/control-plane: ""' CL2_PROMETHEUS_TOLERATE_MASTER=true
       if ! cl2 "$STEP_DIR/warmup" warmup > "$STEP_DIR/warmup/run.log" 2>&1; then
-        echo "    FAILED: warm-up pass (see $STEP_DIR/warmup/run.log)"; FAILED=true; break 2
+        echo "    FAILED: warm-up pass (see $STEP_DIR/warmup/run.log)"; ok=false
       fi
       unset CL2_SCHEDULER_THROUGHPUT_PODS CL2_SCHEDULER_THROUGHPUT_THRESHOLD CL2_PROMETHEUS_NODE_SELECTOR CL2_PROMETHEUS_TOLERATE_MASTER
       # generate-report.py makes a row of every directory with a junit.xml, and would give the warm-up the
@@ -342,24 +364,31 @@ for mode in $MT14_MODES; do
       settle
     fi
 
-    SINCE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-    echo "measured_start: $SINCE" >> "$STEP_DIR/step.txt"
-    measured() { cl2 "$STEP_DIR" "$ARM"; }
-    start_placement_watch "$STEP_DIR"
-    if ! concurrent_run_step "$STEP_DIR" "$TOTAL" "$THRESHOLD" measured; then FAILED=true; fi
-    check_isolation "$STEP_DIR" "$PREFIX" "$TOTAL" | sed 's/^/    /'
-    [ "$ARM" != klastos ] || capture_klastos_logs "$STEP_DIR" "$SINCE"
+    if [ "$ok" = true ]; then
+      SINCE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+      echo "measured_start: $SINCE" >> "$STEP_DIR/step.txt"
+      measured() { cl2 "$STEP_DIR" "$ARM"; }
+      start_placement_watch "$STEP_DIR"
+      concurrent_run_step "$STEP_DIR" "$TOTAL" "$THRESHOLD" measured || ok=false
+      check_isolation "$STEP_DIR" "$PREFIX" "$TOTAL" | sed 's/^/    /'
+      grep -q "^ISOLATION OK" "$STEP_DIR/isolation.txt" || ok=false
+      [ "$ARM" != klastos ] || capture_klastos_logs "$STEP_DIR" "$SINCE"
+    fi
 
     # teardown of the step, not measured
     delete_namespaces "$PREFIX"
-    [ "$ARM" != klastos ] || "$HARNESS_DIR/delete-step-policy.sh" >> "$STEP_DIR/setup.log" 2>&1 || true
-    if [ "$FAILED" = true ]; then break 2; fi
+    case "$ARM" in
+      klastos) "$HARNESS_DIR/delete-step-policy.sh" >> "$STEP_DIR/setup.log" 2>&1 || true ;;
+      gkinj)   "$GKI_DIR/delete-tenant-mutations.sh" >> "$STEP_DIR/setup.log" 2>&1 || true ;;
+    esac
+    [ "$ok" = true ] || FAILED_STEPS="$FAILED_STEPS $STEP"
   done
 done
 
-if [ "$FAILED" = true ]; then
+if [ -n "$FAILED_STEPS" ]; then
   echo ""
-  echo "Stopping: step $STEP failed."
+  echo "FAILED steps:$FAILED_STEPS"
+  concurrent_finalize "$RESULT_ROOT" || true
   exit 1
 fi
 concurrent_finalize "$RESULT_ROOT"
