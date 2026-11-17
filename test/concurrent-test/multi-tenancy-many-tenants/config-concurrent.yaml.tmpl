@@ -3,11 +3,12 @@
 #   __CREATE_PHASES__  one phase per tenant and workload (G tenants x workloads a, b), tuningSet UniformQPS
 #   __DELETE_PHASES__  the same phases with 0 replicas
 #   __TOTAL__          G x S = 2000 pods
+#   __WAIT_TIMEOUT__   the WaitForRunningPods timeout (MT14_WAIT_TIMEOUT, default 5m)
 # and writes the result next to copies of workload-a.yaml / workload-b.yaml. The SAME config is used by every arm
 # (klastos, kyverno, gkinj): the workload is identical, only the policy engine differs.
 # Shape and settings are those of experiments 8 and 9 (../multi-tenancy-antiaffinity-and-affinity/
 # config-klastos-concurrent.yaml): one phase per class and workload, all phases of the step in parallel on the
-# shared UniformQPS budget (so tenants arrive interleaved), WaitForRunningPods timeout 5m. Throughput is one
+# shared UniformQPS budget (so tenants arrive interleaved), WaitForRunningPods timeout 5m by default. Throughput is one
 # combined number over all tenants; per-tenant latency comes from e2e-latency.json (it records each pod's namespace).
 
 {{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
@@ -79,7 +80,7 @@ __CREATE_PHASES__
     Method: WaitForRunningPods
     Params:
       action: gather
-      timeout: 5m
+      timeout: __WAIT_TIMEOUT__
       desiredPodCount: __TOTAL__
       labelSelector: group = direct-scheduler-throughput
 

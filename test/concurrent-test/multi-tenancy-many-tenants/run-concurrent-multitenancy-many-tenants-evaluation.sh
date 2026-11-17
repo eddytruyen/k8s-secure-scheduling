@@ -61,6 +61,7 @@ MT14_GROUPS="${MT14_GROUPS:-40 50 80 100}"
 MT14_TOTAL_PODS="${MT14_TOTAL_PODS:-2000}"
 MT14_MODES="${MT14_MODES:-cold warm}"
 WARMUP_SETTLE_SECONDS="${WARMUP_SETTLE_SECONDS:-30}"
+MT14_WAIT_TIMEOUT="${MT14_WAIT_TIMEOUT:-5m}"   # CL2 WaitForRunningPods timeout per pass (experiments 8 and 9: 5m)
 DRY_RUN="${DRY_RUN:-false}"
 
 ARM="${ARM:-}"
@@ -170,10 +171,10 @@ YAML
   }
   phases "$ra" "$rb" UniformQPS > "$d/.create"
   phases 0 0 default > "$d/.delete"
-  awk -v total=$((G * S)) -v create="$d/.create" -v del="$d/.delete" '
+  awk -v total=$((G * S)) -v wt="$MT14_WAIT_TIMEOUT" -v create="$d/.create" -v del="$d/.delete" '
     /^__CREATE_PHASES__$/ { while ((getline l < create) > 0) print l; next }
     /^__DELETE_PHASES__$/ { while ((getline l < del) > 0) print l; next }
-    { gsub(/__TOTAL__/, total); print }' "$SCRIPT_DIR/config-concurrent.yaml.tmpl" > "$d/config.yaml"
+    { gsub(/__TOTAL__/, total); gsub(/__WAIT_TIMEOUT__/, wt); print }' "$SCRIPT_DIR/config-concurrent.yaml.tmpl" > "$d/config.yaml"
   rm -f "$d/.create" "$d/.delete"
 }
 
@@ -288,7 +289,7 @@ RESULT_ROOT="$TEST_DIR/result/use-case/concurrent-multitenancy-many-tenants-$ARM
 mkdir -p "$RESULT_ROOT"
 {
   echo "arm: $ARM"; echo "modes: $MT14_MODES"; echo "tenants: $MT14_GROUPS"; echo "pods_per_step: $MT14_TOTAL_PODS"
-  echo "cl2_uniform_qps: ${CL2_UNIFORM_QPS:-default}"; echo "warmup_settle_seconds: $WARMUP_SETTLE_SECONDS"
+  echo "cl2_uniform_qps: ${CL2_UNIFORM_QPS:-default}"; echo "wait_timeout: $MT14_WAIT_TIMEOUT"; echo "warmup_settle_seconds: $WARMUP_SETTLE_SECONDS"
   case "$ARM" in
     klastos|klastospc) kubectl -n kube-system get pods unified-operator appclass-operator -o jsonpath='{range .items[*]}{.metadata.name}: {.status.containerStatuses[0].imageID}{"\n"}{end}' 2>/dev/null
              kubectl -n kube-system get pods -l app=csi-admission -o jsonpath='{range .items[*]}{.metadata.name}: {.status.containerStatuses[0].imageID}{"\n"}{end}' 2>/dev/null ;;
