@@ -51,9 +51,22 @@ Known measurement files read (all optional — missing ones render as "-"):
   junit.xml                                    — pass/fail (failures+errors == 0)
   SchedulingThroughput_*.json                  — scheduled pods/sec percentiles
   ../e2e-latency.json                          — true e2e scheduling latency (see above)
-  *OPAAdmissionRequestDuration_*.json           — KLASTOS admission-mutation latency
-  *GatekeeperMutationRequestDuration_*.json     — baseline admission-mutation latency
-  *GatekeeperValidationRequestDuration_*.json   — baseline validation latency
+
+Each row also gives the number of pods behind the e2e column and behind each
+phase column ("Pods e2e/classif./gate/sched"; *_pods in the CSV). The phase
+percentiles cover only pods whose transitions the watcher witnessed; when a
+phase covers under 95% of the pods it applies to (classification: pods with a
+classification source; gate: pods that were gated; scheduling: pods with an
+e2e) the cell says "phases partial", and the phases describe a subset that
+does not add up to the e2e (measured 2026-11-12:
+gate phase over 146 of 2000 pods, p50 4 s, against ~118 s for all pods rebuilt
+from the UCSS log).
+
+Admission is not reported here. The former admission/validation columns came from Gatekeeper's internal handler
+histograms (and the deprecated OPA path): Gatekeeper-only, empty for csi-admission and Kyverno, and a 5-minute
+Prometheus window rather than the run, so not comparable across arms. They were dropped. The apiserver-side admission
+cost per sweep (same method for every arm) is in the campaign's admission-*.txt and is copied into each repeated-run
+folder's stats.md/stats.csv by update-latest-results.py.
 """
 import sys
 import os
@@ -70,9 +83,6 @@ _TS_RE = re.compile(r"_(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)\.json$")
 _METRIC_PREFIXES = {
     "throughput": "SchedulingThroughput_",
     "scheduling_metrics": "SchedulingMetrics_",
-    "opa": "GenericPrometheusQuery OPAAdmissionRequestDuration_",
-    "gk_mutation": "GenericPrometheusQuery GatekeeperMutationRequestDuration_",
-    "gk_validation": "GenericPrometheusQuery GatekeeperValidationRequestDuration_",
 }
 
 
@@ -213,6 +223,27 @@ def load_phase_latency(dirpath, class_key):
         return {}
     phases = data.get("phase_summary") or {}
     return {phase: (per_class.get(class_key) or {}) for phase, per_class in phases.items()}
+
+
+def load_phase_eligible(dirpath, class_key):
+    """How many pods each phase COULD cover, from the per-pod records: the
+    pods with an e2e latency (not resync-recovered) for which the phase
+    applies. Classification: pods carrying a classification source.
+    Gate release: pods that were gated at all (an admission fast-path pod
+    never is). Scheduling: every pod with an e2e. A phase whose count falls
+    short of this was lost by the watcher, not absent by design."""
+    data = _find_e2e_latency_data(dirpath)
+    if not data:
+        return {}
+    pods = [p for p in (data.get("pods") or [])
+            if (class_key == "__all__" or p.get("class") == class_key)
+            and p.get("latency_seconds") is not None
+            and not p.get("recovered_via_resync")]
+    return {
+        "classification": sum(1 for p in pods if p.get("classification_source")),
+        "gate_release": sum(1 for p in pods if p.get("ever_gated")),
+        "scheduling": len(pods),
+    }
 
 
 def load_json(path):
@@ -376,14 +407,10 @@ def summarize(label, dirpath, identifier):
         e2e = load_e2e_latency(dirpath, class_key) or {}
     classification_source = load_classification_source(dirpath, class_key)
     phases = load_phase_latency(dirpath, class_key)
+    eligible = load_phase_eligible(dirpath, class_key)
     classification_phase = phases.get("classification") or {}
     gate_release_phase = phases.get("gate_release") or {}
     scheduling_phase = phases.get("scheduling") or {}
-
-    opa = generic_query_percentiles(dirpath, _METRIC_PREFIXES["opa"], identifier)
-    gk_mut = generic_query_percentiles(dirpath, _METRIC_PREFIXES["gk_mutation"], identifier)
-    gk_val = generic_query_percentiles(dirpath, _METRIC_PREFIXES["gk_validation"], identifier)
-    admission = opa or gk_mut
 
     return {
         "label": label,
@@ -395,10 +422,6 @@ def summarize(label, dirpath, identifier):
         "e2e_p90": e2e.get("p90"),
         "e2e_p99": e2e.get("p99"),
         "e2e_count": e2e.get("count"),
-        "admission_p50": (admission or {}).get("Perc50"),
-        "admission_p90": (admission or {}).get("Perc90"),
-        "admission_p99": (admission or {}).get("Perc99"),
-        "validation_p99": (gk_val or {}).get("Perc99"),
         "classification_source": classification_source,
         "classify_p50": classification_phase.get("p50"),
         "classify_p90": classification_phase.get("p90"),
@@ -409,6 +432,13 @@ def summarize(label, dirpath, identifier):
         "sched_phase_p50": scheduling_phase.get("p50"),
         "sched_phase_p90": scheduling_phase.get("p90"),
         "sched_phase_p99": scheduling_phase.get("p99"),
+        # Pods behind each column. The phase percentiles cover only pods whose
+        # transitions the watcher witnessed, which can be far fewer than the
+        # e2e pods (see phase_coverage in e2e-latency-watch.py).
+        "classify_count": classification_phase.get("count"),
+        "gate_count": gate_release_phase.get("count"),
+        "sched_phase_count": scheduling_phase.get("count"),
+        "phase_eligible": eligible,
         "source_latency": load_source_latency(dirpath, class_key),
     }
 
@@ -424,34 +454,51 @@ def find_leaf_dirs(root):
 def render_markdown(rows):
     headers = [
         "Run", "Status", "Sched pods/s (p50/p90/p99)",
-        "e2e latency (p50/p90/p99)", "Admission-mutation (p50/p90/p99)",
-        "Validation p99", "Classification source",
+        "e2e latency (p50/p90/p99)", "Classification source",
         "Classification phase (p50/p90/p99)",
         "Gate-release phase (p50/p90/p99)",
         "Scheduling phase (p50/p90/p99)",
+        "Pods e2e/classif./gate/sched",
     ]
     lines = ["| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
     for r in rows:
         sched = f"{fmt_num(r['throughput_p50'])}/{fmt_num(r['throughput_p90'])}/{fmt_num(r['throughput_p99'])}"
         e2e = f"{fmt_ms(r['e2e_p50'])}/{fmt_ms(r['e2e_p90'])}/{fmt_ms(r['e2e_p99'])}"
-        adm = f"{fmt_ms(r['admission_p50'])}/{fmt_ms(r['admission_p90'])}/{fmt_ms(r['admission_p99'])}"
-        val = fmt_ms(r["validation_p99"])
         csrc = fmt_classification_source(r["classification_source"])
         classify = f"{fmt_ms(r['classify_p50'])}/{fmt_ms(r['classify_p90'])}/{fmt_ms(r['classify_p99'])}"
         gate = f"{fmt_ms(r['gate_p50'])}/{fmt_ms(r['gate_p90'])}/{fmt_ms(r['gate_p99'])}"
         sched_phase = f"{fmt_ms(r['sched_phase_p50'])}/{fmt_ms(r['sched_phase_p90'])}/{fmt_ms(r['sched_phase_p99'])}"
         lines.append(
-            f"| {r['label']} | {r['status']} | {sched} | {e2e} | {adm} | {val} | "
-            f"{csrc} | {classify} | {gate} | {sched_phase} |"
+            f"| {r['label']} | {r['status']} | {sched} | {e2e} | "
+            f"{csrc} | {classify} | {gate} | {sched_phase} | {fmt_pod_counts(r)} |"
         )
     return "\n".join(lines)
+
+
+def fmt_count(n):
+    return "-" if n is None else str(n)
+
+
+def fmt_pod_counts(r):
+    """"e2e/classify/gate/sched" pod counts, flagged when a phase column
+    covers under 95% of the pods it applies to (see load_phase_eligible):
+    its percentiles then describe a subset (typically the fastest pods,
+    released before the watcher lost the stream) and do not add up to the
+    e2e column. A phase that applies to no pod (a baseline arm has no
+    classification or gate; a fast-path pod is never gated) is not flagged."""
+    counts = [r.get("e2e_count"), r.get("classify_count"), r.get("gate_count"), r.get("sched_phase_count")]
+    elig = r.get("phase_eligible") or {}
+    partial = any(
+        (elig.get(ph) or 0) > 0 and (n or 0) < 0.95 * elig[ph]
+        for ph, n in (("classification", counts[1]), ("gate_release", counts[2]), ("scheduling", counts[3])))
+    return "/".join(fmt_count(n) for n in counts) + (" ⚠ phases partial" if partial else "")
 
 
 def render_source_latency_markdown(rows):
     """Second table: e2e latency per classification source.
 
     Kept separate rather than widening the main table, which is already at
-    ten columns, and because the number of sources is not fixed. Rows are
+    eight columns, and because the number of sources is not fixed. Rows are
     ordered most-populous-first within a run so the dominant path reads
     first and the gated minority sits directly beneath it."""
     headers = ["Run", "Source", "Pods", "p50", "p90", "p99", "max"]
@@ -498,12 +545,11 @@ def render_csv(rows, fileobj):
         "run", "status",
         "throughput_p50", "throughput_p90", "throughput_p99",
         "e2e_p50_ms", "e2e_p90_ms", "e2e_p99_ms",
-        "admission_p50_ms", "admission_p90_ms", "admission_p99_ms",
-        "validation_p99_ms",
         "classification_source",
         "classify_p50_ms", "classify_p90_ms", "classify_p99_ms",
         "gate_p50_ms", "gate_p90_ms", "gate_p99_ms",
         "sched_phase_p50_ms", "sched_phase_p90_ms", "sched_phase_p99_ms",
+        "e2e_pods", "classify_pods", "gate_pods", "sched_phase_pods",
     ]
     writer = csv.writer(fileobj)
     writer.writerow(headers)
@@ -512,12 +558,12 @@ def render_csv(rows, fileobj):
             r["label"], r["status"],
             fmt_num(r["throughput_p50"]), fmt_num(r["throughput_p90"]), fmt_num(r["throughput_p99"]),
             to_ms(r["e2e_p50"]), to_ms(r["e2e_p90"]), to_ms(r["e2e_p99"]),
-            to_ms(r["admission_p50"]), to_ms(r["admission_p90"]), to_ms(r["admission_p99"]),
-            to_ms(r["validation_p99"]),
             fmt_classification_source(r["classification_source"]),
             to_ms(r["classify_p50"]), to_ms(r["classify_p90"]), to_ms(r["classify_p99"]),
             to_ms(r["gate_p50"]), to_ms(r["gate_p90"]), to_ms(r["gate_p99"]),
             to_ms(r["sched_phase_p50"]), to_ms(r["sched_phase_p90"]), to_ms(r["sched_phase_p99"]),
+            *("" if r.get(k) is None else r[k]
+              for k in ("e2e_count", "classify_count", "gate_count", "sched_phase_count")),
         ])
 
 
