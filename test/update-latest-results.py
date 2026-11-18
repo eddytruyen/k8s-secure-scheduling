@@ -19,10 +19,10 @@ UCSS_FIX_FROM = "20261108-012529"
 # KLASTOS-arm sweeps from campaign log dirs >= this stamp ran with the image built from main after PR #106 (UCSS v1.8.0),
 # which does NOT contain the PR #104 scan fixes (PR #104 is unmerged).
 UCSS_106_FROM = "20261109-121834"
-# KLASTOS-arm setups left out of the table: the anti-affinity and anti-affinity + affinity use cases (3, 4, 8, 9).
-# KLASTOS fails them (9) or is factors slower than the baselines (3, 4, 8) until the UCSS interclass release path
-# is fixed. Their sweeps stay in the result folders and campaign logs.
-EXCLUDED_KLASTOS = {3, 4, 8, 9}
+# KLASTOS-arm setups left out of the table. Empty since 2026-11-18 (decided by the experiment owner): the reactive
+# KLASTOS arm of the anti-affinity use cases (3, 4, 8, 9), hidden until then "until the UCSS interclass release path
+# is fixed", is reported again, next to the pre-compiled arm (klastospc) of 8 and 9.
+EXCLUDED_KLASTOS = set()
 # Setups left out for every arm, by sweep name: the first design of experiment 14 ("many appgroups", 2026-11-16/17:
 # the interclass-queue benchmark's intra-group spreading rule, not tenant isolation). It was replaced by
 # "multi-tenancy many-tenants" (experiment 9's rule, G tenants x 2000/G pods), which IS reported.
@@ -215,8 +215,8 @@ lines = ["# Latest evaluation per setup", "",
          "invalid sweep is shown in the last column. Folders are in this directory; `stats.md` has the aggregate table. "
          "Experiment numbers follow `run-campaign-n1000.sh` (the `/N` total in the log names changed from 10 to 12 to 13 "
          "over time and is ignored).", "",
-         "The KLASTOS arm of experiments %s (anti-affinity and anti-affinity + affinity) is left out until the UCSS "
-         "interclass release path is fixed." % ", ".join(str(n) for n in sorted(EXCLUDED_KLASTOS)), "",
+         ("The KLASTOS arm of experiments %s is left out." % ", ".join(str(n) for n in sorted(EXCLUDED_KLASTOS))
+          if EXCLUDED_KLASTOS else "No KLASTOS arm is left out."), "",
          "**Admission** is not in `stats.md`: the e2e latency there starts when the watcher first sees the pod, i.e. "
          "after admission. The two admission columns come from the sweep's `admission-*.txt` in the campaign log dir "
          "(apiserver metrics, all steps and repeats of the sweep). *Pod POST mean* is the exact apiserver-side mean of "
