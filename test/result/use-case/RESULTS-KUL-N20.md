@@ -68,8 +68,38 @@ workloads, while the KU Leuven control plane is real, dedicated hardware. Neithe
 baseline reports `classify` or `gate` phases — they only admit pods, they do not
 classify or gate them, so their e2e *is* their scheduling phase.
 
-The KLASTOS : baseline ratio is ~10–20× on **both** platforms. That ratio, not the
-absolute numbers, is the result that carries over.
+The KLASTOS : baseline ratio is ~10–20× **at N=20**. It does **not** generalise to
+N=1000 — see the next section, which is the more important one.
+
+### The N=20 ratio does NOT hold at N=1000 — read this before quoting it
+
+At N=1000 on KWOK, KLASTOS is **on par with Gatekeeper and Kyverno**, not 10–20×
+slower. e2e p50, ms, each figure over all 1000 pods:
+
+| arm | eu | italynorth | us | vanilla |
+|---|---|---|---|---|
+| KLASTOS | **9.6** | **9.7** | **9.8** | **9.7** |
+| Gatekeeper | 10.4 | 10.6 | 10.4 | 10.9 |
+| Kyverno | 9.3 | 9.8 | 9.2 | 9.9 |
+
+The two scales measure different things, which the phase *coverage* makes explicit:
+
+| | N=20 | N=1000 |
+|---|---|---|
+| `classify` | 271–404 ms over **20 of 20** pods | **0.0 ms** over 1000 of 1000 |
+| `gate` | 72–171 ms over **20 of 20** pods | 228–398 ms over **~61 of 1000** |
+| phases sum to e2e? | **yes** (289.6+126.2+7.1 = 422.9 vs e2e 422.8) | **no** (sum 321.6 vs e2e 9.6) |
+
+At N=20 every pod pays full classification and gate-release latency, and the phases
+add up to the end-to-end figure: a **cold pipeline**. At N=1000 only about 6 % of pods
+are ever observed waiting on a gate, and classification measures zero because the
+annotation is already present when the watcher first sees the pod — so per-pod e2e
+collapses to ~9.6 ms and the classification/gating cost is amortised away.
+
+**Consequence for this run: the regime that matters has not been measured here.**
+Everything else in this document is the N=20 cold-pipeline regime. The N=1000
+behaviour — KLASTOS on par with the baselines — is established on KWOK only and
+remains untested on the KU Leuven cluster.
 
 ### Where the two platforms differ
 
@@ -85,11 +115,10 @@ absolute numbers, is the result that carries over.
 1. **Two repeats.** `REPEATS=2` is the minimum the harness accepts. Several spreads
    are large (`us` e2e ± 193 ms); these numbers are a smoke test that the pipeline
    works on real hardware, **not** a measurement for the paper.
-2. **N=20, not N=1000.** The KWOK data-sovereignty runs usually used N=1000, and that
-   is a *different regime*, not a scaled version of this one: KWOK at N=1000 reports
-   e2e p50 ≈ 9.6 ms with `classify` ≈ 0.0 and `gate` ≈ 228–398 ms. Do not compare the
-   N=1000 KWOK figures against the N=20 figures here — the N=20 KWOK runs
-   (2026-11-05) are the correct comparison and are the ones used above.
+2. **N=20, not N=1000 — and the conclusion differs by regime.** At N=20 KLASTOS costs
+   10–20× the baselines; at N=1000 it is on par with them. Both are true, of
+   different regimes. Quoting the N=20 ratio as "the cost of KLASTOS" would
+   misrepresent the system. See "The N=20 ratio does NOT hold at N=1000" above.
 3. **Prometheus-derived measurements are absent.** `CL2_ENABLE_PROMETHEUS=false` on
    this cluster, because ClusterLoader2 otherwise installs a second Prometheus stack
    into the shared `monitoring` namespace and crashloops the cluster's own
