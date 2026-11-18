@@ -7,6 +7,18 @@
 #   CL2_PROVIDER  - kind|local|skeleton|gce|... "kind" assumes a kind cluster and
 #                   probes for its control-plane container; use "skeleton" for a
 #                   plain remote cluster.
+#   CL2_ENABLE_PROMETHEUS - "false" on any cluster that already runs its own
+#                   monitoring. CL2 otherwise installs a COMPLETE second Prometheus
+#                   stack into the monitoring namespace; on the shared KU Leuven
+#                   cluster one of its ServiceMonitors panicked the cluster's own
+#                   prometheus-operator and left it crashlooping (2026-11-18).
+#                   Prometheus-backed measurements then skip themselves with a
+#                   warning, so no testconfig has to change.
+#   CL2_TEARDOWN_PROMETHEUS - "true" to remove that stack afterwards. The default
+#                   false leaves every object behind, which is what made the damage
+#                   above outlive the run.
+#   CL2_PROMETHEUS_READY_TIMEOUT - 0 means wait FOREVER, and readiness requires ALL
+#                   scrape targets healthy, so one unhealthy target hangs the run.
 # Requires: node labels for $TEST's policy already applied once via
 # `POLICY=$TEST update-labels.sh`, before this script's first invocation -
 # see run-klastos-use-case-test.sh's header for why relabeling on every
@@ -49,11 +61,11 @@ echo -e "[*] Run $TEST test"
 CL2_PROMETHEUS_NODE_SELECTOR='node-role.kubernetes.io/control-plane: ""' \
 CL2_PROMETHEUS_TOLERATE_MASTER=true \
     $SCRIPT_DIR/clusterloader --alsologtostderr --logtostderr=false \
-    --enable-prometheus-server=true \
-    --tear-down-prometheus-server=false \
+    --enable-prometheus-server="${CL2_ENABLE_PROMETHEUS:-true}" \
+    --tear-down-prometheus-server="${CL2_TEARDOWN_PROMETHEUS:-false}" \
     --prometheus-apiserver-scrape-port=6443 \
     --prometheus-pvc-storage-class=standard \
-    --prometheus-ready-timeout=0 \
+    --prometheus-ready-timeout="${CL2_PROMETHEUS_READY_TIMEOUT:-0}" \
     --log_file=$SCRIPT_DIR/result/use-case/$TEST-test.log \
     --report-dir=$SCRIPT_DIR/result/use-case/$TEST-test \
     --testsuite=$SCRIPT_DIR/use-case/$TEST/scheduler-suite.yaml \

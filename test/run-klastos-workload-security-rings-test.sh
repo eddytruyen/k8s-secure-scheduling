@@ -7,6 +7,18 @@
 #   CL2_PROVIDER  - kind|local|skeleton|gce|... "kind" assumes a kind cluster and
 #                   probes for its control-plane container; use "skeleton" for a
 #                   plain remote cluster.
+#   CL2_ENABLE_PROMETHEUS - "false" on any cluster that already runs its own
+#                   monitoring. CL2 otherwise installs a COMPLETE second Prometheus
+#                   stack into the monitoring namespace; on the shared KU Leuven
+#                   cluster one of its ServiceMonitors panicked the cluster's own
+#                   prometheus-operator and left it crashlooping (2026-11-18).
+#                   Prometheus-backed measurements then skip themselves with a
+#                   warning, so no testconfig has to change.
+#   CL2_TEARDOWN_PROMETHEUS - "true" to remove that stack afterwards. The default
+#                   false leaves every object behind, which is what made the damage
+#                   above outlive the run.
+#   CL2_PROMETHEUS_READY_TIMEOUT - 0 means wait FOREVER, and readiness requires ALL
+#                   scrape targets healthy, so one unhealthy target hangs the run.
 # KLASTOS counterpart of run-use-case-test.sh (TEST=workload-security-rings),
 # for the workload-security-rings use case — third use-case instantiation
 # of Experiment 1, alongside run-klastos-use-case-test.sh (data-sovereignty)
@@ -77,11 +89,11 @@ for CLASS in $CLASSES; do
   CL2_PROMETHEUS_TOLERATE_MASTER=true \
   CL2_SCHEDULER_THROUGHPUT_PODS="$CL2_SCHEDULER_THROUGHPUT_PODS" \
       "$SCRIPT_DIR/clusterloader" --alsologtostderr --logtostderr=false \
-      --enable-prometheus-server=true \
-      --tear-down-prometheus-server=false \
+      --enable-prometheus-server="${CL2_ENABLE_PROMETHEUS:-true}" \
+      --tear-down-prometheus-server="${CL2_TEARDOWN_PROMETHEUS:-false}" \
       --prometheus-apiserver-scrape-port=6443 \
       --prometheus-pvc-storage-class=standard \
-      --prometheus-ready-timeout=0 \
+      --prometheus-ready-timeout="${CL2_PROMETHEUS_READY_TIMEOUT:-0}" \
       --log_file="$SCRIPT_DIR/result/use-case/$RESULT_DIR_NAME/$CLASS.log" \
       --report-dir="$SCRIPT_DIR/result/use-case/$RESULT_DIR_NAME/$CLASS" \
       --testconfig="$SCRIPT_DIR/use-case/workload-security-rings-klastos/config-klastos.yaml" \
