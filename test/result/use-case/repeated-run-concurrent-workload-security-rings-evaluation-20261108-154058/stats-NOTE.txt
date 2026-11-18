@@ -1,0 +1,14 @@
+stats.md / stats.csv EXCLUDE repeat 2 entirely (concurrent-workload-security-rings-evaluation-20261108-154332).
+Listed in outliers.txt, which update-latest-results.py (Pass 4/5) and the klastos experiment1 Parquet export read;
+the repeat is left out of LATEST-RESULTS.md statistics, the tables and the figures.
+
+Decision: exclude, decided by the experiment owner on 2026-11-18. Proposed by Claude Code from the per-repeat numbers
+below; the cause is a hypothesis, not verified.
+
+Numbers: repeat 2 is far off its siblings on the same stack and load. e2e mean 348 ms (repeats 1/3/4/5: 51-67 ms),
+p90 966 ms (repeat 1: 16 ms), p99 3572 ms (1469-1922 ms). Pods classified at admission, which never wait for UCSS,
+are slow too (p90 366 ms vs ~15 ms), which points at the cluster rather than the KLASTOS release path. That matches
+the apiserver/etcd stall that excluded repeat 2 of the 2026-11-02 classToTopology sweep; no stall was checked in the
+cluster logs for this run.
+
+Remaining 4 repeats: 1 (154058), 3, 4, 5. Originals over all 5 repeats: stats.with-outlier.md / .csv.

@@ -1,0 +1,26 @@
+=== Experiment 1 CONCURRENT evaluation (workload-security-rings) ===
+Steps (N per ring):     1000
+Classification source:  rbac (KLASTOS arm only)
+Run KLASTOS:  true
+Run baseline: false
+Results:      /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-workload-security-rings-evaluation-20261108-154628
+
+--- Step: N=1000 per ring (threshold=100 pods/sec, violations=off) ---
+[*] KLASTOS harness (workload-security-rings, CONCURRENT), N=1000 per ring
+    OK — log: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-workload-security-rings-evaluation-20261108-154628/klastos-n1000/run.log
+
+=== All steps passed ===
+Results under: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-workload-security-rings-evaluation-20261108-154628
+| Run | Status | Sched pods/s (p50/p90/p99) | e2e latency (p50/p90/p99) | Admission-mutation (p50/p90/p99) | Validation p99 | Classification source | Classification phase (p50/p90/p99) | Gate-release phase (p50/p90/p99) | Scheduling phase (p50/p90/p99) |
+|---|---|---|---|---|---|---|---|---|---|
+| concurrent-workload-security-rings-evaluation-20261108-154628/klastos-n1000/measurements | PASS | 40/40/47.4 | 9.5ms/15.4ms/1694.7ms | -/-/- | - | admission=1940,appclass_operator=60 | 0.0ms/0.0ms/721.0ms | 355.0ms/941.6ms/1089.9ms | 9.4ms/14.4ms/23.3ms |
+
+### E2E latency by classification source
+
+| Run | Source | Pods | p50 | p90 | p99 | max |
+|---|---|---|---|---|---|---|
+| concurrent-workload-security-rings-evaluation-20261108-154628/klastos-n1000/measurements | admission | 1940 | 9.4ms | 14.4ms | 23.3ms | 75.6ms |
+| concurrent-workload-security-rings-evaluation-20261108-154628/klastos-n1000/measurements | appclass_operator | 60 | 1479.7ms | 1995.5ms | 2131.6ms | 2262.9ms |
+
+Report: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-workload-security-rings-evaluation-20261108-154628/report.md
+CSV:    /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/concurrent-workload-security-rings-evaluation-20261108-154628/report.csv
