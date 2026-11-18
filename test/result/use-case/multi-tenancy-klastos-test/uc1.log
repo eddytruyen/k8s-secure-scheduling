@@ -1,0 +1,1215 @@
+Log file created at: 2026/11/02 09:25:56
+Running on machine: test
+Binary: Built with gc go1.23.4 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1102 09:25:56.536043  766590 clusterloader.go:272] Listening on 8000
+I1102 09:25:56.789211  766590 clusterloader.go:174] ClusterConfig.MasterName set to secure-sched-control-plane
+E1102 09:25:56.817367  766590 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1102 09:25:56.844996  766590 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.18.0.2]
+I1102 09:25:56.845059  766590 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/config RunFromCluster:false Nodes:100 Provider:0xc00013a2a0 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.18.0.2] MasterName:secure-sched-control-plane DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1 ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:false EnableServer:true EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[/home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/uc1-tenant/override.yaml]}
+I1102 09:25:56.871110  766590 cluster.go:75] Listing cluster nodes:
+I1102 09:25:56.871159  766590 cluster.go:87] Name: kwok-node-1, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871173  766590 cluster.go:87] Name: kwok-node-10, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871182  766590 cluster.go:87] Name: kwok-node-100, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871191  766590 cluster.go:87] Name: kwok-node-11, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871199  766590 cluster.go:87] Name: kwok-node-12, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871207  766590 cluster.go:87] Name: kwok-node-13, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871214  766590 cluster.go:87] Name: kwok-node-14, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871222  766590 cluster.go:87] Name: kwok-node-15, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871230  766590 cluster.go:87] Name: kwok-node-16, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871237  766590 cluster.go:87] Name: kwok-node-17, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871244  766590 cluster.go:87] Name: kwok-node-18, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871252  766590 cluster.go:87] Name: kwok-node-19, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871277  766590 cluster.go:87] Name: kwok-node-2, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871285  766590 cluster.go:87] Name: kwok-node-20, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871292  766590 cluster.go:87] Name: kwok-node-21, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871300  766590 cluster.go:87] Name: kwok-node-22, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871307  766590 cluster.go:87] Name: kwok-node-23, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871315  766590 cluster.go:87] Name: kwok-node-24, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871322  766590 cluster.go:87] Name: kwok-node-25, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871330  766590 cluster.go:87] Name: kwok-node-26, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871337  766590 cluster.go:87] Name: kwok-node-27, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871345  766590 cluster.go:87] Name: kwok-node-28, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871352  766590 cluster.go:87] Name: kwok-node-29, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871360  766590 cluster.go:87] Name: kwok-node-3, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871367  766590 cluster.go:87] Name: kwok-node-30, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871374  766590 cluster.go:87] Name: kwok-node-31, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871383  766590 cluster.go:87] Name: kwok-node-32, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871390  766590 cluster.go:87] Name: kwok-node-33, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871398  766590 cluster.go:87] Name: kwok-node-34, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871405  766590 cluster.go:87] Name: kwok-node-35, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871413  766590 cluster.go:87] Name: kwok-node-36, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871420  766590 cluster.go:87] Name: kwok-node-37, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871427  766590 cluster.go:87] Name: kwok-node-38, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871435  766590 cluster.go:87] Name: kwok-node-39, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871442  766590 cluster.go:87] Name: kwok-node-4, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871450  766590 cluster.go:87] Name: kwok-node-40, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871458  766590 cluster.go:87] Name: kwok-node-41, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871466  766590 cluster.go:87] Name: kwok-node-42, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871473  766590 cluster.go:87] Name: kwok-node-43, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871481  766590 cluster.go:87] Name: kwok-node-44, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871488  766590 cluster.go:87] Name: kwok-node-45, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871495  766590 cluster.go:87] Name: kwok-node-46, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871522  766590 cluster.go:87] Name: kwok-node-47, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871530  766590 cluster.go:87] Name: kwok-node-48, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871538  766590 cluster.go:87] Name: kwok-node-49, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871552  766590 cluster.go:87] Name: kwok-node-5, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871559  766590 cluster.go:87] Name: kwok-node-50, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871567  766590 cluster.go:87] Name: kwok-node-51, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871576  766590 cluster.go:87] Name: kwok-node-52, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871583  766590 cluster.go:87] Name: kwok-node-53, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871591  766590 cluster.go:87] Name: kwok-node-54, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871598  766590 cluster.go:87] Name: kwok-node-55, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871606  766590 cluster.go:87] Name: kwok-node-56, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871613  766590 cluster.go:87] Name: kwok-node-57, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871620  766590 cluster.go:87] Name: kwok-node-58, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871628  766590 cluster.go:87] Name: kwok-node-59, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871635  766590 cluster.go:87] Name: kwok-node-6, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871643  766590 cluster.go:87] Name: kwok-node-60, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871650  766590 cluster.go:87] Name: kwok-node-61, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871657  766590 cluster.go:87] Name: kwok-node-62, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871665  766590 cluster.go:87] Name: kwok-node-63, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871672  766590 cluster.go:87] Name: kwok-node-64, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871679  766590 cluster.go:87] Name: kwok-node-65, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871687  766590 cluster.go:87] Name: kwok-node-66, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871694  766590 cluster.go:87] Name: kwok-node-67, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871701  766590 cluster.go:87] Name: kwok-node-68, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871709  766590 cluster.go:87] Name: kwok-node-69, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871716  766590 cluster.go:87] Name: kwok-node-7, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871725  766590 cluster.go:87] Name: kwok-node-70, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871732  766590 cluster.go:87] Name: kwok-node-71, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871740  766590 cluster.go:87] Name: kwok-node-72, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871747  766590 cluster.go:87] Name: kwok-node-73, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871755  766590 cluster.go:87] Name: kwok-node-74, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871762  766590 cluster.go:87] Name: kwok-node-75, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871770  766590 cluster.go:87] Name: kwok-node-76, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871777  766590 cluster.go:87] Name: kwok-node-77, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871784  766590 cluster.go:87] Name: kwok-node-78, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871792  766590 cluster.go:87] Name: kwok-node-79, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871805  766590 cluster.go:87] Name: kwok-node-8, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871814  766590 cluster.go:87] Name: kwok-node-80, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871822  766590 cluster.go:87] Name: kwok-node-81, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871829  766590 cluster.go:87] Name: kwok-node-82, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871836  766590 cluster.go:87] Name: kwok-node-83, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871844  766590 cluster.go:87] Name: kwok-node-84, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871851  766590 cluster.go:87] Name: kwok-node-85, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871859  766590 cluster.go:87] Name: kwok-node-86, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871866  766590 cluster.go:87] Name: kwok-node-87, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871874  766590 cluster.go:87] Name: kwok-node-88, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871881  766590 cluster.go:87] Name: kwok-node-89, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871889  766590 cluster.go:87] Name: kwok-node-9, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871896  766590 cluster.go:87] Name: kwok-node-90, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871904  766590 cluster.go:87] Name: kwok-node-91, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871911  766590 cluster.go:87] Name: kwok-node-92, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871918  766590 cluster.go:87] Name: kwok-node-93, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871926  766590 cluster.go:87] Name: kwok-node-94, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871933  766590 cluster.go:87] Name: kwok-node-95, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871941  766590 cluster.go:87] Name: kwok-node-96, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871948  766590 cluster.go:87] Name: kwok-node-97, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871955  766590 cluster.go:87] Name: kwok-node-98, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871963  766590 cluster.go:87] Name: kwok-node-99, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:25:56.871971  766590 cluster.go:87] Name: secure-sched-control-plane, clusterIP: 172.18.0.2, externalIP: , isSchedulable: true
+I1102 09:25:56.902307  766590 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:25:56.907555  766590 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:25:56.927819  766590 prometheus.go:509] Using internal master ips ([172.18.0.2]) to monitor master's components
+I1102 09:25:56.927906  766590 prometheus.go:227] Setting up prometheus stack
+I1102 09:25:56.971438  766590 framework.go:276] Applying templates for "*.yaml"
+I1102 09:25:56.971636  766590 framework.go:287] Applying 0prometheus-operator-0alertmanagerConfigCustomResourceDefinition.yaml
+I1102 09:25:57.146491  766590 framework.go:287] Applying 0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml
+I1102 09:25:57.424242  766590 framework.go:287] Applying 0prometheus-operator-0podmonitorCustomResourceDefinition.yaml
+I1102 09:25:57.475969  766590 framework.go:287] Applying 0prometheus-operator-0probeCustomResourceDefinition.yaml
+I1102 09:25:57.509678  766590 framework.go:287] Applying 0prometheus-operator-0prometheusCustomResourceDefinition.yaml
+I1102 09:25:57.809040  766590 framework.go:287] Applying 0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml
+I1102 09:25:57.832762  766590 framework.go:287] Applying 0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml
+I1102 09:25:57.886992  766590 framework.go:287] Applying 0prometheus-operator-0thanosrulerCustomResourceDefinition.yaml
+I1102 09:25:58.114746  766590 framework.go:287] Applying 0prometheus-operator-clusterRole.yaml
+I1102 09:25:58.129415  766590 framework.go:287] Applying 0prometheus-operator-clusterRoleBinding.yaml
+I1102 09:25:58.141415  766590 framework.go:287] Applying 0prometheus-operator-deployment.yaml
+I1102 09:25:58.183221  766590 framework.go:287] Applying 0prometheus-operator-service.yaml
+I1102 09:25:58.203208  766590 framework.go:287] Applying 0prometheus-operator-serviceAccount.yaml
+I1102 09:25:58.214490  766590 framework.go:287] Applying 0prometheus-operator-serviceMonitor.yaml
+I1102 09:25:58.229078  766590 framework.go:287] Applying 0ssd-storage-class.yaml
+I1102 09:25:58.241198  766590 framework.go:287] Applying grafana-dashboardDatasources.yaml
+I1102 09:25:58.252786  766590 framework.go:287] Applying grafana-dashboardDefinitions.yaml
+I1102 09:25:58.714288  766590 framework.go:287] Applying grafana-dashboardSources.yaml
+I1102 09:25:58.727429  766590 framework.go:287] Applying grafana-deployment.yaml
+I1102 09:25:58.755895  766590 framework.go:287] Applying grafana-service.yaml
+I1102 09:25:58.781253  766590 framework.go:287] Applying grafana-serviceAccount.yaml
+I1102 09:25:58.791958  766590 framework.go:287] Applying grafana-serviceMonitor.yaml
+I1102 09:25:58.808050  766590 framework.go:287] Applying prometheus-clusterRole.yaml
+I1102 09:25:58.826809  766590 framework.go:287] Applying prometheus-clusterRoleBinding.yaml
+I1102 09:25:58.840175  766590 framework.go:287] Applying prometheus-prometheus.yaml
+I1102 09:25:58.861002  766590 framework.go:287] Applying prometheus-resourceQuota.yaml
+I1102 09:25:58.873594  766590 framework.go:287] Applying prometheus-roleBindingConfig.yaml
+I1102 09:25:58.885602  766590 framework.go:287] Applying prometheus-roleConfig.yaml
+I1102 09:25:58.897101  766590 framework.go:287] Applying prometheus-rules.yaml
+I1102 09:25:58.927470  766590 framework.go:287] Applying prometheus-service.yaml
+I1102 09:25:58.953934  766590 framework.go:287] Applying prometheus-serviceAccount.yaml
+I1102 09:25:58.965595  766590 framework.go:287] Applying prometheus-serviceMonitor.yaml
+I1102 09:25:58.982516  766590 framework.go:287] Applying prometheus-windows-scrape-configs.yaml
+I1102 09:25:58.995627  766590 framework.go:276] Applying templates for "default/*.yaml"
+I1102 09:25:58.995770  766590 framework.go:287] Applying default/kube-proxy-service.yaml
+I1102 09:25:59.015471  766590 framework.go:287] Applying default/prometheus-podMonitorAnet.yaml
+W1102 09:25:59.015833  766590 framework.go:291] Skipping empty manifest default/prometheus-podMonitorAnet.yaml
+I1102 09:25:59.015856  766590 framework.go:287] Applying default/prometheus-podMonitorCiliumAgent.yaml
+W1102 09:25:59.016121  766590 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumAgent.yaml
+I1102 09:25:59.016138  766590 framework.go:287] Applying default/prometheus-podMonitorCiliumOperator.yaml
+W1102 09:25:59.016343  766590 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumOperator.yaml
+I1102 09:25:59.016358  766590 framework.go:287] Applying default/prometheus-podMonitorDNSPerf.yaml
+W1102 09:25:59.016523  766590 framework.go:291] Skipping empty manifest default/prometheus-podMonitorDNSPerf.yaml
+I1102 09:25:59.016538  766590 framework.go:287] Applying default/prometheus-podMonitorKubeNetworkPolicies.yaml
+W1102 09:25:59.016704  766590 framework.go:291] Skipping empty manifest default/prometheus-podMonitorKubeNetworkPolicies.yaml
+I1102 09:25:59.016720  766590 framework.go:287] Applying default/prometheus-podMonitorNetPolicyClient.yaml
+W1102 09:25:59.016953  766590 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNetPolicyClient.yaml
+I1102 09:25:59.016970  766590 framework.go:287] Applying default/prometheus-podMonitorNodeLocalDNS.yaml
+W1102 09:25:59.017154  766590 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNodeLocalDNS.yaml
+I1102 09:25:59.017169  766590 framework.go:287] Applying default/prometheus-serviceMonitorCoreDNS.yaml
+I1102 09:25:59.029038  766590 framework.go:287] Applying default/prometheus-serviceMonitorKubeProxy.yaml
+I1102 09:25:59.047624  766590 framework.go:287] Applying default/prometheus-serviceMonitorKubelet.yaml
+W1102 09:25:59.047851  766590 framework.go:291] Skipping empty manifest default/prometheus-serviceMonitorKubelet.yaml
+I1102 09:25:59.047867  766590 framework.go:287] Applying default/prometheus-serviceMonitorLegacyKubeDNS.yaml
+I1102 09:25:59.058753  766590 prometheus.go:360] Exposing kube-apiserver metrics in the cluster
+I1102 09:25:59.091558  766590 framework.go:276] Applying templates for "master-ip/*.yaml"
+I1102 09:25:59.091634  766590 framework.go:287] Applying master-ip/master-endpoints.yaml
+I1102 09:25:59.107248  766590 framework.go:287] Applying master-ip/master-service.yaml
+I1102 09:25:59.120688  766590 framework.go:287] Applying master-ip/master-serviceMonitor.yaml
+W1102 09:25:59.138607  766590 warnings.go:70] unknown field "spec.selector.k8s-app"
+I1102 09:25:59.138783  766590 prometheus.go:439] Waiting for Prometheus stack to become healthy...
+I1102 09:25:59.166645  766590 util.go:104] All 11 expected targets are ready
+I1102 09:25:59.166695  766590 prometheus.go:299] Prometheus stack set up successfully
+I1102 09:25:59.166709  766590 exec_service.go:86] Exec service: setting up service!
+I1102 09:25:59.191196  766590 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1102 09:25:59.191251  766590 framework.go:287] Applying manifest/exec_deployment.yaml
+I1102 09:25:59.224203  766590 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1102 09:25:59.271218  766590 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949277462s
+I1102 09:26:09.272410  766590 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:26:09.272472  766590 exec_service.go:122] Exec service: service set up successfully!
+W1102 09:26:09.272720  766590 imagepreload.go:92] No images specified. Skipping image preloading
+I1102 09:26:09.305444  766590 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1/generatedConfig_klastos-multitenancy-scheduler-throughput.yaml
+I1102 09:26:09.305482  766590 clusterloader.go:243] --------------------------------------------------------------------------------
+I1102 09:26:09.305497  766590 clusterloader.go:244] Running /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:26:09.305511  766590 clusterloader.go:245] --------------------------------------------------------------------------------
+I1102 09:26:09.305548  766590 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-om3zrf
+I1102 09:26:09.333230  766590 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1102 09:26:09.356987  766590 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1102 09:26:09.357336  766590 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1102 09:26:09.358962  766590 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:26:09.374844  766590 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1102 09:26:09.407766  766590 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1102 09:26:09.449377  766590 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1102 09:26:09.450063  766590 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1102 09:26:33.482265  766590 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1102 09:26:33.482305  766590 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1102 09:26:33.537767  766590 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:26:33.585454  766590 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.899384918s
+I1102 09:26:38.587133  766590 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:26:38.587218  766590 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1102 09:26:38.587248  766590 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1102 09:26:38.590265  766590 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1102 09:26:38.590269  766590 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1102 09:26:38.590409  766590 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-02T09:26:38Z
+I1102 09:26:38.591072  766590 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1102 09:26:38.591323  766590 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1102 09:26:38.591371  766590 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:26:38Z
+I1102 09:26:38.600427  766590 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:26:38Z
+I1102 09:26:38.613976  766590 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1102 09:26:38.655126  766590 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:26:38Z
+I1102 09:26:38.677383  766590 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:26:38Z
+I1102 09:26:38.684955  766590 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:26:38Z
+I1102 09:26:38.701204  766590 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:26:38Z
+I1102 09:26:38.713671  766590 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:26:38Z
+I1102 09:26:38.736271  766590 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:LIST Scope:cluster Latency:perc50: 150ms, perc90: 190ms, perc99: 199ms Count:0 SlowCount:0}; threshold: 30s
+I1102 09:26:38.736338  766590 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:cluster Latency:perc50: 26.654464ms, perc90: 47.978035ms, perc99: 135.355ms Count:23 SlowCount:0}; threshold: 30s
+I1102 09:26:38.736378  766590 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:namespace Latency:perc50: 37.375ms, perc90: 84.6ms, perc99: 98.01ms Count:0 SlowCount:0}; threshold: 30s
+I1102 09:26:38.736395  766590 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:replicationcontrollers Subresource: Verb:LIST Scope:cluster Latency:perc50: 25ms, perc90: 45ms, perc99: 49.5ms Count:0 SlowCount:0}; threshold: 30s
+I1102 09:26:38.736412  766590 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:LIST Scope:cluster Latency:perc50: 25ms, perc90: 45ms, perc99: 49.5ms Count:0 SlowCount:0}; threshold: 30s
+I1102 09:26:38.736755  766590 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1102 09:26:38.736791  766590 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1102 09:26:39.767833  766590 request.go:700] Waited for 1.000167463s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-470
+I1102 09:26:40.768548  766590 request.go:700] Waited for 1.997961521s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-146
+I1102 09:26:41.778418  766590 request.go:700] Waited for 3.004740404s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-65
+I1102 09:26:42.789626  766590 request.go:700] Waited for 4.00840696s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-154
+I1102 09:26:43.797851  766590 request.go:700] Waited for 5.008302963s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-271
+I1102 09:26:44.798733  766590 request.go:700] Waited for 5.997565743s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-325
+I1102 09:26:45.808620  766590 request.go:700] Waited for 6.996008216s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-482
+I1102 09:26:46.759658  766590 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1102 09:26:56.788138  766590 simple_test_executor.go:402] Resources cleanup time: 10.027871369s
+I1102 09:26:56.788202  766590 clusterloader.go:253] --------------------------------------------------------------------------------
+I1102 09:26:56.788218  766590 clusterloader.go:254] Test Finished
+I1102 09:26:56.788231  766590 clusterloader.go:255]   Test: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:26:56.788243  766590 clusterloader.go:256]   Status: Success
+I1102 09:26:56.788256  766590 clusterloader.go:260] --------------------------------------------------------------------------------
+I1102 09:26:56.788886  766590 prometheus.go:307] Get snapshot from Prometheus
+I1102 09:26:56.788905  766590 exec_service.go:130] Exec service: tearing down service
+Log file created at: 2026/11/02 09:32:06
+Running on machine: test
+Binary: Built with gc go1.23.4 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1102 09:32:06.722337  773604 clusterloader.go:272] Listening on 8000
+I1102 09:32:06.773381  773604 clusterloader.go:174] ClusterConfig.MasterName set to secure-sched-control-plane
+E1102 09:32:06.800371  773604 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1102 09:32:06.828584  773604 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.18.0.2]
+I1102 09:32:06.828656  773604 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/config RunFromCluster:false Nodes:100 Provider:0xc000014c20 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.18.0.2] MasterName:secure-sched-control-plane DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1 ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:false EnableServer:true EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[/home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/uc1-tenant/override.yaml]}
+I1102 09:32:06.855105  773604 cluster.go:75] Listing cluster nodes:
+I1102 09:32:06.855170  773604 cluster.go:87] Name: kwok-node-1, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855189  773604 cluster.go:87] Name: kwok-node-10, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855199  773604 cluster.go:87] Name: kwok-node-100, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855209  773604 cluster.go:87] Name: kwok-node-11, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855218  773604 cluster.go:87] Name: kwok-node-12, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855228  773604 cluster.go:87] Name: kwok-node-13, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855237  773604 cluster.go:87] Name: kwok-node-14, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855246  773604 cluster.go:87] Name: kwok-node-15, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855255  773604 cluster.go:87] Name: kwok-node-16, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855265  773604 cluster.go:87] Name: kwok-node-17, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855274  773604 cluster.go:87] Name: kwok-node-18, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855283  773604 cluster.go:87] Name: kwok-node-19, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855312  773604 cluster.go:87] Name: kwok-node-2, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855321  773604 cluster.go:87] Name: kwok-node-20, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855330  773604 cluster.go:87] Name: kwok-node-21, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855340  773604 cluster.go:87] Name: kwok-node-22, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855349  773604 cluster.go:87] Name: kwok-node-23, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855359  773604 cluster.go:87] Name: kwok-node-24, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855368  773604 cluster.go:87] Name: kwok-node-25, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855377  773604 cluster.go:87] Name: kwok-node-26, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855386  773604 cluster.go:87] Name: kwok-node-27, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855396  773604 cluster.go:87] Name: kwok-node-28, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855405  773604 cluster.go:87] Name: kwok-node-29, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855414  773604 cluster.go:87] Name: kwok-node-3, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855424  773604 cluster.go:87] Name: kwok-node-30, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855433  773604 cluster.go:87] Name: kwok-node-31, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855442  773604 cluster.go:87] Name: kwok-node-32, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855451  773604 cluster.go:87] Name: kwok-node-33, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855461  773604 cluster.go:87] Name: kwok-node-34, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855470  773604 cluster.go:87] Name: kwok-node-35, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855487  773604 cluster.go:87] Name: kwok-node-36, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855496  773604 cluster.go:87] Name: kwok-node-37, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855505  773604 cluster.go:87] Name: kwok-node-38, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855515  773604 cluster.go:87] Name: kwok-node-39, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855524  773604 cluster.go:87] Name: kwok-node-4, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855533  773604 cluster.go:87] Name: kwok-node-40, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855544  773604 cluster.go:87] Name: kwok-node-41, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855553  773604 cluster.go:87] Name: kwok-node-42, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855562  773604 cluster.go:87] Name: kwok-node-43, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855571  773604 cluster.go:87] Name: kwok-node-44, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855581  773604 cluster.go:87] Name: kwok-node-45, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855590  773604 cluster.go:87] Name: kwok-node-46, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855599  773604 cluster.go:87] Name: kwok-node-47, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855608  773604 cluster.go:87] Name: kwok-node-48, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855617  773604 cluster.go:87] Name: kwok-node-49, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855635  773604 cluster.go:87] Name: kwok-node-5, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855644  773604 cluster.go:87] Name: kwok-node-50, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855654  773604 cluster.go:87] Name: kwok-node-51, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855663  773604 cluster.go:87] Name: kwok-node-52, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855673  773604 cluster.go:87] Name: kwok-node-53, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855682  773604 cluster.go:87] Name: kwok-node-54, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855691  773604 cluster.go:87] Name: kwok-node-55, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855700  773604 cluster.go:87] Name: kwok-node-56, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855709  773604 cluster.go:87] Name: kwok-node-57, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855719  773604 cluster.go:87] Name: kwok-node-58, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855728  773604 cluster.go:87] Name: kwok-node-59, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855737  773604 cluster.go:87] Name: kwok-node-6, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855747  773604 cluster.go:87] Name: kwok-node-60, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855756  773604 cluster.go:87] Name: kwok-node-61, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855765  773604 cluster.go:87] Name: kwok-node-62, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855774  773604 cluster.go:87] Name: kwok-node-63, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855784  773604 cluster.go:87] Name: kwok-node-64, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855793  773604 cluster.go:87] Name: kwok-node-65, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855803  773604 cluster.go:87] Name: kwok-node-66, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855812  773604 cluster.go:87] Name: kwok-node-67, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855845  773604 cluster.go:87] Name: kwok-node-68, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855855  773604 cluster.go:87] Name: kwok-node-69, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855865  773604 cluster.go:87] Name: kwok-node-7, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855874  773604 cluster.go:87] Name: kwok-node-70, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855883  773604 cluster.go:87] Name: kwok-node-71, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855892  773604 cluster.go:87] Name: kwok-node-72, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855902  773604 cluster.go:87] Name: kwok-node-73, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855911  773604 cluster.go:87] Name: kwok-node-74, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855920  773604 cluster.go:87] Name: kwok-node-75, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855930  773604 cluster.go:87] Name: kwok-node-76, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855939  773604 cluster.go:87] Name: kwok-node-77, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855948  773604 cluster.go:87] Name: kwok-node-78, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855957  773604 cluster.go:87] Name: kwok-node-79, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855973  773604 cluster.go:87] Name: kwok-node-8, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855984  773604 cluster.go:87] Name: kwok-node-80, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.855993  773604 cluster.go:87] Name: kwok-node-81, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856003  773604 cluster.go:87] Name: kwok-node-82, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856012  773604 cluster.go:87] Name: kwok-node-83, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856022  773604 cluster.go:87] Name: kwok-node-84, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856031  773604 cluster.go:87] Name: kwok-node-85, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856040  773604 cluster.go:87] Name: kwok-node-86, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856049  773604 cluster.go:87] Name: kwok-node-87, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856058  773604 cluster.go:87] Name: kwok-node-88, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856068  773604 cluster.go:87] Name: kwok-node-89, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856077  773604 cluster.go:87] Name: kwok-node-9, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856086  773604 cluster.go:87] Name: kwok-node-90, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856095  773604 cluster.go:87] Name: kwok-node-91, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856104  773604 cluster.go:87] Name: kwok-node-92, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856114  773604 cluster.go:87] Name: kwok-node-93, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856123  773604 cluster.go:87] Name: kwok-node-94, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856132  773604 cluster.go:87] Name: kwok-node-95, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856141  773604 cluster.go:87] Name: kwok-node-96, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856151  773604 cluster.go:87] Name: kwok-node-97, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856160  773604 cluster.go:87] Name: kwok-node-98, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856169  773604 cluster.go:87] Name: kwok-node-99, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:32:06.856179  773604 cluster.go:87] Name: secure-sched-control-plane, clusterIP: 172.18.0.2, externalIP: , isSchedulable: true
+I1102 09:32:06.881133  773604 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:32:06.886522  773604 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:32:06.891574  773604 prometheus.go:509] Using internal master ips ([172.18.0.2]) to monitor master's components
+I1102 09:32:06.891627  773604 prometheus.go:227] Setting up prometheus stack
+I1102 09:32:06.930439  773604 framework.go:276] Applying templates for "*.yaml"
+I1102 09:32:06.930666  773604 framework.go:287] Applying 0prometheus-operator-0alertmanagerConfigCustomResourceDefinition.yaml
+I1102 09:32:07.122386  773604 framework.go:287] Applying 0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml
+I1102 09:32:07.393551  773604 framework.go:287] Applying 0prometheus-operator-0podmonitorCustomResourceDefinition.yaml
+I1102 09:32:07.442288  773604 framework.go:287] Applying 0prometheus-operator-0probeCustomResourceDefinition.yaml
+I1102 09:32:07.475742  773604 framework.go:287] Applying 0prometheus-operator-0prometheusCustomResourceDefinition.yaml
+I1102 09:32:07.783089  773604 framework.go:287] Applying 0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml
+I1102 09:32:07.819899  773604 framework.go:287] Applying 0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml
+I1102 09:32:07.851094  773604 framework.go:287] Applying 0prometheus-operator-0thanosrulerCustomResourceDefinition.yaml
+I1102 09:32:08.087705  773604 framework.go:287] Applying 0prometheus-operator-clusterRole.yaml
+I1102 09:32:08.101586  773604 framework.go:287] Applying 0prometheus-operator-clusterRoleBinding.yaml
+I1102 09:32:08.113367  773604 framework.go:287] Applying 0prometheus-operator-deployment.yaml
+I1102 09:32:08.140323  773604 framework.go:287] Applying 0prometheus-operator-service.yaml
+I1102 09:32:08.157492  773604 framework.go:287] Applying 0prometheus-operator-serviceAccount.yaml
+I1102 09:32:08.171153  773604 framework.go:287] Applying 0prometheus-operator-serviceMonitor.yaml
+I1102 09:32:08.186066  773604 framework.go:287] Applying 0ssd-storage-class.yaml
+I1102 09:32:08.197556  773604 framework.go:287] Applying grafana-dashboardDatasources.yaml
+I1102 09:32:08.211640  773604 framework.go:287] Applying grafana-dashboardDefinitions.yaml
+I1102 09:32:08.735807  773604 framework.go:287] Applying grafana-dashboardSources.yaml
+I1102 09:32:08.749343  773604 framework.go:287] Applying grafana-deployment.yaml
+I1102 09:32:08.783920  773604 framework.go:287] Applying grafana-service.yaml
+I1102 09:32:08.809769  773604 framework.go:287] Applying grafana-serviceAccount.yaml
+I1102 09:32:08.821774  773604 framework.go:287] Applying grafana-serviceMonitor.yaml
+I1102 09:32:08.835803  773604 framework.go:287] Applying prometheus-clusterRole.yaml
+I1102 09:32:08.847911  773604 framework.go:287] Applying prometheus-clusterRoleBinding.yaml
+I1102 09:32:08.861644  773604 framework.go:287] Applying prometheus-prometheus.yaml
+I1102 09:32:08.881094  773604 framework.go:287] Applying prometheus-resourceQuota.yaml
+I1102 09:32:08.894402  773604 framework.go:287] Applying prometheus-roleBindingConfig.yaml
+I1102 09:32:08.910536  773604 framework.go:287] Applying prometheus-roleConfig.yaml
+I1102 09:32:08.921976  773604 framework.go:287] Applying prometheus-rules.yaml
+I1102 09:32:08.950281  773604 framework.go:287] Applying prometheus-service.yaml
+I1102 09:32:08.978338  773604 framework.go:287] Applying prometheus-serviceAccount.yaml
+I1102 09:32:08.990585  773604 framework.go:287] Applying prometheus-serviceMonitor.yaml
+I1102 09:32:09.005166  773604 framework.go:287] Applying prometheus-windows-scrape-configs.yaml
+I1102 09:32:09.020307  773604 framework.go:276] Applying templates for "default/*.yaml"
+I1102 09:32:09.020416  773604 framework.go:287] Applying default/kube-proxy-service.yaml
+I1102 09:32:09.040291  773604 framework.go:287] Applying default/prometheus-podMonitorAnet.yaml
+W1102 09:32:09.040716  773604 framework.go:291] Skipping empty manifest default/prometheus-podMonitorAnet.yaml
+I1102 09:32:09.040744  773604 framework.go:287] Applying default/prometheus-podMonitorCiliumAgent.yaml
+W1102 09:32:09.041026  773604 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumAgent.yaml
+I1102 09:32:09.041043  773604 framework.go:287] Applying default/prometheus-podMonitorCiliumOperator.yaml
+W1102 09:32:09.041378  773604 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumOperator.yaml
+I1102 09:32:09.041401  773604 framework.go:287] Applying default/prometheus-podMonitorDNSPerf.yaml
+W1102 09:32:09.041624  773604 framework.go:291] Skipping empty manifest default/prometheus-podMonitorDNSPerf.yaml
+I1102 09:32:09.041652  773604 framework.go:287] Applying default/prometheus-podMonitorKubeNetworkPolicies.yaml
+W1102 09:32:09.041999  773604 framework.go:291] Skipping empty manifest default/prometheus-podMonitorKubeNetworkPolicies.yaml
+I1102 09:32:09.042032  773604 framework.go:287] Applying default/prometheus-podMonitorNetPolicyClient.yaml
+W1102 09:32:09.042400  773604 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNetPolicyClient.yaml
+I1102 09:32:09.042430  773604 framework.go:287] Applying default/prometheus-podMonitorNodeLocalDNS.yaml
+W1102 09:32:09.043409  773604 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNodeLocalDNS.yaml
+I1102 09:32:09.043436  773604 framework.go:287] Applying default/prometheus-serviceMonitorCoreDNS.yaml
+I1102 09:32:09.060734  773604 framework.go:287] Applying default/prometheus-serviceMonitorKubeProxy.yaml
+I1102 09:32:09.075373  773604 framework.go:287] Applying default/prometheus-serviceMonitorKubelet.yaml
+W1102 09:32:09.075642  773604 framework.go:291] Skipping empty manifest default/prometheus-serviceMonitorKubelet.yaml
+I1102 09:32:09.075660  773604 framework.go:287] Applying default/prometheus-serviceMonitorLegacyKubeDNS.yaml
+I1102 09:32:09.093641  773604 prometheus.go:360] Exposing kube-apiserver metrics in the cluster
+I1102 09:32:09.135596  773604 framework.go:276] Applying templates for "master-ip/*.yaml"
+I1102 09:32:09.135644  773604 framework.go:287] Applying master-ip/master-endpoints.yaml
+I1102 09:32:09.153519  773604 framework.go:287] Applying master-ip/master-service.yaml
+I1102 09:32:09.166983  773604 framework.go:287] Applying master-ip/master-serviceMonitor.yaml
+W1102 09:32:09.188107  773604 warnings.go:70] unknown field "spec.selector.k8s-app"
+I1102 09:32:09.188289  773604 prometheus.go:439] Waiting for Prometheus stack to become healthy...
+I1102 09:32:09.214659  773604 util.go:104] All 11 expected targets are ready
+I1102 09:32:09.214722  773604 prometheus.go:299] Prometheus stack set up successfully
+I1102 09:32:09.214742  773604 exec_service.go:86] Exec service: setting up service!
+I1102 09:32:09.244024  773604 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1102 09:32:09.244090  773604 framework.go:287] Applying manifest/exec_deployment.yaml
+I1102 09:32:09.279360  773604 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1102 09:32:09.326689  773604 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949530758s
+I1102 09:32:19.328916  773604 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:32:19.329002  773604 exec_service.go:122] Exec service: service set up successfully!
+W1102 09:32:19.330512  773604 imagepreload.go:92] No images specified. Skipping image preloading
+I1102 09:32:19.345609  773604 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1/generatedConfig_klastos-multitenancy-scheduler-throughput.yaml
+I1102 09:32:19.345633  773604 clusterloader.go:243] --------------------------------------------------------------------------------
+I1102 09:32:19.345643  773604 clusterloader.go:244] Running /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:32:19.345653  773604 clusterloader.go:245] --------------------------------------------------------------------------------
+I1102 09:32:19.345667  773604 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-0phbkr
+I1102 09:32:19.367477  773604 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1102 09:32:19.383822  773604 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1102 09:32:19.383977  773604 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1102 09:32:19.387568  773604 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:32:19.416734  773604 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1102 09:32:19.434780  773604 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1102 09:32:19.451695  773604 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1102 09:32:19.451759  773604 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1102 09:32:43.468483  773604 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1102 09:32:43.468525  773604 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1102 09:32:43.552455  773604 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:32:43.570950  773604 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.898856881s
+I1102 09:32:48.573332  773604 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:32:48.573420  773604 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1102 09:32:48.573458  773604 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1102 09:32:48.578692  773604 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1102 09:32:48.578728  773604 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1102 09:32:48.578798  773604 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:32:48Z
+I1102 09:32:48.579518  773604 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1102 09:32:48.579558  773604 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-02T09:32:48Z
+I1102 09:32:48.581373  773604 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1102 09:32:48.592203  773604 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:32:48Z
+I1102 09:32:48.601671  773604 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1102 09:32:48.640133  773604 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:32:48Z
+I1102 09:32:48.654627  773604 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:32:48Z
+I1102 09:32:48.668712  773604 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:32:48Z
+I1102 09:32:48.694829  773604 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:32:48Z
+I1102 09:32:48.707322  773604 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:32:48Z
+I1102 09:32:48.731962  773604 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:DELETE Scope:namespace Latency:perc50: 35.657142ms, perc90: 5.4457s, perc99: 5.891469999s Count:0 SlowCount:0}; threshold: 30s
+I1102 09:32:48.732043  773604 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:LIST Scope:cluster Latency:perc50: 150ms, perc90: 190ms, perc99: 199ms Count:0 SlowCount:0}; threshold: 30s
+I1102 09:32:48.732090  773604 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:LIST Scope:cluster Latency:perc50: 31.1875ms, perc90: 74.7ms, perc99: 97.019999ms Count:0 SlowCount:0}; threshold: 30s
+I1102 09:32:48.732124  773604 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:cluster Latency:perc50: 30.342203ms, perc90: 71.557142ms, perc99: 96.889999ms Count:23 SlowCount:0}; threshold: 30s
+I1102 09:32:48.732144  773604 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:configmaps Subresource: Verb:POST Scope:resource Latency:perc50: 27.25ms, perc90: 49.05ms, perc99: 93.555ms Count:0 SlowCount:0}; threshold: 1s
+I1102 09:32:48.732859  773604 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1102 09:32:48.732970  773604 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1102 09:32:49.775015  773604 request.go:700] Waited for 1.003770678s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-341
+I1102 09:32:50.784571  773604 request.go:700] Waited for 2.006093645s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-240
+I1102 09:32:51.794512  773604 request.go:700] Waited for 2.999533792s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-297
+I1102 09:32:52.794859  773604 request.go:700] Waited for 3.989444027s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-314
+I1102 09:32:53.805017  773604 request.go:700] Waited for 4.992555644s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-356
+I1102 09:32:54.815144  773604 request.go:700] Waited for 5.976953736s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-481
+I1102 09:32:55.824821  773604 request.go:700] Waited for 6.983250574s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-421
+I1102 09:32:56.744971  773604 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1102 09:33:06.762404  773604 simple_test_executor.go:402] Resources cleanup time: 10.015765165s
+I1102 09:33:06.762459  773604 clusterloader.go:253] --------------------------------------------------------------------------------
+I1102 09:33:06.762471  773604 clusterloader.go:254] Test Finished
+I1102 09:33:06.762480  773604 clusterloader.go:255]   Test: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:33:06.762489  773604 clusterloader.go:256]   Status: Success
+I1102 09:33:06.762498  773604 clusterloader.go:260] --------------------------------------------------------------------------------
+I1102 09:33:06.762945  773604 prometheus.go:307] Get snapshot from Prometheus
+I1102 09:33:06.762961  773604 exec_service.go:130] Exec service: tearing down service
+Log file created at: 2026/11/02 09:38:19
+Running on machine: test
+Binary: Built with gc go1.23.4 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1102 09:38:19.945305  780835 clusterloader.go:272] Listening on 8000
+I1102 09:38:19.993312  780835 clusterloader.go:174] ClusterConfig.MasterName set to secure-sched-control-plane
+E1102 09:38:20.021163  780835 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1102 09:38:20.048400  780835 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.18.0.2]
+I1102 09:38:20.048470  780835 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/config RunFromCluster:false Nodes:100 Provider:0xc00011a900 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.18.0.2] MasterName:secure-sched-control-plane DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1 ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:false EnableServer:true EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[/home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/uc1-tenant/override.yaml]}
+I1102 09:38:20.078971  780835 cluster.go:75] Listing cluster nodes:
+I1102 09:38:20.079029  780835 cluster.go:87] Name: kwok-node-1, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079048  780835 cluster.go:87] Name: kwok-node-10, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079060  780835 cluster.go:87] Name: kwok-node-100, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079071  780835 cluster.go:87] Name: kwok-node-11, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079083  780835 cluster.go:87] Name: kwok-node-12, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079095  780835 cluster.go:87] Name: kwok-node-13, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079106  780835 cluster.go:87] Name: kwok-node-14, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079126  780835 cluster.go:87] Name: kwok-node-15, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079137  780835 cluster.go:87] Name: kwok-node-16, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079148  780835 cluster.go:87] Name: kwok-node-17, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079160  780835 cluster.go:87] Name: kwok-node-18, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079170  780835 cluster.go:87] Name: kwok-node-19, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079204  780835 cluster.go:87] Name: kwok-node-2, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079215  780835 cluster.go:87] Name: kwok-node-20, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079225  780835 cluster.go:87] Name: kwok-node-21, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079242  780835 cluster.go:87] Name: kwok-node-22, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079253  780835 cluster.go:87] Name: kwok-node-23, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079263  780835 cluster.go:87] Name: kwok-node-24, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079273  780835 cluster.go:87] Name: kwok-node-25, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079283  780835 cluster.go:87] Name: kwok-node-26, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079293  780835 cluster.go:87] Name: kwok-node-27, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079303  780835 cluster.go:87] Name: kwok-node-28, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079320  780835 cluster.go:87] Name: kwok-node-29, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079330  780835 cluster.go:87] Name: kwok-node-3, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079340  780835 cluster.go:87] Name: kwok-node-30, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079351  780835 cluster.go:87] Name: kwok-node-31, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079362  780835 cluster.go:87] Name: kwok-node-32, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079372  780835 cluster.go:87] Name: kwok-node-33, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079382  780835 cluster.go:87] Name: kwok-node-34, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079392  780835 cluster.go:87] Name: kwok-node-35, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079410  780835 cluster.go:87] Name: kwok-node-36, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079420  780835 cluster.go:87] Name: kwok-node-37, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079430  780835 cluster.go:87] Name: kwok-node-38, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079440  780835 cluster.go:87] Name: kwok-node-39, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079451  780835 cluster.go:87] Name: kwok-node-4, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079461  780835 cluster.go:87] Name: kwok-node-40, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079471  780835 cluster.go:87] Name: kwok-node-41, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079481  780835 cluster.go:87] Name: kwok-node-42, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079498  780835 cluster.go:87] Name: kwok-node-43, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079510  780835 cluster.go:87] Name: kwok-node-44, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079520  780835 cluster.go:87] Name: kwok-node-45, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079574  780835 cluster.go:87] Name: kwok-node-46, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079655  780835 cluster.go:87] Name: kwok-node-47, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079671  780835 cluster.go:87] Name: kwok-node-48, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079683  780835 cluster.go:87] Name: kwok-node-49, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079721  780835 cluster.go:87] Name: kwok-node-5, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079737  780835 cluster.go:87] Name: kwok-node-50, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079748  780835 cluster.go:87] Name: kwok-node-51, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079758  780835 cluster.go:87] Name: kwok-node-52, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079769  780835 cluster.go:87] Name: kwok-node-53, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079810  780835 cluster.go:87] Name: kwok-node-54, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079821  780835 cluster.go:87] Name: kwok-node-55, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079832  780835 cluster.go:87] Name: kwok-node-56, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079850  780835 cluster.go:87] Name: kwok-node-57, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079860  780835 cluster.go:87] Name: kwok-node-58, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079870  780835 cluster.go:87] Name: kwok-node-59, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079880  780835 cluster.go:87] Name: kwok-node-6, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079890  780835 cluster.go:87] Name: kwok-node-60, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079903  780835 cluster.go:87] Name: kwok-node-61, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079935  780835 cluster.go:87] Name: kwok-node-62, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079946  780835 cluster.go:87] Name: kwok-node-63, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079963  780835 cluster.go:87] Name: kwok-node-64, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079973  780835 cluster.go:87] Name: kwok-node-65, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079983  780835 cluster.go:87] Name: kwok-node-66, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.079993  780835 cluster.go:87] Name: kwok-node-67, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080002  780835 cluster.go:87] Name: kwok-node-68, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080012  780835 cluster.go:87] Name: kwok-node-69, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080022  780835 cluster.go:87] Name: kwok-node-7, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080038  780835 cluster.go:87] Name: kwok-node-70, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080048  780835 cluster.go:87] Name: kwok-node-71, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080058  780835 cluster.go:87] Name: kwok-node-72, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080067  780835 cluster.go:87] Name: kwok-node-73, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080077  780835 cluster.go:87] Name: kwok-node-74, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080087  780835 cluster.go:87] Name: kwok-node-75, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080096  780835 cluster.go:87] Name: kwok-node-76, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080106  780835 cluster.go:87] Name: kwok-node-77, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080124  780835 cluster.go:87] Name: kwok-node-78, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080145  780835 cluster.go:87] Name: kwok-node-79, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080166  780835 cluster.go:87] Name: kwok-node-8, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080228  780835 cluster.go:87] Name: kwok-node-80, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080454  780835 cluster.go:87] Name: kwok-node-81, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080473  780835 cluster.go:87] Name: kwok-node-82, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080484  780835 cluster.go:87] Name: kwok-node-83, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080493  780835 cluster.go:87] Name: kwok-node-84, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080502  780835 cluster.go:87] Name: kwok-node-85, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080512  780835 cluster.go:87] Name: kwok-node-86, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080521  780835 cluster.go:87] Name: kwok-node-87, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080531  780835 cluster.go:87] Name: kwok-node-88, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080540  780835 cluster.go:87] Name: kwok-node-89, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080550  780835 cluster.go:87] Name: kwok-node-9, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080559  780835 cluster.go:87] Name: kwok-node-90, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080569  780835 cluster.go:87] Name: kwok-node-91, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080578  780835 cluster.go:87] Name: kwok-node-92, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080587  780835 cluster.go:87] Name: kwok-node-93, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080597  780835 cluster.go:87] Name: kwok-node-94, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080606  780835 cluster.go:87] Name: kwok-node-95, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080615  780835 cluster.go:87] Name: kwok-node-96, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080624  780835 cluster.go:87] Name: kwok-node-97, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080633  780835 cluster.go:87] Name: kwok-node-98, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080643  780835 cluster.go:87] Name: kwok-node-99, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:38:20.080653  780835 cluster.go:87] Name: secure-sched-control-plane, clusterIP: 172.18.0.2, externalIP: , isSchedulable: true
+I1102 09:38:20.106830  780835 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:38:20.113131  780835 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:38:20.177330  780835 prometheus.go:509] Using internal master ips ([172.18.0.2]) to monitor master's components
+I1102 09:38:20.177403  780835 prometheus.go:227] Setting up prometheus stack
+I1102 09:38:20.244096  780835 framework.go:276] Applying templates for "*.yaml"
+I1102 09:38:20.244307  780835 framework.go:287] Applying 0prometheus-operator-0alertmanagerConfigCustomResourceDefinition.yaml
+I1102 09:38:20.411409  780835 framework.go:287] Applying 0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml
+I1102 09:38:20.688622  780835 framework.go:287] Applying 0prometheus-operator-0podmonitorCustomResourceDefinition.yaml
+I1102 09:38:20.742405  780835 framework.go:287] Applying 0prometheus-operator-0probeCustomResourceDefinition.yaml
+I1102 09:38:20.776336  780835 framework.go:287] Applying 0prometheus-operator-0prometheusCustomResourceDefinition.yaml
+I1102 09:38:21.096287  780835 framework.go:287] Applying 0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml
+I1102 09:38:21.121708  780835 framework.go:287] Applying 0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml
+I1102 09:38:21.168331  780835 framework.go:287] Applying 0prometheus-operator-0thanosrulerCustomResourceDefinition.yaml
+I1102 09:38:21.426715  780835 framework.go:287] Applying 0prometheus-operator-clusterRole.yaml
+I1102 09:38:21.447036  780835 framework.go:287] Applying 0prometheus-operator-clusterRoleBinding.yaml
+I1102 09:38:21.459784  780835 framework.go:287] Applying 0prometheus-operator-deployment.yaml
+I1102 09:38:21.483049  780835 framework.go:287] Applying 0prometheus-operator-service.yaml
+I1102 09:38:21.498044  780835 framework.go:287] Applying 0prometheus-operator-serviceAccount.yaml
+I1102 09:38:21.510239  780835 framework.go:287] Applying 0prometheus-operator-serviceMonitor.yaml
+I1102 09:38:21.524222  780835 framework.go:287] Applying 0ssd-storage-class.yaml
+I1102 09:38:21.537529  780835 framework.go:287] Applying grafana-dashboardDatasources.yaml
+I1102 09:38:21.551039  780835 framework.go:287] Applying grafana-dashboardDefinitions.yaml
+I1102 09:38:22.081669  780835 framework.go:287] Applying grafana-dashboardSources.yaml
+I1102 09:38:22.096739  780835 framework.go:287] Applying grafana-deployment.yaml
+I1102 09:38:22.121702  780835 framework.go:287] Applying grafana-service.yaml
+I1102 09:38:22.147772  780835 framework.go:287] Applying grafana-serviceAccount.yaml
+I1102 09:38:22.160507  780835 framework.go:287] Applying grafana-serviceMonitor.yaml
+I1102 09:38:22.175840  780835 framework.go:287] Applying prometheus-clusterRole.yaml
+I1102 09:38:22.189310  780835 framework.go:287] Applying prometheus-clusterRoleBinding.yaml
+I1102 09:38:22.200386  780835 framework.go:287] Applying prometheus-prometheus.yaml
+I1102 09:38:22.221449  780835 framework.go:287] Applying prometheus-resourceQuota.yaml
+I1102 09:38:22.235049  780835 framework.go:287] Applying prometheus-roleBindingConfig.yaml
+I1102 09:38:22.247451  780835 framework.go:287] Applying prometheus-roleConfig.yaml
+I1102 09:38:22.259485  780835 framework.go:287] Applying prometheus-rules.yaml
+I1102 09:38:22.290305  780835 framework.go:287] Applying prometheus-service.yaml
+I1102 09:38:22.315038  780835 framework.go:287] Applying prometheus-serviceAccount.yaml
+I1102 09:38:22.327025  780835 framework.go:287] Applying prometheus-serviceMonitor.yaml
+I1102 09:38:22.348361  780835 framework.go:287] Applying prometheus-windows-scrape-configs.yaml
+I1102 09:38:22.363230  780835 framework.go:276] Applying templates for "default/*.yaml"
+I1102 09:38:22.363306  780835 framework.go:287] Applying default/kube-proxy-service.yaml
+I1102 09:38:22.380308  780835 framework.go:287] Applying default/prometheus-podMonitorAnet.yaml
+W1102 09:38:22.380577  780835 framework.go:291] Skipping empty manifest default/prometheus-podMonitorAnet.yaml
+I1102 09:38:22.380593  780835 framework.go:287] Applying default/prometheus-podMonitorCiliumAgent.yaml
+W1102 09:38:22.380806  780835 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumAgent.yaml
+I1102 09:38:22.380820  780835 framework.go:287] Applying default/prometheus-podMonitorCiliumOperator.yaml
+W1102 09:38:22.380982  780835 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumOperator.yaml
+I1102 09:38:22.380994  780835 framework.go:287] Applying default/prometheus-podMonitorDNSPerf.yaml
+W1102 09:38:22.381122  780835 framework.go:291] Skipping empty manifest default/prometheus-podMonitorDNSPerf.yaml
+I1102 09:38:22.381134  780835 framework.go:287] Applying default/prometheus-podMonitorKubeNetworkPolicies.yaml
+W1102 09:38:22.381283  780835 framework.go:291] Skipping empty manifest default/prometheus-podMonitorKubeNetworkPolicies.yaml
+I1102 09:38:22.381301  780835 framework.go:287] Applying default/prometheus-podMonitorNetPolicyClient.yaml
+W1102 09:38:22.381505  780835 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNetPolicyClient.yaml
+I1102 09:38:22.381521  780835 framework.go:287] Applying default/prometheus-podMonitorNodeLocalDNS.yaml
+W1102 09:38:22.381686  780835 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNodeLocalDNS.yaml
+I1102 09:38:22.381700  780835 framework.go:287] Applying default/prometheus-serviceMonitorCoreDNS.yaml
+I1102 09:38:22.395371  780835 framework.go:287] Applying default/prometheus-serviceMonitorKubeProxy.yaml
+I1102 09:38:22.409822  780835 framework.go:287] Applying default/prometheus-serviceMonitorKubelet.yaml
+W1102 09:38:22.410171  780835 framework.go:291] Skipping empty manifest default/prometheus-serviceMonitorKubelet.yaml
+I1102 09:38:22.410235  780835 framework.go:287] Applying default/prometheus-serviceMonitorLegacyKubeDNS.yaml
+I1102 09:38:22.425431  780835 prometheus.go:360] Exposing kube-apiserver metrics in the cluster
+I1102 09:38:22.470099  780835 framework.go:276] Applying templates for "master-ip/*.yaml"
+I1102 09:38:22.470180  780835 framework.go:287] Applying master-ip/master-endpoints.yaml
+I1102 09:38:22.483436  780835 framework.go:287] Applying master-ip/master-service.yaml
+I1102 09:38:22.497814  780835 framework.go:287] Applying master-ip/master-serviceMonitor.yaml
+W1102 09:38:22.516138  780835 warnings.go:70] unknown field "spec.selector.k8s-app"
+I1102 09:38:22.516316  780835 prometheus.go:439] Waiting for Prometheus stack to become healthy...
+I1102 09:38:22.546539  780835 util.go:104] All 11 expected targets are ready
+I1102 09:38:22.546601  780835 prometheus.go:299] Prometheus stack set up successfully
+I1102 09:38:22.546621  780835 exec_service.go:86] Exec service: setting up service!
+I1102 09:38:22.579431  780835 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1102 09:38:22.579491  780835 framework.go:287] Applying manifest/exec_deployment.yaml
+I1102 09:38:22.618781  780835 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1102 09:38:22.663530  780835 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949529272s
+I1102 09:38:32.665705  780835 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:38:32.665772  780835 exec_service.go:122] Exec service: service set up successfully!
+W1102 09:38:32.666155  780835 imagepreload.go:92] No images specified. Skipping image preloading
+I1102 09:38:32.677403  780835 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1/generatedConfig_klastos-multitenancy-scheduler-throughput.yaml
+I1102 09:38:32.677433  780835 clusterloader.go:243] --------------------------------------------------------------------------------
+I1102 09:38:32.677447  780835 clusterloader.go:244] Running /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:38:32.677461  780835 clusterloader.go:245] --------------------------------------------------------------------------------
+I1102 09:38:32.677480  780835 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-bx22e3
+I1102 09:38:32.703646  780835 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1102 09:38:32.726625  780835 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1102 09:38:32.727749  780835 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1102 09:38:32.729873  780835 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:38:32.745638  780835 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1102 09:38:32.777175  780835 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1102 09:38:32.785475  780835 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1102 09:38:32.785672  780835 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1102 09:38:56.799428  780835 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1102 09:38:56.799460  780835 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1102 09:38:56.855971  780835 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:38:56.901548  780835 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.89926507s
+I1102 09:39:01.902675  780835 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:39:01.902730  780835 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1102 09:39:01.902750  780835 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1102 09:39:01.904745  780835 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1102 09:39:01.905223  780835 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1102 09:39:01.905243  780835 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:39:01Z
+I1102 09:39:01.905736  780835 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1102 09:39:01.905775  780835 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-02T09:39:01Z
+I1102 09:39:01.907102  780835 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1102 09:39:01.917743  780835 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:39:01Z
+I1102 09:39:01.920806  780835 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1102 09:39:01.970210  780835 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:39:01Z
+I1102 09:39:01.988533  780835 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:39:01Z
+I1102 09:39:01.994767  780835 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:39:01Z
+I1102 09:39:02.017309  780835 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:39:01Z
+I1102 09:39:02.026603  780835 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:39:01Z
+I1102 09:39:02.053422  780835 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:DELETE Scope:namespace Latency:perc50: 39.957142ms, perc90: 5.599s, perc99: 5.9599s Count:0 SlowCount:0}; threshold: 30s
+I1102 09:39:02.053481  780835 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource:binding Verb:POST Scope:resource Latency:perc50: 28.854867ms, perc90: 79.519736ms, perc99: 328.445526ms Count:1160 SlowCount:0}; threshold: 1s
+I1102 09:39:02.053500  780835 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:POST Scope:resource Latency:perc50: 29.850274ms, perc90: 84.352499ms, perc99: 297.038076ms Count:1102 SlowCount:0}; threshold: 1s
+I1102 09:39:02.053509  780835 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:leases Subresource: Verb:GET Scope:resource Latency:perc50: 26.455882ms, perc90: 47.620588ms, perc99: 289.575ms Count:29 SlowCount:0}; threshold: 1s
+I1102 09:39:02.053521  780835 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource:status Verb:PATCH Scope:resource Latency:perc50: 28.120102ms, perc90: 60.518918ms, perc99: 277.515ms Count:1160 SlowCount:0}; threshold: 1s
+I1102 09:39:02.053713  780835 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1102 09:39:02.053736  780835 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1102 09:39:03.115009  780835 request.go:700] Waited for 1.009170769s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-170
+I1102 09:39:04.125733  780835 request.go:700] Waited for 2.010141943s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-151
+I1102 09:39:05.134790  780835 request.go:700] Waited for 2.962260059s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-320
+I1102 09:39:06.144916  780835 request.go:700] Waited for 3.963433367s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-318
+I1102 09:39:07.155243  780835 request.go:700] Waited for 4.968258504s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-417
+I1102 09:39:08.155376  780835 request.go:700] Waited for 5.965228523s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-261
+I1102 09:39:09.164782  780835 request.go:700] Waited for 6.967840788s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-454
+I1102 09:39:10.067995  780835 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1102 09:39:20.090531  780835 simple_test_executor.go:402] Resources cleanup time: 10.017800946s
+I1102 09:39:20.090614  780835 clusterloader.go:253] --------------------------------------------------------------------------------
+I1102 09:39:20.090632  780835 clusterloader.go:254] Test Finished
+I1102 09:39:20.090644  780835 clusterloader.go:255]   Test: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:39:20.090658  780835 clusterloader.go:256]   Status: Success
+I1102 09:39:20.090670  780835 clusterloader.go:260] --------------------------------------------------------------------------------
+I1102 09:39:20.091176  780835 prometheus.go:307] Get snapshot from Prometheus
+I1102 09:39:20.091197  780835 exec_service.go:130] Exec service: tearing down service
+Log file created at: 2026/11/02 09:44:35
+Running on machine: test
+Binary: Built with gc go1.23.4 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1102 09:44:35.914083  787925 clusterloader.go:272] Listening on 8000
+I1102 09:44:35.953211  787925 clusterloader.go:174] ClusterConfig.MasterName set to secure-sched-control-plane
+E1102 09:44:35.980656  787925 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1102 09:44:36.028682  787925 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.18.0.2]
+I1102 09:44:36.028719  787925 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/config RunFromCluster:false Nodes:100 Provider:0xc000014c40 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.18.0.2] MasterName:secure-sched-control-plane DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1 ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:false EnableServer:true EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[/home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/uc1-tenant/override.yaml]}
+I1102 09:44:36.064869  787925 cluster.go:75] Listing cluster nodes:
+I1102 09:44:36.064899  787925 cluster.go:87] Name: kwok-node-1, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064905  787925 cluster.go:87] Name: kwok-node-10, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064909  787925 cluster.go:87] Name: kwok-node-100, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064912  787925 cluster.go:87] Name: kwok-node-11, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064915  787925 cluster.go:87] Name: kwok-node-12, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064918  787925 cluster.go:87] Name: kwok-node-13, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064921  787925 cluster.go:87] Name: kwok-node-14, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064924  787925 cluster.go:87] Name: kwok-node-15, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064926  787925 cluster.go:87] Name: kwok-node-16, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064929  787925 cluster.go:87] Name: kwok-node-17, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064931  787925 cluster.go:87] Name: kwok-node-18, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064933  787925 cluster.go:87] Name: kwok-node-19, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064946  787925 cluster.go:87] Name: kwok-node-2, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064948  787925 cluster.go:87] Name: kwok-node-20, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064951  787925 cluster.go:87] Name: kwok-node-21, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064954  787925 cluster.go:87] Name: kwok-node-22, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064957  787925 cluster.go:87] Name: kwok-node-23, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064959  787925 cluster.go:87] Name: kwok-node-24, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064962  787925 cluster.go:87] Name: kwok-node-25, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064964  787925 cluster.go:87] Name: kwok-node-26, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064967  787925 cluster.go:87] Name: kwok-node-27, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064969  787925 cluster.go:87] Name: kwok-node-28, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064972  787925 cluster.go:87] Name: kwok-node-29, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064974  787925 cluster.go:87] Name: kwok-node-3, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064977  787925 cluster.go:87] Name: kwok-node-30, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064979  787925 cluster.go:87] Name: kwok-node-31, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064982  787925 cluster.go:87] Name: kwok-node-32, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064984  787925 cluster.go:87] Name: kwok-node-33, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064987  787925 cluster.go:87] Name: kwok-node-34, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064990  787925 cluster.go:87] Name: kwok-node-35, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064993  787925 cluster.go:87] Name: kwok-node-36, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064995  787925 cluster.go:87] Name: kwok-node-37, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.064998  787925 cluster.go:87] Name: kwok-node-38, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065001  787925 cluster.go:87] Name: kwok-node-39, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065003  787925 cluster.go:87] Name: kwok-node-4, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065005  787925 cluster.go:87] Name: kwok-node-40, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065007  787925 cluster.go:87] Name: kwok-node-41, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065010  787925 cluster.go:87] Name: kwok-node-42, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065012  787925 cluster.go:87] Name: kwok-node-43, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065014  787925 cluster.go:87] Name: kwok-node-44, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065017  787925 cluster.go:87] Name: kwok-node-45, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065019  787925 cluster.go:87] Name: kwok-node-46, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065022  787925 cluster.go:87] Name: kwok-node-47, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065024  787925 cluster.go:87] Name: kwok-node-48, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065026  787925 cluster.go:87] Name: kwok-node-49, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065187  787925 cluster.go:87] Name: kwok-node-5, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065193  787925 cluster.go:87] Name: kwok-node-50, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065196  787925 cluster.go:87] Name: kwok-node-51, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065198  787925 cluster.go:87] Name: kwok-node-52, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065201  787925 cluster.go:87] Name: kwok-node-53, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065204  787925 cluster.go:87] Name: kwok-node-54, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065206  787925 cluster.go:87] Name: kwok-node-55, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065209  787925 cluster.go:87] Name: kwok-node-56, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065212  787925 cluster.go:87] Name: kwok-node-57, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065214  787925 cluster.go:87] Name: kwok-node-58, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065218  787925 cluster.go:87] Name: kwok-node-59, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065221  787925 cluster.go:87] Name: kwok-node-6, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065223  787925 cluster.go:87] Name: kwok-node-60, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065226  787925 cluster.go:87] Name: kwok-node-61, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065228  787925 cluster.go:87] Name: kwok-node-62, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065231  787925 cluster.go:87] Name: kwok-node-63, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065233  787925 cluster.go:87] Name: kwok-node-64, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065236  787925 cluster.go:87] Name: kwok-node-65, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065238  787925 cluster.go:87] Name: kwok-node-66, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065241  787925 cluster.go:87] Name: kwok-node-67, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065243  787925 cluster.go:87] Name: kwok-node-68, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065245  787925 cluster.go:87] Name: kwok-node-69, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065248  787925 cluster.go:87] Name: kwok-node-7, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065250  787925 cluster.go:87] Name: kwok-node-70, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065252  787925 cluster.go:87] Name: kwok-node-71, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065255  787925 cluster.go:87] Name: kwok-node-72, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065258  787925 cluster.go:87] Name: kwok-node-73, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065261  787925 cluster.go:87] Name: kwok-node-74, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065263  787925 cluster.go:87] Name: kwok-node-75, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065266  787925 cluster.go:87] Name: kwok-node-76, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065268  787925 cluster.go:87] Name: kwok-node-77, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065270  787925 cluster.go:87] Name: kwok-node-78, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065273  787925 cluster.go:87] Name: kwok-node-79, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065278  787925 cluster.go:87] Name: kwok-node-8, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065283  787925 cluster.go:87] Name: kwok-node-80, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065285  787925 cluster.go:87] Name: kwok-node-81, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065287  787925 cluster.go:87] Name: kwok-node-82, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065290  787925 cluster.go:87] Name: kwok-node-83, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065292  787925 cluster.go:87] Name: kwok-node-84, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065295  787925 cluster.go:87] Name: kwok-node-85, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065297  787925 cluster.go:87] Name: kwok-node-86, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065300  787925 cluster.go:87] Name: kwok-node-87, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065302  787925 cluster.go:87] Name: kwok-node-88, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065305  787925 cluster.go:87] Name: kwok-node-89, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065307  787925 cluster.go:87] Name: kwok-node-9, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065309  787925 cluster.go:87] Name: kwok-node-90, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065312  787925 cluster.go:87] Name: kwok-node-91, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065314  787925 cluster.go:87] Name: kwok-node-92, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065316  787925 cluster.go:87] Name: kwok-node-93, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065319  787925 cluster.go:87] Name: kwok-node-94, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065321  787925 cluster.go:87] Name: kwok-node-95, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065324  787925 cluster.go:87] Name: kwok-node-96, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065326  787925 cluster.go:87] Name: kwok-node-97, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065328  787925 cluster.go:87] Name: kwok-node-98, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065331  787925 cluster.go:87] Name: kwok-node-99, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:44:36.065333  787925 cluster.go:87] Name: secure-sched-control-plane, clusterIP: 172.18.0.2, externalIP: , isSchedulable: true
+I1102 09:44:36.096333  787925 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:44:36.098349  787925 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:44:36.100671  787925 prometheus.go:509] Using internal master ips ([172.18.0.2]) to monitor master's components
+I1102 09:44:36.100927  787925 prometheus.go:227] Setting up prometheus stack
+I1102 09:44:36.123137  787925 framework.go:276] Applying templates for "*.yaml"
+I1102 09:44:36.123299  787925 framework.go:287] Applying 0prometheus-operator-0alertmanagerConfigCustomResourceDefinition.yaml
+I1102 09:44:36.264039  787925 framework.go:287] Applying 0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml
+I1102 09:44:36.501078  787925 framework.go:287] Applying 0prometheus-operator-0podmonitorCustomResourceDefinition.yaml
+I1102 09:44:36.544061  787925 framework.go:287] Applying 0prometheus-operator-0probeCustomResourceDefinition.yaml
+I1102 09:44:36.574025  787925 framework.go:287] Applying 0prometheus-operator-0prometheusCustomResourceDefinition.yaml
+I1102 09:44:36.895525  787925 framework.go:287] Applying 0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml
+I1102 09:44:36.920663  787925 framework.go:287] Applying 0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml
+I1102 09:44:36.970616  787925 framework.go:287] Applying 0prometheus-operator-0thanosrulerCustomResourceDefinition.yaml
+I1102 09:44:37.238172  787925 framework.go:287] Applying 0prometheus-operator-clusterRole.yaml
+I1102 09:44:37.254308  787925 framework.go:287] Applying 0prometheus-operator-clusterRoleBinding.yaml
+I1102 09:44:37.273386  787925 framework.go:287] Applying 0prometheus-operator-deployment.yaml
+I1102 09:44:37.293517  787925 framework.go:287] Applying 0prometheus-operator-service.yaml
+I1102 09:44:37.309393  787925 framework.go:287] Applying 0prometheus-operator-serviceAccount.yaml
+I1102 09:44:37.321208  787925 framework.go:287] Applying 0prometheus-operator-serviceMonitor.yaml
+I1102 09:44:37.337348  787925 framework.go:287] Applying 0ssd-storage-class.yaml
+I1102 09:44:37.349103  787925 framework.go:287] Applying grafana-dashboardDatasources.yaml
+I1102 09:44:37.364430  787925 framework.go:287] Applying grafana-dashboardDefinitions.yaml
+I1102 09:44:37.890376  787925 framework.go:287] Applying grafana-dashboardSources.yaml
+I1102 09:44:37.908166  787925 framework.go:287] Applying grafana-deployment.yaml
+I1102 09:44:37.941656  787925 framework.go:287] Applying grafana-service.yaml
+I1102 09:44:37.970043  787925 framework.go:287] Applying grafana-serviceAccount.yaml
+I1102 09:44:37.983737  787925 framework.go:287] Applying grafana-serviceMonitor.yaml
+I1102 09:44:38.000250  787925 framework.go:287] Applying prometheus-clusterRole.yaml
+I1102 09:44:38.013078  787925 framework.go:287] Applying prometheus-clusterRoleBinding.yaml
+I1102 09:44:38.025482  787925 framework.go:287] Applying prometheus-prometheus.yaml
+I1102 09:44:38.050177  787925 framework.go:287] Applying prometheus-resourceQuota.yaml
+I1102 09:44:38.068685  787925 framework.go:287] Applying prometheus-roleBindingConfig.yaml
+I1102 09:44:38.087096  787925 framework.go:287] Applying prometheus-roleConfig.yaml
+I1102 09:44:38.097987  787925 framework.go:287] Applying prometheus-rules.yaml
+I1102 09:44:38.129718  787925 framework.go:287] Applying prometheus-service.yaml
+I1102 09:44:38.163259  787925 framework.go:287] Applying prometheus-serviceAccount.yaml
+I1102 09:44:38.176123  787925 framework.go:287] Applying prometheus-serviceMonitor.yaml
+I1102 09:44:38.190099  787925 framework.go:287] Applying prometheus-windows-scrape-configs.yaml
+I1102 09:44:38.204545  787925 framework.go:276] Applying templates for "default/*.yaml"
+I1102 09:44:38.204663  787925 framework.go:287] Applying default/kube-proxy-service.yaml
+I1102 09:44:38.223864  787925 framework.go:287] Applying default/prometheus-podMonitorAnet.yaml
+W1102 09:44:38.224192  787925 framework.go:291] Skipping empty manifest default/prometheus-podMonitorAnet.yaml
+I1102 09:44:38.224213  787925 framework.go:287] Applying default/prometheus-podMonitorCiliumAgent.yaml
+W1102 09:44:38.224506  787925 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumAgent.yaml
+I1102 09:44:38.224524  787925 framework.go:287] Applying default/prometheus-podMonitorCiliumOperator.yaml
+W1102 09:44:38.224731  787925 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumOperator.yaml
+I1102 09:44:38.224746  787925 framework.go:287] Applying default/prometheus-podMonitorDNSPerf.yaml
+W1102 09:44:38.224933  787925 framework.go:291] Skipping empty manifest default/prometheus-podMonitorDNSPerf.yaml
+I1102 09:44:38.224950  787925 framework.go:287] Applying default/prometheus-podMonitorKubeNetworkPolicies.yaml
+W1102 09:44:38.225147  787925 framework.go:291] Skipping empty manifest default/prometheus-podMonitorKubeNetworkPolicies.yaml
+I1102 09:44:38.225164  787925 framework.go:287] Applying default/prometheus-podMonitorNetPolicyClient.yaml
+W1102 09:44:38.225334  787925 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNetPolicyClient.yaml
+I1102 09:44:38.225350  787925 framework.go:287] Applying default/prometheus-podMonitorNodeLocalDNS.yaml
+W1102 09:44:38.225541  787925 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNodeLocalDNS.yaml
+I1102 09:44:38.225557  787925 framework.go:287] Applying default/prometheus-serviceMonitorCoreDNS.yaml
+I1102 09:44:38.240082  787925 framework.go:287] Applying default/prometheus-serviceMonitorKubeProxy.yaml
+I1102 09:44:38.252317  787925 framework.go:287] Applying default/prometheus-serviceMonitorKubelet.yaml
+W1102 09:44:38.252634  787925 framework.go:291] Skipping empty manifest default/prometheus-serviceMonitorKubelet.yaml
+I1102 09:44:38.252655  787925 framework.go:287] Applying default/prometheus-serviceMonitorLegacyKubeDNS.yaml
+I1102 09:44:38.272090  787925 prometheus.go:360] Exposing kube-apiserver metrics in the cluster
+I1102 09:44:38.307095  787925 framework.go:276] Applying templates for "master-ip/*.yaml"
+I1102 09:44:38.307156  787925 framework.go:287] Applying master-ip/master-endpoints.yaml
+I1102 09:44:38.318368  787925 framework.go:287] Applying master-ip/master-service.yaml
+I1102 09:44:38.332683  787925 framework.go:287] Applying master-ip/master-serviceMonitor.yaml
+W1102 09:44:38.350590  787925 warnings.go:70] unknown field "spec.selector.k8s-app"
+I1102 09:44:38.350727  787925 prometheus.go:439] Waiting for Prometheus stack to become healthy...
+I1102 09:44:38.375056  787925 util.go:104] All 11 expected targets are ready
+I1102 09:44:38.375125  787925 prometheus.go:299] Prometheus stack set up successfully
+I1102 09:44:38.375144  787925 exec_service.go:86] Exec service: setting up service!
+I1102 09:44:38.405968  787925 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1102 09:44:38.406028  787925 framework.go:287] Applying manifest/exec_deployment.yaml
+I1102 09:44:38.438921  787925 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1102 09:44:38.486133  787925 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949190117s
+I1102 09:44:48.488827  787925 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:44:48.488891  787925 exec_service.go:122] Exec service: service set up successfully!
+W1102 09:44:48.489167  787925 imagepreload.go:92] No images specified. Skipping image preloading
+I1102 09:44:48.500936  787925 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1/generatedConfig_klastos-multitenancy-scheduler-throughput.yaml
+I1102 09:44:48.500967  787925 clusterloader.go:243] --------------------------------------------------------------------------------
+I1102 09:44:48.500979  787925 clusterloader.go:244] Running /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:44:48.500990  787925 clusterloader.go:245] --------------------------------------------------------------------------------
+I1102 09:44:48.501006  787925 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-ury9gq
+I1102 09:44:48.525485  787925 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1102 09:44:48.544679  787925 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1102 09:44:48.544854  787925 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1102 09:44:48.549179  787925 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:44:48.564934  787925 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1102 09:44:48.596438  787925 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1102 09:44:48.631706  787925 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1102 09:44:48.631793  787925 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1102 09:45:12.652355  787925 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1102 09:45:12.652393  787925 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1102 09:45:12.724426  787925 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:45:12.754375  787925 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.899899329s
+I1102 09:45:17.757023  787925 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:45:17.757129  787925 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1102 09:45:17.757173  787925 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1102 09:45:17.759077  787925 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1102 09:45:17.759132  787925 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-02T09:45:17Z
+I1102 09:45:17.759571  787925 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1102 09:45:17.759595  787925 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:45:17Z
+I1102 09:45:17.760075  787925 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1102 09:45:17.760236  787925 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1102 09:45:17.778202  787925 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:45:17Z
+I1102 09:45:17.789704  787925 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1102 09:45:17.840327  787925 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:45:17Z
+I1102 09:45:17.856050  787925 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:45:17Z
+I1102 09:45:17.862856  787925 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:45:17Z
+I1102 09:45:17.877127  787925 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:45:17Z
+I1102 09:45:17.886277  787925 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:45:17Z
+I1102 09:45:17.906555  787925 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:DELETE Scope:namespace Latency:perc50: 35.657142ms, perc90: 6.930699999s, perc99: 7.821969999s Count:0 SlowCount:0}; threshold: 30s
+I1102 09:45:17.906609  787925 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:LIST Scope:cluster Latency:perc50: 150ms, perc90: 190ms, perc99: 199ms Count:1 SlowCount:0}; threshold: 30s
+I1102 09:45:17.906645  787925 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:cluster Latency:perc50: 32.376308ms, perc90: 80.037912ms, perc99: 138.29ms Count:31 SlowCount:0}; threshold: 30s
+I1102 09:45:17.906659  787925 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:configmaps Subresource: Verb:POST Scope:resource Latency:perc50: 29.95ms, perc90: 69.75ms, perc99: 96.525ms Count:1 SlowCount:0}; threshold: 1s
+I1102 09:45:17.906672  787925 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource:binding Verb:POST Scope:resource Latency:perc50: 26.573255ms, perc90: 47.83186ms, perc99: 95.668783ms Count:1160 SlowCount:0}; threshold: 1s
+I1102 09:45:17.906934  787925 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1102 09:45:17.906961  787925 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1102 09:45:18.988225  787925 request.go:700] Waited for 1.003145391s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-455
+I1102 09:45:19.997765  787925 request.go:700] Waited for 1.992136721s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-85
+I1102 09:45:20.997954  787925 request.go:700] Waited for 2.97474957s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-261
+I1102 09:45:21.998124  787925 request.go:700] Waited for 3.971796686s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-132
+I1102 09:45:22.998356  787925 request.go:700] Waited for 4.968446698s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-241
+I1102 09:45:23.998655  787925 request.go:700] Waited for 5.96432394s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-362
+I1102 09:45:25.007839  787925 request.go:700] Waited for 6.970220485s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-445
+I1102 09:45:25.924010  787925 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1102 09:45:35.943752  787925 simple_test_executor.go:402] Resources cleanup time: 10.017675213s
+I1102 09:45:35.943841  787925 clusterloader.go:253] --------------------------------------------------------------------------------
+I1102 09:45:35.943858  787925 clusterloader.go:254] Test Finished
+I1102 09:45:35.943871  787925 clusterloader.go:255]   Test: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:45:35.943884  787925 clusterloader.go:256]   Status: Success
+I1102 09:45:35.943896  787925 clusterloader.go:260] --------------------------------------------------------------------------------
+I1102 09:45:35.944408  787925 prometheus.go:307] Get snapshot from Prometheus
+I1102 09:45:35.944427  787925 exec_service.go:130] Exec service: tearing down service
+Log file created at: 2026/11/02 09:50:48
+Running on machine: test
+Binary: Built with gc go1.23.4 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1102 09:50:48.022161  795254 clusterloader.go:272] Listening on 8000
+I1102 09:50:48.064162  795254 clusterloader.go:174] ClusterConfig.MasterName set to secure-sched-control-plane
+E1102 09:50:48.085976  795254 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1102 09:50:48.108776  795254 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.18.0.2]
+I1102 09:50:48.108824  795254 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/config RunFromCluster:false Nodes:100 Provider:0xc00037c950 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.18.0.2] MasterName:secure-sched-control-plane DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1 ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:false EnableServer:true EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[/home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/uc1-tenant/override.yaml]}
+I1102 09:50:48.135833  795254 cluster.go:75] Listing cluster nodes:
+I1102 09:50:48.135900  795254 cluster.go:87] Name: kwok-node-1, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.135923  795254 cluster.go:87] Name: kwok-node-10, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.135936  795254 cluster.go:87] Name: kwok-node-100, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.135947  795254 cluster.go:87] Name: kwok-node-11, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.135958  795254 cluster.go:87] Name: kwok-node-12, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.135968  795254 cluster.go:87] Name: kwok-node-13, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.135978  795254 cluster.go:87] Name: kwok-node-14, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.135987  795254 cluster.go:87] Name: kwok-node-15, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.135997  795254 cluster.go:87] Name: kwok-node-16, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136006  795254 cluster.go:87] Name: kwok-node-17, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136016  795254 cluster.go:87] Name: kwok-node-18, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136025  795254 cluster.go:87] Name: kwok-node-19, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136054  795254 cluster.go:87] Name: kwok-node-2, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136064  795254 cluster.go:87] Name: kwok-node-20, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136073  795254 cluster.go:87] Name: kwok-node-21, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136083  795254 cluster.go:87] Name: kwok-node-22, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136092  795254 cluster.go:87] Name: kwok-node-23, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136107  795254 cluster.go:87] Name: kwok-node-24, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136116  795254 cluster.go:87] Name: kwok-node-25, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136125  795254 cluster.go:87] Name: kwok-node-26, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136135  795254 cluster.go:87] Name: kwok-node-27, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136144  795254 cluster.go:87] Name: kwok-node-28, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136154  795254 cluster.go:87] Name: kwok-node-29, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136163  795254 cluster.go:87] Name: kwok-node-3, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136172  795254 cluster.go:87] Name: kwok-node-30, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136183  795254 cluster.go:87] Name: kwok-node-31, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136192  795254 cluster.go:87] Name: kwok-node-32, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136201  795254 cluster.go:87] Name: kwok-node-33, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136211  795254 cluster.go:87] Name: kwok-node-34, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136220  795254 cluster.go:87] Name: kwok-node-35, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136229  795254 cluster.go:87] Name: kwok-node-36, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136240  795254 cluster.go:87] Name: kwok-node-37, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136249  795254 cluster.go:87] Name: kwok-node-38, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136259  795254 cluster.go:87] Name: kwok-node-39, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136268  795254 cluster.go:87] Name: kwok-node-4, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136277  795254 cluster.go:87] Name: kwok-node-40, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136287  795254 cluster.go:87] Name: kwok-node-41, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136296  795254 cluster.go:87] Name: kwok-node-42, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136305  795254 cluster.go:87] Name: kwok-node-43, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136314  795254 cluster.go:87] Name: kwok-node-44, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136323  795254 cluster.go:87] Name: kwok-node-45, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136333  795254 cluster.go:87] Name: kwok-node-46, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136344  795254 cluster.go:87] Name: kwok-node-47, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136354  795254 cluster.go:87] Name: kwok-node-48, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136363  795254 cluster.go:87] Name: kwok-node-49, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136379  795254 cluster.go:87] Name: kwok-node-5, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136389  795254 cluster.go:87] Name: kwok-node-50, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136399  795254 cluster.go:87] Name: kwok-node-51, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136408  795254 cluster.go:87] Name: kwok-node-52, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136417  795254 cluster.go:87] Name: kwok-node-53, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136426  795254 cluster.go:87] Name: kwok-node-54, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136440  795254 cluster.go:87] Name: kwok-node-55, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136449  795254 cluster.go:87] Name: kwok-node-56, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136458  795254 cluster.go:87] Name: kwok-node-57, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136467  795254 cluster.go:87] Name: kwok-node-58, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136477  795254 cluster.go:87] Name: kwok-node-59, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136486  795254 cluster.go:87] Name: kwok-node-6, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136495  795254 cluster.go:87] Name: kwok-node-60, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136505  795254 cluster.go:87] Name: kwok-node-61, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136514  795254 cluster.go:87] Name: kwok-node-62, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136523  795254 cluster.go:87] Name: kwok-node-63, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136532  795254 cluster.go:87] Name: kwok-node-64, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136541  795254 cluster.go:87] Name: kwok-node-65, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136579  795254 cluster.go:87] Name: kwok-node-66, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136590  795254 cluster.go:87] Name: kwok-node-67, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136599  795254 cluster.go:87] Name: kwok-node-68, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136608  795254 cluster.go:87] Name: kwok-node-69, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136618  795254 cluster.go:87] Name: kwok-node-7, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136627  795254 cluster.go:87] Name: kwok-node-70, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136636  795254 cluster.go:87] Name: kwok-node-71, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136645  795254 cluster.go:87] Name: kwok-node-72, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136654  795254 cluster.go:87] Name: kwok-node-73, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136663  795254 cluster.go:87] Name: kwok-node-74, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136673  795254 cluster.go:87] Name: kwok-node-75, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136682  795254 cluster.go:87] Name: kwok-node-76, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136692  795254 cluster.go:87] Name: kwok-node-77, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136701  795254 cluster.go:87] Name: kwok-node-78, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136710  795254 cluster.go:87] Name: kwok-node-79, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136726  795254 cluster.go:87] Name: kwok-node-8, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136737  795254 cluster.go:87] Name: kwok-node-80, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136746  795254 cluster.go:87] Name: kwok-node-81, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136756  795254 cluster.go:87] Name: kwok-node-82, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136765  795254 cluster.go:87] Name: kwok-node-83, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136774  795254 cluster.go:87] Name: kwok-node-84, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136788  795254 cluster.go:87] Name: kwok-node-85, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136797  795254 cluster.go:87] Name: kwok-node-86, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136806  795254 cluster.go:87] Name: kwok-node-87, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136816  795254 cluster.go:87] Name: kwok-node-88, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136825  795254 cluster.go:87] Name: kwok-node-89, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136834  795254 cluster.go:87] Name: kwok-node-9, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136843  795254 cluster.go:87] Name: kwok-node-90, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136852  795254 cluster.go:87] Name: kwok-node-91, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136861  795254 cluster.go:87] Name: kwok-node-92, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136870  795254 cluster.go:87] Name: kwok-node-93, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136878  795254 cluster.go:87] Name: kwok-node-94, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136886  795254 cluster.go:87] Name: kwok-node-95, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136894  795254 cluster.go:87] Name: kwok-node-96, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136903  795254 cluster.go:87] Name: kwok-node-97, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136911  795254 cluster.go:87] Name: kwok-node-98, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136919  795254 cluster.go:87] Name: kwok-node-99, clusterIP: 10.244.0.11, externalIP: , isSchedulable: true
+I1102 09:50:48.136928  795254 cluster.go:87] Name: secure-sched-control-plane, clusterIP: 172.18.0.2, externalIP: , isSchedulable: true
+I1102 09:50:48.163740  795254 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:50:48.169007  795254 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/config" kubeconfig.
+I1102 09:50:48.173328  795254 prometheus.go:509] Using internal master ips ([172.18.0.2]) to monitor master's components
+I1102 09:50:48.173377  795254 prometheus.go:227] Setting up prometheus stack
+I1102 09:50:48.200969  795254 framework.go:276] Applying templates for "*.yaml"
+I1102 09:50:48.201189  795254 framework.go:287] Applying 0prometheus-operator-0alertmanagerConfigCustomResourceDefinition.yaml
+I1102 09:50:48.378690  795254 framework.go:287] Applying 0prometheus-operator-0alertmanagerCustomResourceDefinition.yaml
+I1102 09:50:48.656985  795254 framework.go:287] Applying 0prometheus-operator-0podmonitorCustomResourceDefinition.yaml
+I1102 09:50:48.715016  795254 framework.go:287] Applying 0prometheus-operator-0probeCustomResourceDefinition.yaml
+I1102 09:50:48.753493  795254 framework.go:287] Applying 0prometheus-operator-0prometheusCustomResourceDefinition.yaml
+I1102 09:50:49.051200  795254 framework.go:287] Applying 0prometheus-operator-0prometheusruleCustomResourceDefinition.yaml
+I1102 09:50:49.074101  795254 framework.go:287] Applying 0prometheus-operator-0servicemonitorCustomResourceDefinition.yaml
+I1102 09:50:49.127825  795254 framework.go:287] Applying 0prometheus-operator-0thanosrulerCustomResourceDefinition.yaml
+I1102 09:50:49.369718  795254 framework.go:287] Applying 0prometheus-operator-clusterRole.yaml
+I1102 09:50:49.384887  795254 framework.go:287] Applying 0prometheus-operator-clusterRoleBinding.yaml
+I1102 09:50:49.397569  795254 framework.go:287] Applying 0prometheus-operator-deployment.yaml
+I1102 09:50:49.416446  795254 framework.go:287] Applying 0prometheus-operator-service.yaml
+I1102 09:50:49.432754  795254 framework.go:287] Applying 0prometheus-operator-serviceAccount.yaml
+I1102 09:50:49.448545  795254 framework.go:287] Applying 0prometheus-operator-serviceMonitor.yaml
+I1102 09:50:49.465815  795254 framework.go:287] Applying 0ssd-storage-class.yaml
+I1102 09:50:49.478038  795254 framework.go:287] Applying grafana-dashboardDatasources.yaml
+I1102 09:50:49.490743  795254 framework.go:287] Applying grafana-dashboardDefinitions.yaml
+I1102 09:50:49.961767  795254 framework.go:287] Applying grafana-dashboardSources.yaml
+I1102 09:50:49.976248  795254 framework.go:287] Applying grafana-deployment.yaml
+I1102 09:50:50.044964  795254 framework.go:287] Applying grafana-service.yaml
+I1102 09:50:50.074817  795254 framework.go:287] Applying grafana-serviceAccount.yaml
+I1102 09:50:50.087330  795254 framework.go:287] Applying grafana-serviceMonitor.yaml
+I1102 09:50:50.100884  795254 framework.go:287] Applying prometheus-clusterRole.yaml
+I1102 09:50:50.114223  795254 framework.go:287] Applying prometheus-clusterRoleBinding.yaml
+I1102 09:50:50.127000  795254 framework.go:287] Applying prometheus-prometheus.yaml
+I1102 09:50:50.151618  795254 framework.go:287] Applying prometheus-resourceQuota.yaml
+I1102 09:50:50.164632  795254 framework.go:287] Applying prometheus-roleBindingConfig.yaml
+I1102 09:50:50.177865  795254 framework.go:287] Applying prometheus-roleConfig.yaml
+I1102 09:50:50.189952  795254 framework.go:287] Applying prometheus-rules.yaml
+I1102 09:50:50.222052  795254 framework.go:287] Applying prometheus-service.yaml
+I1102 09:50:50.251190  795254 framework.go:287] Applying prometheus-serviceAccount.yaml
+I1102 09:50:50.262315  795254 framework.go:287] Applying prometheus-serviceMonitor.yaml
+I1102 09:50:50.280220  795254 framework.go:287] Applying prometheus-windows-scrape-configs.yaml
+I1102 09:50:50.293866  795254 framework.go:276] Applying templates for "default/*.yaml"
+I1102 09:50:50.294030  795254 framework.go:287] Applying default/kube-proxy-service.yaml
+I1102 09:50:50.310199  795254 framework.go:287] Applying default/prometheus-podMonitorAnet.yaml
+W1102 09:50:50.310480  795254 framework.go:291] Skipping empty manifest default/prometheus-podMonitorAnet.yaml
+I1102 09:50:50.310506  795254 framework.go:287] Applying default/prometheus-podMonitorCiliumAgent.yaml
+W1102 09:50:50.310794  795254 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumAgent.yaml
+I1102 09:50:50.310815  795254 framework.go:287] Applying default/prometheus-podMonitorCiliumOperator.yaml
+W1102 09:50:50.311043  795254 framework.go:291] Skipping empty manifest default/prometheus-podMonitorCiliumOperator.yaml
+I1102 09:50:50.311061  795254 framework.go:287] Applying default/prometheus-podMonitorDNSPerf.yaml
+W1102 09:50:50.311232  795254 framework.go:291] Skipping empty manifest default/prometheus-podMonitorDNSPerf.yaml
+I1102 09:50:50.311248  795254 framework.go:287] Applying default/prometheus-podMonitorKubeNetworkPolicies.yaml
+W1102 09:50:50.311431  795254 framework.go:291] Skipping empty manifest default/prometheus-podMonitorKubeNetworkPolicies.yaml
+I1102 09:50:50.311447  795254 framework.go:287] Applying default/prometheus-podMonitorNetPolicyClient.yaml
+W1102 09:50:50.311617  795254 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNetPolicyClient.yaml
+I1102 09:50:50.311634  795254 framework.go:287] Applying default/prometheus-podMonitorNodeLocalDNS.yaml
+W1102 09:50:50.311849  795254 framework.go:291] Skipping empty manifest default/prometheus-podMonitorNodeLocalDNS.yaml
+I1102 09:50:50.311865  795254 framework.go:287] Applying default/prometheus-serviceMonitorCoreDNS.yaml
+I1102 09:50:50.329281  795254 framework.go:287] Applying default/prometheus-serviceMonitorKubeProxy.yaml
+I1102 09:50:50.341776  795254 framework.go:287] Applying default/prometheus-serviceMonitorKubelet.yaml
+W1102 09:50:50.342034  795254 framework.go:291] Skipping empty manifest default/prometheus-serviceMonitorKubelet.yaml
+I1102 09:50:50.342051  795254 framework.go:287] Applying default/prometheus-serviceMonitorLegacyKubeDNS.yaml
+I1102 09:50:50.357022  795254 prometheus.go:360] Exposing kube-apiserver metrics in the cluster
+I1102 09:50:50.397191  795254 framework.go:276] Applying templates for "master-ip/*.yaml"
+I1102 09:50:50.397271  795254 framework.go:287] Applying master-ip/master-endpoints.yaml
+I1102 09:50:50.413822  795254 framework.go:287] Applying master-ip/master-service.yaml
+I1102 09:50:50.428967  795254 framework.go:287] Applying master-ip/master-serviceMonitor.yaml
+W1102 09:50:50.444102  795254 warnings.go:70] unknown field "spec.selector.k8s-app"
+I1102 09:50:50.444258  795254 prometheus.go:439] Waiting for Prometheus stack to become healthy...
+I1102 09:50:50.476984  795254 util.go:104] All 11 expected targets are ready
+I1102 09:50:50.477043  795254 prometheus.go:299] Prometheus stack set up successfully
+I1102 09:50:50.477084  795254 exec_service.go:86] Exec service: setting up service!
+I1102 09:50:50.510245  795254 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1102 09:50:50.510299  795254 framework.go:287] Applying manifest/exec_deployment.yaml
+I1102 09:50:50.540021  795254 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1102 09:50:50.587553  795254 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.948862009s
+I1102 09:51:00.588683  795254 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:51:00.588781  795254 exec_service.go:122] Exec service: service set up successfully!
+W1102 09:51:00.589112  795254 imagepreload.go:92] No images specified. Skipping image preloading
+I1102 09:51:00.598552  795254 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/result/use-case/multi-tenancy-klastos-test/uc1/generatedConfig_klastos-multitenancy-scheduler-throughput.yaml
+I1102 09:51:00.598571  795254 clusterloader.go:243] --------------------------------------------------------------------------------
+I1102 09:51:00.598579  795254 clusterloader.go:244] Running /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:51:00.598586  795254 clusterloader.go:245] --------------------------------------------------------------------------------
+I1102 09:51:00.598598  795254 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-cczqd3
+I1102 09:51:00.622786  795254 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+I1102 09:51:00.646743  795254 prometheus_measurement.go:87] APIResponsivenessPrometheus has started
+I1102 09:51:00.647532  795254 prometheus_measurement.go:87] SchedulingThroughputPrometheus has started
+I1102 09:51:00.649952  795254 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:51:00.662063  795254 scheduler_latency.go:136] SchedulingMetrics: start collecting latency metrics in scheduler...
+I1102 09:51:00.697826  795254 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1102 09:51:00.722125  795254 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1102 09:51:00.722188  795254 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1102 09:51:24.741175  795254 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1102 09:51:24.741237  795254 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1102 09:51:24.814899  795254 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1102 09:51:24.844100  795254 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.899534167s
+I1102 09:51:29.847483  795254 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 1000 out of 1000 created, 1000 running (1000 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1102 09:51:29.847607  795254 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1102 09:51:29.847653  795254 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1102 09:51:29.850671  795254 prometheus_measurement.go:91] SchedulingThroughputPrometheus gathering results
+I1102 09:51:29.850705  795254 prometheus.go:112] Executing "max_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:51:29Z
+I1102 09:51:29.851535  795254 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1102 09:51:29.855026  795254 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1102 09:51:29.855091  795254 prometheus_measurement.go:91] APIResponsivenessPrometheus gathering results
+I1102 09:51:29.855156  795254 prometheus.go:112] Executing "quantile_over_time(0.99, apiserver:apiserver_request_sli_latency_1m:histogram_quantile{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[60s])" at 2026-11-02T09:51:29Z
+I1102 09:51:29.861469  795254 prometheus.go:112] Executing "avg_over_time(sum(irate(apiserver_request_total{verb=\"POST\", resource=\"pods\", subresource=\"binding\",code=\"201\"}[1m]))[29s:5s])" at 2026-11-02T09:51:29Z
+I1102 09:51:29.881272  795254 scheduler_latency.go:139] SchedulingMetrics: gathering latency metrics in scheduler...
+I1102 09:51:29.912004  795254 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_count{verb!=\"WATCH\", subresource!~\"log|exec|portforward|attach|proxy\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:51:29Z
+I1102 09:51:29.933866  795254 prometheus.go:112] Executing "sum(increase(apiserver_watch_list_duration_seconds_count{}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:51:29Z
+I1102 09:51:29.940353  795254 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{verb!~\"WATCH|LIST\", subresource!=\"proxy\", le=\"1\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:51:29Z
+I1102 09:51:29.954960  795254 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope!=\"cluster\", verb=\"LIST\", le=\"5\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:51:29Z
+I1102 09:51:29.968593  795254 prometheus.go:112] Executing "sum(increase(apiserver_request_sli_duration_seconds_bucket{scope=\"cluster\", verb=\"LIST\", le=\"30\"}[29s])) by (resource, subresource, scope, verb)" at 2026-11-02T09:51:29Z
+I1102 09:51:29.993069  795254 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:events Subresource: Verb:DELETE Scope:namespace Latency:perc50: 37.482142ms, perc90: 7.396s, perc99: 7.9396s Count:0 SlowCount:0}; threshold: 30s
+I1102 09:51:29.993139  795254 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:customresourcedefinitions Subresource: Verb:LIST Scope:cluster Latency:perc50: 149.25ms, perc90: 189.05ms, perc99: 198.005ms Count:1 SlowCount:0}; threshold: 30s
+I1102 09:51:29.993192  795254 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:pods Subresource: Verb:LIST Scope:cluster Latency:perc50: 29.367967ms, perc90: 70.415301ms, perc99: 166.194999ms Count:28 SlowCount:0}; threshold: 30s
+I1102 09:51:29.993216  795254 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:nodes Subresource: Verb:LIST Scope:cluster Latency:perc50: 28.535714ms, perc90: 59.85ms, perc99: 95.535ms Count:5 SlowCount:0}; threshold: 30s
+I1102 09:51:29.993237  795254 api_responsiveness_prometheus.go:297] APIResponsivenessPrometheus: Top latency metric: {Resource:configmaps Subresource: Verb:POST Scope:resource Latency:perc50: 27.475ms, perc90: 49.455ms, perc99: 94.05ms Count:0 SlowCount:0}; threshold: 1s
+I1102 09:51:29.993638  795254 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1102 09:51:29.993694  795254 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1102 09:51:31.036033  795254 request.go:700] Waited for 1.005425788s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-226
+I1102 09:51:32.045463  795254 request.go:700] Waited for 1.991154309s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-109
+I1102 09:51:33.045861  795254 request.go:700] Waited for 2.988343187s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-154
+I1102 09:51:34.055386  795254 request.go:700] Waited for 3.994660985s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-229
+I1102 09:51:35.066158  795254 request.go:700] Waited for 4.996686366s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-417
+I1102 09:51:36.075168  795254 request.go:700] Waited for 5.960882031s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-a-391
+I1102 09:51:37.075418  795254 request.go:700] Waited for 6.949943817s due to client-side throttling, not priority and fairness, request: DELETE:https://127.0.0.1:40125/api/v1/namespaces/uc1/pods/klastos-scheduler-throughput-pod-b-443
+I1102 09:51:37.974998  795254 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1102 09:51:47.991353  795254 simple_test_executor.go:402] Resources cleanup time: 10.015772975s
+I1102 09:51:47.991415  795254 clusterloader.go:253] --------------------------------------------------------------------------------
+I1102 09:51:47.991431  795254 clusterloader.go:254] Test Finished
+I1102 09:51:47.991443  795254 clusterloader.go:255]   Test: /home/ubuntu/githubrepos/k8s-secure-scheduling/test/use-case/multi-tenancy-klastos/config-klastos.yaml
+I1102 09:51:47.991456  795254 clusterloader.go:256]   Status: Success
+I1102 09:51:47.991468  795254 clusterloader.go:260] --------------------------------------------------------------------------------
+I1102 09:51:47.991961  795254 prometheus.go:307] Get snapshot from Prometheus
+I1102 09:51:47.991981  795254 exec_service.go:130] Exec service: tearing down service
