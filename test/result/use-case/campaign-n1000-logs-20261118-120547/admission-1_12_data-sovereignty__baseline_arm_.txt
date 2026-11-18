@@ -1,0 +1,10 @@
+webhook                                        type        op      rej      calls     mean   p50<=   p90<=   p99<=
+mutation.gatekeeper.sh                         admit       UPDATE  false     3002    2.4ms     5ms     5ms    25ms
+validation.gatekeeper.sh                       validating  UPDATE  false     3002    2.9ms     5ms     5ms    25ms
+mutation.gatekeeper.sh                         admit       CREATE  false     1564    3.6ms     5ms    25ms   100ms
+validation.gatekeeper.sh                       validating  CREATE  false     1564    3.2ms     5ms    25ms    25ms
+check-ignore-label.gatekeeper.sh               validating  UPDATE  false       62    2.1ms     5ms     5ms    25ms
+check-ignore-label.gatekeeper.sh               validating  CREATE  false       10    1.8ms     5ms     5ms     5ms
+
+POST pods request, apiserver-side (webhooks + persistence): calls=167 mean=41.5ms
+Exact mean from request to scheduled = this mean + the watcher's mean e2e (means add; percentiles do not).

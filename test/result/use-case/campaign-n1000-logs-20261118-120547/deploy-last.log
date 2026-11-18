@@ -1,0 +1,131 @@
+Switched to context "kubernetes-admin@kubernetes".
+=== KLASTOS stack deploy (KWOK cluster, context: kubernetes-admin@kubernetes) ===
+NESTOR_REPO: /home/ubuntu/githubrepos/Nestor-paper
+
+--- Step 1: Installing CRDs ---
+customresourcedefinition.apiextensions.k8s.io/appgroups.appgroup.diktyo.x-k8s.io created
+customresourcedefinition.apiextensions.k8s.io/appinfodefinitions.appgroup.diktyo.x-k8s.io created
+customresourcedefinition.apiextensions.k8s.io/appinfos.appgroup.diktyo.x-k8s.io created
+customresourcedefinition.apiextensions.k8s.io/appclasses.appclass.diktyo.x-k8s.io created
+customresourcedefinition.apiextensions.k8s.io/nodesegmentationpolicies.nodesegmentationpolicy.diktyo.x-k8s.io created
+customresourcedefinition.apiextensions.k8s.io/classschedulingconstraints.scheduling.diktyo.x-k8s.io created
+customresourcedefinition.apiextensions.k8s.io/classschedulinginfos.scheduling.diktyo.x-k8s.io created
+
+--- Step 2: Creating namespaces ---
+namespace/appinfo-system created
+
+--- Step 3: Setting up RBAC ---
+serviceaccount/appclass-sa created
+clusterrolebinding.rbac.authorization.k8s.io/appclass-cluster-rolebinding created
+serviceaccount/unified-operator-sa created
+clusterrole.rbac.authorization.k8s.io/unified-operator-role created
+clusterrolebinding.rbac.authorization.k8s.io/unified-operator-rb created
+
+--- Step 4: Labeling nodes with a zone - SKIPPED (CLUSTER_BACKEND=real keeps the cluster's own zones) ---
+    existing zones: cloud1 cloud2 edge1 edge2 fog1 fog2 master 
+
+--- Step 5: Deploying appclass-operator and unified-operator ---
+pod/appclass-operator created
+pod/unified-operator created
+pod/appclass-operator condition met
+pod/unified-operator condition met
+
+--- Step 6: Deploying Diktyo scheduler ---
+namespace/diktyo created
+Release "diktyo" does not exist. Installing it now.
+NAME: diktyo
+LAST DEPLOYED: Wed Nov 18 12:06:36 2026
+NAMESPACE: diktyo
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+deployment.apps/diktyo-scheduler patched
+deployment.apps/scheduler-plugins-controller patched
+Waiting for deployment "diktyo-scheduler" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "diktyo-scheduler" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "diktyo-scheduler" rollout to finish: 1 old replicas are pending termination...
+deployment "diktyo-scheduler" successfully rolled out
+deployment "scheduler-plugins-controller" successfully rolled out
+
+--- Step 7: Creating NetworkTopology CR — skipped (DISABLE_NETWORK_TOPOLOGY disables networkOverhead) ---
+
+--- Reconciling gating admission controller state ---
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Preflight checks...
+[0;32m✅[0m kubectl found.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 1: Removing MutatingWebhookConfiguration...
+[1;33m⚠️  [0m MutatingWebhookConfiguration 'opa-mutating-webhook' not found, skipping.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 2: Removing OPA deployment resources...
+[1;33m⚠️  [0m Namespace 'opa' not found — skipping ac.yaml deletion.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 3: Removing policy ConfigMap...
+[0;32m✅[0m ConfigMap 'opa-policy' deleted.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 4: Removing TLS secret...
+[0;32m✅[0m Secret 'opa-server' deleted.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 5: Removing webhook-exclusion labels from system namespaces...
+label "openpolicyagent.org/webhook" not found.
+namespace/kube-system not labeled
+[0;32m✅[0m Label removed from namespace 'kube-system'.
+[1;33m⚠️  [0m Namespace 'opa' not found, skipping.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 6: Deleting opa namespace...
+[1;33m⚠️  [0m Namespace 'opa' not found, skipping.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 7: Removing cluster-scoped RBAC resources...
+[0;32m✅[0m Cluster-scoped RBAC deleted.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 8: Removing locally generated TLS and config files...
+[0;32m✅[0m Local generated files removed.
+[1;33m----------------------------------------[0m
+
+[0;32m========================================[0m
+[0;32m  OPA Admission Controller uninstalled  [0m
+[0;32m========================================[0m
+
+
+--- Step 8: Deploying csi-gate-webhook admission controller (image: decomads/csi-gate-webhook:latest) ---
+make: Entering directory '/home/ubuntu/githubrepos/Nestor-paper/full-example/deploy'
+=== Deploying CSI admission webhook (image: decomads/csi-gate-webhook:latest) ===
+kubectl apply -f /home/ubuntu/githubrepos/Nestor-paper/csi-gate-webhook/deploy/rbac.yaml
+serviceaccount/csi-admission created
+clusterrole.rbac.authorization.k8s.io/csi-admission created
+clusterrolebinding.rbac.authorization.k8s.io/csi-admission created
+kubectl apply -f /home/ubuntu/githubrepos/Nestor-paper/csi-gate-webhook/deploy/webhook-config.yaml
+mutatingwebhookconfiguration.admissionregistration.k8s.io/csi-admission created
+bash /home/ubuntu/githubrepos/Nestor-paper/csi-gate-webhook/deploy/certs/generate-certs.sh
+Certificate request self-signature ok
+subject=CN = csi-admission.kube-system.svc
+secret/csi-admission-tls created
+mutatingwebhookconfiguration.admissionregistration.k8s.io/csi-admission patched
+LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURGekNDQWYrZ0F3SUJBZ0lVT0pSamdmMnlWeWc1UUU4SElzTGlnNTluTkVZd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0d6RVpNQmNHQTFVRUF3d1FZM05wTFdGa2JXbHpjMmx2YmkxallUQWVGdzB5TmpFeE1UZ3hNakEyTkRSYQpGdzB6TmpFeE1UVXhNakEyTkRSYU1Cc3hHVEFYQmdOVkJBTU1FR056YVMxaFpHMXBjM05wYjI0dFkyRXdnZ0VpCk1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRQ0p6bUVRcnVhS3pPdmduSldVTUFEekZySzMKazV0bFMxelRZdjQzd2JMUExPWUxRN3BVaFZDSWMzZ2Q1T2NCREZWb1E0UEdvaDdUekFQYlc2UnVSTDBtRDFaZgpOVmJrUDNoOEduaWtiaGVzT211bS9pUWo1TzlzU1l4QWE4eEluOFJ1NlJjaFBjVGRmdjArRHlnY3IxdXE4OTZuCkZYc2RTVytJa2NOdW1KQVlZK0VpTzdVdktMV25wOWN2ekczc2w5Z3pKUXFPRGptSmFkaHo1K29BSTJXRUFuQTgKU1pxa2R0MGx2UXZkWmVGc0tzVDk4RkpvMjRENER3aTRIejNia29BM0M2NE41YVpjdGVNWnhEVFdTQkFzNDRhWQpXb0hpb0o4L3NYYzJpSStQR2N2SlM4NGY1T3gvMUhIdDROT0Uya1lvRW5uak9ia3NiK0dFbEhMTyttT3pBZ01CCkFBR2pVekJSTUIwR0ExVWREZ1FXQkJRSHB5WnB3NXpYcXByaVJmdDZTOGRHaERIcEFqQWZCZ05WSFNNRUdEQVcKZ0JRSHB5WnB3NXpYcXByaVJmdDZTOGRHaERIcEFqQVBCZ05WSFJNQkFmOEVCVEFEQVFIL01BMEdDU3FHU0liMwpEUUVCQ3dVQUE0SUJBUUJidGZBMEduWHBVQnRwN0tET2hFWGlOWDNQQUkwcGlnZFlHWngrU05lUkdEOUgyb3Z5CncvRS9lOGE4eE5QbjN6KytBaDkySzRERlk1NTJuOHBMQ3N1dGx3aE5KWUt3WHQ4ZUM0cU51V3pXdEh1eFlERWIKeU0wRW1DV2IxczlzZTdVdFJUZENncDlvRjNGcDdZY0s3SGFsQUNmMTdVVWRDL2dkUzVpeFV2TTU5VG02TFJDZQpZYmlPNW5ReW5KZGsxM29uTkJxcFVTL053MVJPQU0xclZLQXpBQlpQRUZZOHk2blQzMk9GSkJIWnhQRDBWUmtvClpPSFFQWGRWUVdVcEJHclN4QXRVb3daWHpxUzEyQ2Rnam1CbUg4UGZ2STFlVHpub2g3a2YvM1NmaUcydHc2NHkKaUo1TjZlcTdCY2w0VkgwRm5ZU2EzdWE1RGJjRjFLWVp2cHlVCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+  Webhook image: decomads/csi-gate-webhook:latest  (pull=IfNotPresent)
+kubectl apply -f /tmp/csi-admission.rendered.yaml
+deployment.apps/csi-admission created
+service/csi-admission created
+kubectl -n kube-system wait --for=condition=Available deployment/csi-admission --timeout=60s
+deployment.apps/csi-admission condition met
+make: Leaving directory '/home/ubuntu/githubrepos/Nestor-paper/full-example/deploy'
+deployment.apps/csi-admission patched
+Waiting for deployment "csi-admission" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "csi-admission" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "csi-admission" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "csi-admission" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "csi-admission" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "csi-admission" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "csi-admission" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "csi-admission" rollout to finish: 1 old replicas are pending termination...
+deployment "csi-admission" successfully rolled out
+
+=== KLASTOS stack deployed (ClassScheduling-only mode (no network topology)) ===
+Verify with: kubectl -n kube-system get pod appclass-operator unified-operator
+             kubectl -n diktyo get pods
+             kubectl -n opa get pods
+Then run:    CL2_SCHEDULER_THROUGHPUT_THRESHOLD=<N> ${K8S_SECURE_SCHEDULING_REPO:-../k8s-secure-scheduling}/test/run-klastos-use-case-test.sh
+             - set K8S_SECURE_SCHEDULING_REPO if it's checked out as a sibling repo, not a submodule of klastos
+             - set CL2_SCHEDULER_THROUGHPUT_THRESHOLD (pods/sec; config-klastos.yaml defaults to 400, calibrated
+               for N=1000) if your CL2_SCHEDULER_THROUGHPUT_PODS won't realistically reach that - otherwise the
+               run fails on a throughput check that was never meant to apply at your pod count

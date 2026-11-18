@@ -1,0 +1,40 @@
+--- Preflight ---
+none
+
+--- Installing Kyverno chart 3.3.9 (admission controller only, pinned to the control-plane node) ---
+"kyverno" has been added to your repositories
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "kyverno" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Release "kyverno" does not exist. Installing it now.
+NAME: kyverno
+LAST DEPLOYED: Wed Nov 18 12:20:21 2026
+NAMESPACE: kyverno
+STATUS: deployed
+REVISION: 1
+NOTES:
+Chart version: 3.3.9
+Kyverno version: v1.13.6
+
+Thank you for installing kyverno! Your release is named kyverno.
+
+The following components have been installed in your cluster:
+- CRDs
+- Admission controller
+
+
+
+
+⚠️  WARNING: PolicyExceptions are disabled by default. To enable them, set '--enablePolicyException' to true.
+
+💡 Note: There is a trade-off when deciding which approach to take regarding Namespace exclusions. Please see the documentation at https://kyverno.io/docs/installation/#security-vs-operability to understand the risks.
+
+--- Verifying ---
+Waiting for deployment "kyverno-admission-controller" rollout to finish: 2 of 3 updated replicas are available...
+deployment "kyverno-admission-controller" successfully rolled out
+kyverno-admission-controller-6859f6469f-2qtxn   1/1   Running   0     38s   192.168.205.87   test-master   <none>   <none>
+kyverno-admission-controller-6859f6469f-8vrcc   1/1   Running   0     38s   192.168.205.95   test-master   <none>   <none>
+kyverno-admission-controller-6859f6469f-dghqt   1/1   Running   0     38s   192.168.205.67   test-master   <none>   <none>
+
+Kyverno baseline stack deployed.
+Apply a use case with: kyverno-baseline/apply-policy.sh <use-case>

@@ -1,0 +1,10 @@
+webhook                                        type        op      rej      calls     mean   p50<=   p90<=   p99<=
+validate.kyverno.svc-fail                      validating  DELETE  false      578    7.4ms     5ms    25ms   100ms
+mutate.kyverno.svc-fail                        admit       CREATE  false      166   35.6ms   100ms   100ms   500ms
+validate.kyverno.svc-fail                      validating  CREATE  false      166   19.0ms    25ms   100ms   100ms
+monitor-webhooks.kyverno.svc                   admit       UPDATE  false       19    2.7ms     5ms     5ms     5ms
+mutate-policy.kyverno.svc                      admit       CREATE  false        6    5.5ms     5ms    25ms    25ms
+validate-policy.kyverno.svc                    validating  CREATE  false        6   40.2ms   100ms   100ms   100ms
+
+POST pods request, apiserver-side (webhooks + persistence): calls=166 mean=74.1ms
+Exact mean from request to scheduled = this mean + the watcher's mean e2e (means add; percentiles do not).

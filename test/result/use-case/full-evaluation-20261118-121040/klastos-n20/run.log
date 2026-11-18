@@ -1,0 +1,438 @@
+[*] Apply shared KLASTOS classification schema (AppClass + AppInfoDefinition)
+appclass.appclass.diktyo.x-k8s.io/data-sovereignty created
+configmap/data-sovereignty-logic-plugin created
+appinfodefinition.appgroup.diktyo.x-k8s.io/data-sovereignty-policy created
+
+
+=== Class: vanilla (N=20) ===
+[*] Apply vanilla policy (CSC + AppGroup)
+namespace/klastos-eval-1 created
+appgroup.appgroup.diktyo.x-k8s.io/vanilla-app created
+policy-ready klastos-csi-unchanged(entries=0,rv=664344162) 20s
+
+[*] Run vanilla clusterloader pass
+I1118 12:11:04.081839 1034060 dns_performance-k8s-hostnames.go:58] Registering measurement: DNS Performance for K8s Hostnames
+I1118 12:11:04.081914 1034060 network_performance_measurement.go:90] Registering Network Performance Measurement
+I1118 12:11:04.087480 1034060 clusterloader.go:272] Listening on 8000
+I1118 12:11:04.123025 1034060 clusterloader.go:174] ClusterConfig.MasterName set to test-master
+E1118 12:11:04.150840 1034060 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1118 12:11:04.169391 1034060 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.22.14.30]
+I1118 12:11:04.169504 1034060 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/kul-cluster.config RunFromCluster:false Nodes:38 Provider:0xc0004f3e30 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.22.14.30] MasterName:test-master DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/vanilla ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:true EnableServer:false EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[]}
+I1118 12:11:04.192466 1034060 cluster.go:75] Listing cluster nodes:
+I1118 12:11:04.192531 1034060 cluster.go:87] Name: cloud-worker-1, clusterIP: 172.22.8.74, externalIP: , isSchedulable: true
+I1118 12:11:04.192549 1034060 cluster.go:87] Name: cloud-worker-2, clusterIP: 172.22.8.165, externalIP: , isSchedulable: true
+I1118 12:11:04.192562 1034060 cluster.go:87] Name: cloud-worker-3, clusterIP: 172.22.8.19, externalIP: , isSchedulable: true
+I1118 12:11:04.192574 1034060 cluster.go:87] Name: cloud-worker-4, clusterIP: 172.22.8.22, externalIP: , isSchedulable: true
+I1118 12:11:04.192586 1034060 cluster.go:87] Name: cloud-worker-5, clusterIP: 172.22.8.170, externalIP: , isSchedulable: true
+I1118 12:11:04.192598 1034060 cluster.go:87] Name: cloud-worker-6, clusterIP: 172.22.8.83, externalIP: , isSchedulable: true
+I1118 12:11:04.192609 1034060 cluster.go:87] Name: cloud-worker-7, clusterIP: 172.22.8.116, externalIP: , isSchedulable: true
+I1118 12:11:04.192620 1034060 cluster.go:87] Name: cloud-worker-8, clusterIP: 172.22.8.39, externalIP: , isSchedulable: true
+I1118 12:11:04.192631 1034060 cluster.go:87] Name: macro-worker-1, clusterIP: 172.22.14.19, externalIP: , isSchedulable: true
+I1118 12:11:04.192643 1034060 cluster.go:87] Name: macro-worker-2, clusterIP: 172.22.14.159, externalIP: , isSchedulable: true
+I1118 12:11:04.192653 1034060 cluster.go:87] Name: macro-worker-3, clusterIP: 172.22.14.140, externalIP: , isSchedulable: true
+I1118 12:11:04.192664 1034060 cluster.go:87] Name: macro-worker-4, clusterIP: 172.22.14.171, externalIP: , isSchedulable: true
+I1118 12:11:04.192696 1034060 cluster.go:87] Name: macro-worker-5, clusterIP: 172.22.14.33, externalIP: , isSchedulable: true
+I1118 12:11:04.192709 1034060 cluster.go:87] Name: macro-worker-6, clusterIP: 172.22.14.202, externalIP: , isSchedulable: true
+I1118 12:11:04.192720 1034060 cluster.go:87] Name: macro-worker-7, clusterIP: 172.22.14.56, externalIP: , isSchedulable: true
+I1118 12:11:04.192732 1034060 cluster.go:87] Name: micro-worker-1, clusterIP: 172.22.14.66, externalIP: , isSchedulable: true
+I1118 12:11:04.192742 1034060 cluster.go:87] Name: micro-worker-10, clusterIP: 172.22.14.118, externalIP: , isSchedulable: true
+I1118 12:11:04.192753 1034060 cluster.go:87] Name: micro-worker-11, clusterIP: 172.22.14.201, externalIP: , isSchedulable: true
+I1118 12:11:04.192764 1034060 cluster.go:87] Name: micro-worker-12, clusterIP: 172.22.14.71, externalIP: , isSchedulable: true
+I1118 12:11:04.192775 1034060 cluster.go:87] Name: micro-worker-13, clusterIP: 172.22.14.97, externalIP: , isSchedulable: true
+I1118 12:11:04.192785 1034060 cluster.go:87] Name: micro-worker-14, clusterIP: 172.22.14.229, externalIP: , isSchedulable: true
+I1118 12:11:04.192795 1034060 cluster.go:87] Name: micro-worker-15, clusterIP: 172.22.14.124, externalIP: , isSchedulable: true
+I1118 12:11:04.192805 1034060 cluster.go:87] Name: micro-worker-16, clusterIP: 172.22.14.208, externalIP: , isSchedulable: true
+I1118 12:11:04.192814 1034060 cluster.go:87] Name: micro-worker-17, clusterIP: 172.22.14.196, externalIP: , isSchedulable: true
+I1118 12:11:04.192824 1034060 cluster.go:87] Name: micro-worker-18, clusterIP: 172.22.14.61, externalIP: , isSchedulable: true
+I1118 12:11:04.192833 1034060 cluster.go:87] Name: micro-worker-19, clusterIP: 172.22.14.136, externalIP: , isSchedulable: true
+I1118 12:11:04.192843 1034060 cluster.go:87] Name: micro-worker-2, clusterIP: 172.22.14.151, externalIP: , isSchedulable: true
+I1118 12:11:04.192852 1034060 cluster.go:87] Name: micro-worker-20, clusterIP: 172.22.14.177, externalIP: , isSchedulable: true
+I1118 12:11:04.192862 1034060 cluster.go:87] Name: micro-worker-21, clusterIP: 172.22.14.246, externalIP: , isSchedulable: true
+I1118 12:11:04.192871 1034060 cluster.go:87] Name: micro-worker-22, clusterIP: 172.22.14.146, externalIP: , isSchedulable: true
+I1118 12:11:04.192880 1034060 cluster.go:87] Name: micro-worker-23, clusterIP: 172.22.14.23, externalIP: , isSchedulable: true
+I1118 12:11:04.192890 1034060 cluster.go:87] Name: micro-worker-3, clusterIP: 172.22.14.167, externalIP: , isSchedulable: true
+I1118 12:11:04.192899 1034060 cluster.go:87] Name: micro-worker-4, clusterIP: 172.22.14.110, externalIP: , isSchedulable: true
+I1118 12:11:04.192908 1034060 cluster.go:87] Name: micro-worker-5, clusterIP: 172.22.14.154, externalIP: , isSchedulable: true
+I1118 12:11:04.192918 1034060 cluster.go:87] Name: micro-worker-6, clusterIP: 172.22.14.62, externalIP: , isSchedulable: true
+I1118 12:11:04.192927 1034060 cluster.go:87] Name: micro-worker-7, clusterIP: 172.22.14.125, externalIP: , isSchedulable: true
+I1118 12:11:04.192937 1034060 cluster.go:87] Name: micro-worker-8, clusterIP: 172.22.14.18, externalIP: , isSchedulable: true
+I1118 12:11:04.192946 1034060 cluster.go:87] Name: micro-worker-9, clusterIP: 172.22.14.53, externalIP: , isSchedulable: true
+I1118 12:11:04.192956 1034060 cluster.go:87] Name: test-master, clusterIP: 172.22.14.30, externalIP: , isSchedulable: true
+I1118 12:11:04.222580 1034060 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/kul-cluster.config" kubeconfig.
+I1118 12:11:04.228047 1034060 exec_service.go:86] Exec service: setting up service!
+I1118 12:11:04.249836 1034060 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1118 12:11:04.249903 1034060 framework.go:287] Applying manifest/exec_deployment.yaml
+I1118 12:11:04.279816 1034060 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1118 12:11:04.326752 1034060 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949790855s
+I1118 12:11:14.327353 1034060 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:11:14.327421 1034060 exec_service.go:122] Exec service: service set up successfully!
+W1118 12:11:14.327578 1034060 imagepreload.go:92] No images specified. Skipping image preloading
+I1118 12:11:14.338744 1034060 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/vanilla/generatedConfig_klastos-scheduler-throughput.yaml
+I1118 12:11:14.338784 1034060 clusterloader.go:243] --------------------------------------------------------------------------------
+I1118 12:11:14.338799 1034060 clusterloader.go:244] Running /home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/config-klastos.yaml
+I1118 12:11:14.338813 1034060 clusterloader.go:245] --------------------------------------------------------------------------------
+I1118 12:11:14.338833 1034060 simple_test_executor.go:58] AutomanagedNamespacePrefix: klastos-eval
+I1118 12:11:14.352693 1034060 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+W1118 12:11:14.375837 1034060 prometheus_measurement.go:68] OPAAdmissionRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:11:14.375910 1034060 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:11:14.376519 1034060 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:11:14.379298 1034060 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:11:14.426628 1034060 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1118 12:11:14.426726 1034060 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1118 12:11:14.426781 1034060 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1118 12:11:14.496700 1034060 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1118 12:11:14.496771 1034060 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1118 12:11:14.502244 1034060 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:11:14.549310 1034060 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.949323624s
+I1118 12:11:19.549870 1034060 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 20 out of 20 created, 20 running (20 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:11:19.549971 1034060 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1118 12:11:19.550009 1034060 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+W1118 12:11:19.555637 1034060 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:11:19.555682 1034060 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+W1118 12:11:19.555742 1034060 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:11:19.555905 1034060 prometheus_measurement.go:68] OPAAdmissionRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:11:19.567323 1034060 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1118 12:11:19.567659 1034060 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1118 12:11:19.567736 1034060 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1118 12:11:19.609827 1034060 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1118 12:11:34.699264 1034060 simple_test_executor.go:402] Resources cleanup time: 15.08903557s
+I1118 12:11:34.699376 1034060 clusterloader.go:253] --------------------------------------------------------------------------------
+I1118 12:11:34.699393 1034060 clusterloader.go:254] Test Finished
+I1118 12:11:34.699406 1034060 clusterloader.go:255]   Test: /home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/config-klastos.yaml
+I1118 12:11:34.699418 1034060 clusterloader.go:256]   Status: Success
+I1118 12:11:34.699430 1034060 clusterloader.go:260] --------------------------------------------------------------------------------
+
+JUnit report was created: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/vanilla/junit.xml
+I1118 12:11:34.699949 1034060 prometheus.go:307] Get snapshot from Prometheus
+I1118 12:11:34.699970 1034060 exec_service.go:130] Exec service: tearing down service
+Look into /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/vanilla for the measurements
+
+[*] Remove vanilla policy (CSC + AppGroup)
+
+=== Class: eu (N=20) ===
+[*] Apply eu policy (CSC + AppGroup)
+namespace/klastos-eval-1 created
+classschedulingconstraint.scheduling.diktyo.x-k8s.io/data-sovereignty-eu created
+appgroup.appgroup.diktyo.x-k8s.io/eu-app created
+policy-ready klastos-csi(entries=1) 4s
+
+[*] Run eu clusterloader pass
+I1118 12:11:56.212937 1034417 dns_performance-k8s-hostnames.go:58] Registering measurement: DNS Performance for K8s Hostnames
+I1118 12:11:56.213004 1034417 network_performance_measurement.go:90] Registering Network Performance Measurement
+I1118 12:11:56.220893 1034417 clusterloader.go:272] Listening on 8000
+I1118 12:11:56.266813 1034417 clusterloader.go:174] ClusterConfig.MasterName set to test-master
+E1118 12:11:56.287381 1034417 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1118 12:11:56.313284 1034417 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.22.14.30]
+I1118 12:11:56.313376 1034417 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/kul-cluster.config RunFromCluster:false Nodes:38 Provider:0xc0003a0bb0 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.22.14.30] MasterName:test-master DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/eu ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:true EnableServer:false EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[/home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/eu-region/override.yaml]}
+I1118 12:11:56.334270 1034417 cluster.go:75] Listing cluster nodes:
+I1118 12:11:56.334331 1034417 cluster.go:87] Name: cloud-worker-1, clusterIP: 172.22.8.74, externalIP: , isSchedulable: true
+I1118 12:11:56.334490 1034417 cluster.go:87] Name: cloud-worker-2, clusterIP: 172.22.8.165, externalIP: , isSchedulable: true
+I1118 12:11:56.334528 1034417 cluster.go:87] Name: cloud-worker-3, clusterIP: 172.22.8.19, externalIP: , isSchedulable: true
+I1118 12:11:56.334539 1034417 cluster.go:87] Name: cloud-worker-4, clusterIP: 172.22.8.22, externalIP: , isSchedulable: true
+I1118 12:11:56.334550 1034417 cluster.go:87] Name: cloud-worker-5, clusterIP: 172.22.8.170, externalIP: , isSchedulable: true
+I1118 12:11:56.334560 1034417 cluster.go:87] Name: cloud-worker-6, clusterIP: 172.22.8.83, externalIP: , isSchedulable: true
+I1118 12:11:56.334570 1034417 cluster.go:87] Name: cloud-worker-7, clusterIP: 172.22.8.116, externalIP: , isSchedulable: true
+I1118 12:11:56.334579 1034417 cluster.go:87] Name: cloud-worker-8, clusterIP: 172.22.8.39, externalIP: , isSchedulable: true
+I1118 12:11:56.334589 1034417 cluster.go:87] Name: macro-worker-1, clusterIP: 172.22.14.19, externalIP: , isSchedulable: true
+I1118 12:11:56.334598 1034417 cluster.go:87] Name: macro-worker-2, clusterIP: 172.22.14.159, externalIP: , isSchedulable: true
+I1118 12:11:56.334607 1034417 cluster.go:87] Name: macro-worker-3, clusterIP: 172.22.14.140, externalIP: , isSchedulable: true
+I1118 12:11:56.334617 1034417 cluster.go:87] Name: macro-worker-4, clusterIP: 172.22.14.171, externalIP: , isSchedulable: true
+I1118 12:11:56.334626 1034417 cluster.go:87] Name: macro-worker-5, clusterIP: 172.22.14.33, externalIP: , isSchedulable: true
+I1118 12:11:56.334635 1034417 cluster.go:87] Name: macro-worker-6, clusterIP: 172.22.14.202, externalIP: , isSchedulable: true
+I1118 12:11:56.334645 1034417 cluster.go:87] Name: macro-worker-7, clusterIP: 172.22.14.56, externalIP: , isSchedulable: true
+I1118 12:11:56.334654 1034417 cluster.go:87] Name: micro-worker-1, clusterIP: 172.22.14.66, externalIP: , isSchedulable: true
+I1118 12:11:56.334663 1034417 cluster.go:87] Name: micro-worker-10, clusterIP: 172.22.14.118, externalIP: , isSchedulable: true
+I1118 12:11:56.334672 1034417 cluster.go:87] Name: micro-worker-11, clusterIP: 172.22.14.201, externalIP: , isSchedulable: true
+I1118 12:11:56.334682 1034417 cluster.go:87] Name: micro-worker-12, clusterIP: 172.22.14.71, externalIP: , isSchedulable: true
+I1118 12:11:56.334691 1034417 cluster.go:87] Name: micro-worker-13, clusterIP: 172.22.14.97, externalIP: , isSchedulable: true
+I1118 12:11:56.334701 1034417 cluster.go:87] Name: micro-worker-14, clusterIP: 172.22.14.229, externalIP: , isSchedulable: true
+I1118 12:11:56.334710 1034417 cluster.go:87] Name: micro-worker-15, clusterIP: 172.22.14.124, externalIP: , isSchedulable: true
+I1118 12:11:56.334719 1034417 cluster.go:87] Name: micro-worker-16, clusterIP: 172.22.14.208, externalIP: , isSchedulable: true
+I1118 12:11:56.334728 1034417 cluster.go:87] Name: micro-worker-17, clusterIP: 172.22.14.196, externalIP: , isSchedulable: true
+I1118 12:11:56.334738 1034417 cluster.go:87] Name: micro-worker-18, clusterIP: 172.22.14.61, externalIP: , isSchedulable: true
+I1118 12:11:56.334747 1034417 cluster.go:87] Name: micro-worker-19, clusterIP: 172.22.14.136, externalIP: , isSchedulable: true
+I1118 12:11:56.334756 1034417 cluster.go:87] Name: micro-worker-2, clusterIP: 172.22.14.151, externalIP: , isSchedulable: true
+I1118 12:11:56.334765 1034417 cluster.go:87] Name: micro-worker-20, clusterIP: 172.22.14.177, externalIP: , isSchedulable: true
+I1118 12:11:56.334785 1034417 cluster.go:87] Name: micro-worker-21, clusterIP: 172.22.14.246, externalIP: , isSchedulable: true
+I1118 12:11:56.334795 1034417 cluster.go:87] Name: micro-worker-22, clusterIP: 172.22.14.146, externalIP: , isSchedulable: true
+I1118 12:11:56.334804 1034417 cluster.go:87] Name: micro-worker-23, clusterIP: 172.22.14.23, externalIP: , isSchedulable: true
+I1118 12:11:56.334813 1034417 cluster.go:87] Name: micro-worker-3, clusterIP: 172.22.14.167, externalIP: , isSchedulable: true
+I1118 12:11:56.334822 1034417 cluster.go:87] Name: micro-worker-4, clusterIP: 172.22.14.110, externalIP: , isSchedulable: true
+I1118 12:11:56.334832 1034417 cluster.go:87] Name: micro-worker-5, clusterIP: 172.22.14.154, externalIP: , isSchedulable: true
+I1118 12:11:56.334849 1034417 cluster.go:87] Name: micro-worker-6, clusterIP: 172.22.14.62, externalIP: , isSchedulable: true
+I1118 12:11:56.334858 1034417 cluster.go:87] Name: micro-worker-7, clusterIP: 172.22.14.125, externalIP: , isSchedulable: true
+I1118 12:11:56.334867 1034417 cluster.go:87] Name: micro-worker-8, clusterIP: 172.22.14.18, externalIP: , isSchedulable: true
+I1118 12:11:56.334876 1034417 cluster.go:87] Name: micro-worker-9, clusterIP: 172.22.14.53, externalIP: , isSchedulable: true
+I1118 12:11:56.334886 1034417 cluster.go:87] Name: test-master, clusterIP: 172.22.14.30, externalIP: , isSchedulable: true
+I1118 12:11:56.360775 1034417 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/kul-cluster.config" kubeconfig.
+I1118 12:11:56.365540 1034417 exec_service.go:86] Exec service: setting up service!
+I1118 12:11:56.388827 1034417 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1118 12:11:56.388894 1034417 framework.go:287] Applying manifest/exec_deployment.yaml
+I1118 12:11:56.416338 1034417 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1118 12:11:56.463559 1034417 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.94944923s
+I1118 12:12:06.464526 1034417 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:12:06.464624 1034417 exec_service.go:122] Exec service: service set up successfully!
+W1118 12:12:06.465053 1034417 imagepreload.go:92] No images specified. Skipping image preloading
+I1118 12:12:06.480209 1034417 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/eu/generatedConfig_klastos-scheduler-throughput.yaml
+I1118 12:12:06.480241 1034417 clusterloader.go:243] --------------------------------------------------------------------------------
+I1118 12:12:06.480253 1034417 clusterloader.go:244] Running /home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/config-klastos.yaml
+I1118 12:12:06.480263 1034417 clusterloader.go:245] --------------------------------------------------------------------------------
+I1118 12:12:06.480278 1034417 simple_test_executor.go:58] AutomanagedNamespacePrefix: klastos-eval
+I1118 12:12:06.494962 1034417 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+W1118 12:12:06.515305 1034417 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:12:06.515438 1034417 prometheus_measurement.go:68] OPAAdmissionRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:12:06.515494 1034417 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:12:06.518735 1034417 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:12:06.565807 1034417 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1118 12:12:06.565990 1034417 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1118 12:12:06.566051 1034417 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1118 12:12:06.646052 1034417 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1118 12:12:06.646116 1034417 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1118 12:12:06.651330 1034417 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:12:06.698306 1034417 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.94964847s
+I1118 12:12:11.699600 1034417 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 20 out of 20 created, 20 running (20 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:12:11.699725 1034417 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1118 12:12:11.699771 1034417 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+W1118 12:12:11.703224 1034417 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:12:11.703268 1034417 prometheus_measurement.go:68] OPAAdmissionRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:12:11.703347 1034417 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:12:11.703434 1034417 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1118 12:12:11.704459 1034417 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1118 12:12:11.704593 1034417 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1118 12:12:11.704637 1034417 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1118 12:12:11.763526 1034417 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1118 12:12:26.788379 1034417 simple_test_executor.go:402] Resources cleanup time: 15.024538783s
+I1118 12:12:26.788447 1034417 clusterloader.go:253] --------------------------------------------------------------------------------
+I1118 12:12:26.788460 1034417 clusterloader.go:254] Test Finished
+I1118 12:12:26.788472 1034417 clusterloader.go:255]   Test: /home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/config-klastos.yaml
+I1118 12:12:26.788486 1034417 clusterloader.go:256]   Status: Success
+I1118 12:12:26.788500 1034417 clusterloader.go:260] --------------------------------------------------------------------------------
+
+JUnit report was created: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/eu/junit.xml
+I1118 12:12:26.789025 1034417 prometheus.go:307] Get snapshot from Prometheus
+I1118 12:12:26.789045 1034417 exec_service.go:130] Exec service: tearing down service
+Look into /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/eu for the measurements
+
+[*] Remove eu policy (CSC + AppGroup)
+classschedulingconstraint.scheduling.diktyo.x-k8s.io "data-sovereignty-eu" deleted
+
+=== Class: us (N=20) ===
+[*] Apply us policy (CSC + AppGroup)
+namespace/klastos-eval-1 created
+classschedulingconstraint.scheduling.diktyo.x-k8s.io/data-sovereignty-us created
+appgroup.appgroup.diktyo.x-k8s.io/us-app created
+policy-ready klastos-csi(entries=1) 4s
+
+[*] Run us clusterloader pass
+I1118 12:12:47.434210 1034667 dns_performance-k8s-hostnames.go:58] Registering measurement: DNS Performance for K8s Hostnames
+I1118 12:12:47.434336 1034667 network_performance_measurement.go:90] Registering Network Performance Measurement
+I1118 12:12:47.446986 1034667 clusterloader.go:272] Listening on 8000
+I1118 12:12:47.493507 1034667 clusterloader.go:174] ClusterConfig.MasterName set to test-master
+E1118 12:12:47.518724 1034667 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1118 12:12:47.547097 1034667 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.22.14.30]
+I1118 12:12:47.547204 1034667 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/kul-cluster.config RunFromCluster:false Nodes:38 Provider:0xc0000146d0 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.22.14.30] MasterName:test-master DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/us ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:true EnableServer:false EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[/home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/us-region/override.yaml]}
+I1118 12:12:47.570749 1034667 cluster.go:75] Listing cluster nodes:
+I1118 12:12:47.570814 1034667 cluster.go:87] Name: cloud-worker-1, clusterIP: 172.22.8.74, externalIP: , isSchedulable: true
+I1118 12:12:47.570833 1034667 cluster.go:87] Name: cloud-worker-2, clusterIP: 172.22.8.165, externalIP: , isSchedulable: true
+I1118 12:12:47.570845 1034667 cluster.go:87] Name: cloud-worker-3, clusterIP: 172.22.8.19, externalIP: , isSchedulable: true
+I1118 12:12:47.570855 1034667 cluster.go:87] Name: cloud-worker-4, clusterIP: 172.22.8.22, externalIP: , isSchedulable: true
+I1118 12:12:47.570865 1034667 cluster.go:87] Name: cloud-worker-5, clusterIP: 172.22.8.170, externalIP: , isSchedulable: true
+I1118 12:12:47.570874 1034667 cluster.go:87] Name: cloud-worker-6, clusterIP: 172.22.8.83, externalIP: , isSchedulable: true
+I1118 12:12:47.570884 1034667 cluster.go:87] Name: cloud-worker-7, clusterIP: 172.22.8.116, externalIP: , isSchedulable: true
+I1118 12:12:47.570893 1034667 cluster.go:87] Name: cloud-worker-8, clusterIP: 172.22.8.39, externalIP: , isSchedulable: true
+I1118 12:12:47.570902 1034667 cluster.go:87] Name: macro-worker-1, clusterIP: 172.22.14.19, externalIP: , isSchedulable: true
+I1118 12:12:47.570911 1034667 cluster.go:87] Name: macro-worker-2, clusterIP: 172.22.14.159, externalIP: , isSchedulable: true
+I1118 12:12:47.570920 1034667 cluster.go:87] Name: macro-worker-3, clusterIP: 172.22.14.140, externalIP: , isSchedulable: true
+I1118 12:12:47.570930 1034667 cluster.go:87] Name: macro-worker-4, clusterIP: 172.22.14.171, externalIP: , isSchedulable: true
+I1118 12:12:47.570939 1034667 cluster.go:87] Name: macro-worker-5, clusterIP: 172.22.14.33, externalIP: , isSchedulable: true
+I1118 12:12:47.570948 1034667 cluster.go:87] Name: macro-worker-6, clusterIP: 172.22.14.202, externalIP: , isSchedulable: true
+I1118 12:12:47.570957 1034667 cluster.go:87] Name: macro-worker-7, clusterIP: 172.22.14.56, externalIP: , isSchedulable: true
+I1118 12:12:47.570967 1034667 cluster.go:87] Name: micro-worker-1, clusterIP: 172.22.14.66, externalIP: , isSchedulable: true
+I1118 12:12:47.570992 1034667 cluster.go:87] Name: micro-worker-10, clusterIP: 172.22.14.118, externalIP: , isSchedulable: true
+I1118 12:12:47.571002 1034667 cluster.go:87] Name: micro-worker-11, clusterIP: 172.22.14.201, externalIP: , isSchedulable: true
+I1118 12:12:47.571012 1034667 cluster.go:87] Name: micro-worker-12, clusterIP: 172.22.14.71, externalIP: , isSchedulable: true
+I1118 12:12:47.571022 1034667 cluster.go:87] Name: micro-worker-13, clusterIP: 172.22.14.97, externalIP: , isSchedulable: true
+I1118 12:12:47.571032 1034667 cluster.go:87] Name: micro-worker-14, clusterIP: 172.22.14.229, externalIP: , isSchedulable: true
+I1118 12:12:47.571041 1034667 cluster.go:87] Name: micro-worker-15, clusterIP: 172.22.14.124, externalIP: , isSchedulable: true
+I1118 12:12:47.571083 1034667 cluster.go:87] Name: micro-worker-16, clusterIP: 172.22.14.208, externalIP: , isSchedulable: true
+I1118 12:12:47.571093 1034667 cluster.go:87] Name: micro-worker-17, clusterIP: 172.22.14.196, externalIP: , isSchedulable: true
+I1118 12:12:47.571124 1034667 cluster.go:87] Name: micro-worker-18, clusterIP: 172.22.14.61, externalIP: , isSchedulable: true
+I1118 12:12:47.571133 1034667 cluster.go:87] Name: micro-worker-19, clusterIP: 172.22.14.136, externalIP: , isSchedulable: true
+I1118 12:12:47.571142 1034667 cluster.go:87] Name: micro-worker-2, clusterIP: 172.22.14.151, externalIP: , isSchedulable: true
+I1118 12:12:47.571152 1034667 cluster.go:87] Name: micro-worker-20, clusterIP: 172.22.14.177, externalIP: , isSchedulable: true
+I1118 12:12:47.571161 1034667 cluster.go:87] Name: micro-worker-21, clusterIP: 172.22.14.246, externalIP: , isSchedulable: true
+I1118 12:12:47.571170 1034667 cluster.go:87] Name: micro-worker-22, clusterIP: 172.22.14.146, externalIP: , isSchedulable: true
+I1118 12:12:47.571179 1034667 cluster.go:87] Name: micro-worker-23, clusterIP: 172.22.14.23, externalIP: , isSchedulable: true
+I1118 12:12:47.571189 1034667 cluster.go:87] Name: micro-worker-3, clusterIP: 172.22.14.167, externalIP: , isSchedulable: true
+I1118 12:12:47.571198 1034667 cluster.go:87] Name: micro-worker-4, clusterIP: 172.22.14.110, externalIP: , isSchedulable: true
+I1118 12:12:47.571207 1034667 cluster.go:87] Name: micro-worker-5, clusterIP: 172.22.14.154, externalIP: , isSchedulable: true
+I1118 12:12:47.571217 1034667 cluster.go:87] Name: micro-worker-6, clusterIP: 172.22.14.62, externalIP: , isSchedulable: true
+I1118 12:12:47.571226 1034667 cluster.go:87] Name: micro-worker-7, clusterIP: 172.22.14.125, externalIP: , isSchedulable: true
+I1118 12:12:47.571235 1034667 cluster.go:87] Name: micro-worker-8, clusterIP: 172.22.14.18, externalIP: , isSchedulable: true
+I1118 12:12:47.571244 1034667 cluster.go:87] Name: micro-worker-9, clusterIP: 172.22.14.53, externalIP: , isSchedulable: true
+I1118 12:12:47.571254 1034667 cluster.go:87] Name: test-master, clusterIP: 172.22.14.30, externalIP: , isSchedulable: true
+I1118 12:12:47.607479 1034667 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/kul-cluster.config" kubeconfig.
+I1118 12:12:47.612295 1034667 exec_service.go:86] Exec service: setting up service!
+I1118 12:12:47.645680 1034667 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1118 12:12:47.645782 1034667 framework.go:287] Applying manifest/exec_deployment.yaml
+I1118 12:12:47.678902 1034667 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1118 12:12:47.726258 1034667 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949713985s
+I1118 12:12:57.727329 1034667 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:12:57.727402 1034667 exec_service.go:122] Exec service: service set up successfully!
+W1118 12:12:57.727741 1034667 imagepreload.go:92] No images specified. Skipping image preloading
+I1118 12:12:57.738539 1034667 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/us/generatedConfig_klastos-scheduler-throughput.yaml
+I1118 12:12:57.738572 1034667 clusterloader.go:243] --------------------------------------------------------------------------------
+I1118 12:12:57.738585 1034667 clusterloader.go:244] Running /home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/config-klastos.yaml
+I1118 12:12:57.738597 1034667 clusterloader.go:245] --------------------------------------------------------------------------------
+I1118 12:12:57.738617 1034667 simple_test_executor.go:58] AutomanagedNamespacePrefix: klastos-eval
+I1118 12:12:57.754090 1034667 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+W1118 12:12:57.771286 1034667 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:12:57.771417 1034667 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:12:57.771547 1034667 prometheus_measurement.go:68] OPAAdmissionRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:12:57.774339 1034667 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:12:57.822155 1034667 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1118 12:12:57.822248 1034667 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1118 12:12:57.822302 1034667 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1118 12:12:57.892617 1034667 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1118 12:12:57.892683 1034667 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1118 12:12:57.898013 1034667 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:12:57.945154 1034667 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.949327544s
+I1118 12:13:02.945901 1034667 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 20 out of 20 created, 20 running (20 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:13:02.946018 1034667 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1118 12:13:02.946058 1034667 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+W1118 12:13:02.949429 1034667 prometheus_measurement.go:68] OPAAdmissionRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:13:02.949526 1034667 api_availability_measurement.go:292] APIAvailability: gathering summaries
+W1118 12:13:02.949678 1034667 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:13:02.949736 1034667 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+W1118 12:13:02.949745 1034667 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:13:02.949911 1034667 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1118 12:13:02.949965 1034667 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1118 12:13:02.999673 1034667 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1118 12:13:18.032098 1034667 simple_test_executor.go:402] Resources cleanup time: 15.032069679s
+I1118 12:13:18.032166 1034667 clusterloader.go:253] --------------------------------------------------------------------------------
+I1118 12:13:18.032183 1034667 clusterloader.go:254] Test Finished
+I1118 12:13:18.032196 1034667 clusterloader.go:255]   Test: /home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/config-klastos.yaml
+I1118 12:13:18.032209 1034667 clusterloader.go:256]   Status: Success
+I1118 12:13:18.032222 1034667 clusterloader.go:260] --------------------------------------------------------------------------------
+
+JUnit report was created: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/us/junit.xml
+I1118 12:13:18.032758 1034667 prometheus.go:307] Get snapshot from Prometheus
+I1118 12:13:18.032787 1034667 exec_service.go:130] Exec service: tearing down service
+Look into /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/us for the measurements
+
+[*] Remove us policy (CSC + AppGroup)
+classschedulingconstraint.scheduling.diktyo.x-k8s.io "data-sovereignty-us" deleted
+
+=== Class: italynorth (N=20) ===
+[*] Apply italynorth policy (CSC + AppGroup)
+namespace/klastos-eval-1 created
+classschedulingconstraint.scheduling.diktyo.x-k8s.io/data-sovereignty-italynorth created
+appgroup.appgroup.diktyo.x-k8s.io/italynorth-app created
+policy-ready klastos-csi(entries=1) 3s
+
+[*] Run italynorth clusterloader pass
+I1118 12:13:38.779103 1034906 dns_performance-k8s-hostnames.go:58] Registering measurement: DNS Performance for K8s Hostnames
+I1118 12:13:38.779218 1034906 network_performance_measurement.go:90] Registering Network Performance Measurement
+I1118 12:13:38.792451 1034906 clusterloader.go:272] Listening on 8000
+I1118 12:13:38.839846 1034906 clusterloader.go:174] ClusterConfig.MasterName set to test-master
+E1118 12:13:38.871448 1034906 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1118 12:13:38.898618 1034906 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.22.14.30]
+I1118 12:13:38.898694 1034906 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/kul-cluster.config RunFromCluster:false Nodes:38 Provider:0xc0002b90b0 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.22.14.30] MasterName:test-master DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/italynorth ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:true EnableServer:false EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[/home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/italynorth-region/override.yaml]}
+I1118 12:13:38.932307 1034906 cluster.go:75] Listing cluster nodes:
+I1118 12:13:38.932363 1034906 cluster.go:87] Name: cloud-worker-1, clusterIP: 172.22.8.74, externalIP: , isSchedulable: true
+I1118 12:13:38.932383 1034906 cluster.go:87] Name: cloud-worker-2, clusterIP: 172.22.8.165, externalIP: , isSchedulable: true
+I1118 12:13:38.932394 1034906 cluster.go:87] Name: cloud-worker-3, clusterIP: 172.22.8.19, externalIP: , isSchedulable: true
+I1118 12:13:38.932404 1034906 cluster.go:87] Name: cloud-worker-4, clusterIP: 172.22.8.22, externalIP: , isSchedulable: true
+I1118 12:13:38.932413 1034906 cluster.go:87] Name: cloud-worker-5, clusterIP: 172.22.8.170, externalIP: , isSchedulable: true
+I1118 12:13:38.932423 1034906 cluster.go:87] Name: cloud-worker-6, clusterIP: 172.22.8.83, externalIP: , isSchedulable: true
+I1118 12:13:38.932432 1034906 cluster.go:87] Name: cloud-worker-7, clusterIP: 172.22.8.116, externalIP: , isSchedulable: true
+I1118 12:13:38.932441 1034906 cluster.go:87] Name: cloud-worker-8, clusterIP: 172.22.8.39, externalIP: , isSchedulable: true
+I1118 12:13:38.932451 1034906 cluster.go:87] Name: macro-worker-1, clusterIP: 172.22.14.19, externalIP: , isSchedulable: true
+I1118 12:13:38.932460 1034906 cluster.go:87] Name: macro-worker-2, clusterIP: 172.22.14.159, externalIP: , isSchedulable: true
+I1118 12:13:38.932469 1034906 cluster.go:87] Name: macro-worker-3, clusterIP: 172.22.14.140, externalIP: , isSchedulable: true
+I1118 12:13:38.932479 1034906 cluster.go:87] Name: macro-worker-4, clusterIP: 172.22.14.171, externalIP: , isSchedulable: true
+I1118 12:13:38.932488 1034906 cluster.go:87] Name: macro-worker-5, clusterIP: 172.22.14.33, externalIP: , isSchedulable: true
+I1118 12:13:38.932515 1034906 cluster.go:87] Name: macro-worker-6, clusterIP: 172.22.14.202, externalIP: , isSchedulable: true
+I1118 12:13:38.932528 1034906 cluster.go:87] Name: macro-worker-7, clusterIP: 172.22.14.56, externalIP: , isSchedulable: true
+I1118 12:13:38.932537 1034906 cluster.go:87] Name: micro-worker-1, clusterIP: 172.22.14.66, externalIP: , isSchedulable: true
+I1118 12:13:38.932547 1034906 cluster.go:87] Name: micro-worker-10, clusterIP: 172.22.14.118, externalIP: , isSchedulable: true
+I1118 12:13:38.932562 1034906 cluster.go:87] Name: micro-worker-11, clusterIP: 172.22.14.201, externalIP: , isSchedulable: true
+I1118 12:13:38.932571 1034906 cluster.go:87] Name: micro-worker-12, clusterIP: 172.22.14.71, externalIP: , isSchedulable: true
+I1118 12:13:38.932580 1034906 cluster.go:87] Name: micro-worker-13, clusterIP: 172.22.14.97, externalIP: , isSchedulable: true
+I1118 12:13:38.932590 1034906 cluster.go:87] Name: micro-worker-14, clusterIP: 172.22.14.229, externalIP: , isSchedulable: true
+I1118 12:13:38.932599 1034906 cluster.go:87] Name: micro-worker-15, clusterIP: 172.22.14.124, externalIP: , isSchedulable: true
+I1118 12:13:38.932608 1034906 cluster.go:87] Name: micro-worker-16, clusterIP: 172.22.14.208, externalIP: , isSchedulable: true
+I1118 12:13:38.932617 1034906 cluster.go:87] Name: micro-worker-17, clusterIP: 172.22.14.196, externalIP: , isSchedulable: true
+I1118 12:13:38.932627 1034906 cluster.go:87] Name: micro-worker-18, clusterIP: 172.22.14.61, externalIP: , isSchedulable: true
+I1118 12:13:38.932636 1034906 cluster.go:87] Name: micro-worker-19, clusterIP: 172.22.14.136, externalIP: , isSchedulable: true
+I1118 12:13:38.932645 1034906 cluster.go:87] Name: micro-worker-2, clusterIP: 172.22.14.151, externalIP: , isSchedulable: true
+I1118 12:13:38.932654 1034906 cluster.go:87] Name: micro-worker-20, clusterIP: 172.22.14.177, externalIP: , isSchedulable: true
+I1118 12:13:38.932663 1034906 cluster.go:87] Name: micro-worker-21, clusterIP: 172.22.14.246, externalIP: , isSchedulable: true
+I1118 12:13:38.932672 1034906 cluster.go:87] Name: micro-worker-22, clusterIP: 172.22.14.146, externalIP: , isSchedulable: true
+I1118 12:13:38.932681 1034906 cluster.go:87] Name: micro-worker-23, clusterIP: 172.22.14.23, externalIP: , isSchedulable: true
+I1118 12:13:38.932690 1034906 cluster.go:87] Name: micro-worker-3, clusterIP: 172.22.14.167, externalIP: , isSchedulable: true
+I1118 12:13:38.932699 1034906 cluster.go:87] Name: micro-worker-4, clusterIP: 172.22.14.110, externalIP: , isSchedulable: true
+I1118 12:13:38.932708 1034906 cluster.go:87] Name: micro-worker-5, clusterIP: 172.22.14.154, externalIP: , isSchedulable: true
+I1118 12:13:38.932718 1034906 cluster.go:87] Name: micro-worker-6, clusterIP: 172.22.14.62, externalIP: , isSchedulable: true
+I1118 12:13:38.932727 1034906 cluster.go:87] Name: micro-worker-7, clusterIP: 172.22.14.125, externalIP: , isSchedulable: true
+I1118 12:13:38.932736 1034906 cluster.go:87] Name: micro-worker-8, clusterIP: 172.22.14.18, externalIP: , isSchedulable: true
+I1118 12:13:38.932745 1034906 cluster.go:87] Name: micro-worker-9, clusterIP: 172.22.14.53, externalIP: , isSchedulable: true
+I1118 12:13:38.932755 1034906 cluster.go:87] Name: test-master, clusterIP: 172.22.14.30, externalIP: , isSchedulable: true
+I1118 12:13:38.958709 1034906 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/kul-cluster.config" kubeconfig.
+I1118 12:13:38.963646 1034906 exec_service.go:86] Exec service: setting up service!
+I1118 12:13:38.995985 1034906 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1118 12:13:38.996059 1034906 framework.go:287] Applying manifest/exec_deployment.yaml
+I1118 12:13:39.030670 1034906 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1118 12:13:39.078353 1034906 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949264953s
+I1118 12:13:49.079043 1034906 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:13:49.079124 1034906 exec_service.go:122] Exec service: service set up successfully!
+W1118 12:13:49.079462 1034906 imagepreload.go:92] No images specified. Skipping image preloading
+I1118 12:13:49.095476 1034906 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/italynorth/generatedConfig_klastos-scheduler-throughput.yaml
+I1118 12:13:49.095508 1034906 clusterloader.go:243] --------------------------------------------------------------------------------
+I1118 12:13:49.095520 1034906 clusterloader.go:244] Running /home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/config-klastos.yaml
+I1118 12:13:49.095531 1034906 clusterloader.go:245] --------------------------------------------------------------------------------
+I1118 12:13:49.095547 1034906 simple_test_executor.go:58] AutomanagedNamespacePrefix: klastos-eval
+I1118 12:13:49.116002 1034906 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+W1118 12:13:49.140740 1034906 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:13:49.140787 1034906 prometheus_measurement.go:68] OPAAdmissionRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:13:49.140952 1034906 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:13:49.143384 1034906 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:13:49.191303 1034906 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1118 12:13:49.191387 1034906 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1118 12:13:49.191450 1034906 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1118 12:13:49.271153 1034906 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1118 12:13:49.271779 1034906 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1118 12:13:49.277189 1034906 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:13:49.323959 1034906 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.94988151s
+I1118 12:13:54.325114 1034906 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 20 out of 20 created, 20 running (20 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:13:54.325303 1034906 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1118 12:13:54.325344 1034906 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1118 12:13:54.328800 1034906 api_availability_measurement.go:292] APIAvailability: gathering summaries
+I1118 12:13:54.329023 1034906 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+W1118 12:13:54.329117 1034906 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:13:54.329062 1034906 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:13:54.329739 1034906 prometheus_measurement.go:68] OPAAdmissionRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:13:54.329798 1034906 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1118 12:13:54.329863 1034906 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1118 12:13:54.377984 1034906 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1118 12:14:09.405894 1034906 simple_test_executor.go:402] Resources cleanup time: 15.027599678s
+I1118 12:14:09.405999 1034906 clusterloader.go:253] --------------------------------------------------------------------------------
+I1118 12:14:09.406017 1034906 clusterloader.go:254] Test Finished
+I1118 12:14:09.406029 1034906 clusterloader.go:255]   Test: /home/ubuntu/kss-fix/test/use-case/data-sovereignty-klastos/config-klastos.yaml
+I1118 12:14:09.406042 1034906 clusterloader.go:256]   Status: Success
+I1118 12:14:09.406055 1034906 clusterloader.go:260] --------------------------------------------------------------------------------
+
+JUnit report was created: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/italynorth/junit.xml
+I1118 12:14:09.406580 1034906 prometheus.go:307] Get snapshot from Prometheus
+I1118 12:14:09.406601 1034906 exec_service.go:130] Exec service: tearing down service
+Look into /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-klastos-test/italynorth for the measurements
+
+[*] Remove italynorth policy (CSC + AppGroup)
+classschedulingconstraint.scheduling.diktyo.x-k8s.io "data-sovereignty-italynorth" deleted
+
+[*] Remove shared KLASTOS classification schema
+appclass.appclass.diktyo.x-k8s.io/data-sovereignty patched
+appclass.appclass.diktyo.x-k8s.io "data-sovereignty" deleted
+configmap "data-sovereignty-logic-plugin" deleted
+appinfodefinition.appgroup.diktyo.x-k8s.io "data-sovereignty-policy" deleted
+

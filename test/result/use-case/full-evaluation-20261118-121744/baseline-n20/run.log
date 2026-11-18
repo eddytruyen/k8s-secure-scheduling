@@ -1,0 +1,241 @@
+[*] Allow Gatekeeper to reject workloads that create pods violating constraints
+expansiontemplate.expansion.gatekeeper.sh/expand-deployments created
+policy-ready gatekeeper 6s
+
+[*] Use Gatekeeper to mutate the node affinity/selector config
+modifyset.mutations.gatekeeper.sh/add-eu-region-node-affinity created
+modifyset.mutations.gatekeeper.sh/add-us-region-node-affinity created
+policy-ready gatekeeper 6s
+
+[*] Use Gatekeeper to validate the node affinity/selector config
+[+] Add constraint template
+constrainttemplate.templates.gatekeeper.sh/k8srequirespecificnodeaffinity created
+policy-ready gatekeeper 6s
+[+] Add constraints
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh/ensure-data-sovereignty created
+policy-ready gatekeeper 7s
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh/warn-unknown-eu-region created
+policy-ready gatekeeper 6s
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh/warn-unknown-us-region created
+policy-ready gatekeeper 6s
+
+[*] Run data-sovereignty test
+I1118 12:18:27.307473 1038125 dns_performance-k8s-hostnames.go:58] Registering measurement: DNS Performance for K8s Hostnames
+I1118 12:18:27.312610 1038125 network_performance_measurement.go:90] Registering Network Performance Measurement
+I1118 12:18:27.319728 1038125 clusterloader.go:272] Listening on 8000
+I1118 12:18:27.368448 1038125 clusterloader.go:174] ClusterConfig.MasterName set to test-master
+E1118 12:18:27.396871 1038125 clusterloader.go:185] Getting master external ip error: didn't find any ExternalIP master IPs
+I1118 12:18:27.422464 1038125 clusterloader.go:192] ClusterConfig.MasterInternalIP set to [172.22.14.30]
+I1118 12:18:27.422575 1038125 clusterloader.go:300] Using config: {ClusterConfig:{KubeConfigPath:/home/ubuntu/.kube/kul-cluster.config RunFromCluster:false Nodes:38 Provider:0xc000014720 EtcdCertificatePath:/etc/srv/kubernetes/pki/etcd-apiserver-server.crt EtcdKeyPath:/etc/srv/kubernetes/pki/etcd-apiserver-server.key EtcdInsecurePort:2382 MasterIPs:[] MasterInternalIPs:[172.22.14.30] MasterName:test-master DeleteStaleNamespaces:false DeleteAutomanagedNamespaces:true APIServerPprofByClientEnabled:true KubeletPort:10250 K8SClientsNumber:1 SkipClusterVerification:false} ReportDir:/home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-test ExecServiceConfig:{Enable:true ImageRegistry:registry.k8s.io} ModifierConfig:{OverwriteTestConfig:[] SkipSteps:[]} PrometheusConfig:{TearDownServer:true EnableServer:false EnablePushgateway:false ScrapeEtcd:false ScrapeNodeExporter:false ScrapeWindowsNodeExporter:false ScrapeKubelets:false ScrapeMasterKubelets:false ScrapeKubeProxy:true KubeProxySelectorKey:component ScrapeKubeStateMetrics:false ScrapeMetricsServerMetrics:false ScrapeNodeLocalDNS:false ScrapeAnet:false ScrapeNetworkPolicies:false ScrapeMastersWithPublicIPs:false APIServerScrapePort:6443 SnapshotProject: AdditionalMonitorsPath: StorageClassProvisioner:kubernetes.io/gce-pd StorageClassVolumeType:pd-ssd PVCStorageClass:standard ReadyTimeout:0s PrometheusMemoryRequest:10Gi} OverridePaths:[]}
+I1118 12:18:27.451944 1038125 cluster.go:75] Listing cluster nodes:
+I1118 12:18:27.452006 1038125 cluster.go:87] Name: cloud-worker-1, clusterIP: 172.22.8.74, externalIP: , isSchedulable: true
+I1118 12:18:27.452025 1038125 cluster.go:87] Name: cloud-worker-2, clusterIP: 172.22.8.165, externalIP: , isSchedulable: true
+I1118 12:18:27.452038 1038125 cluster.go:87] Name: cloud-worker-3, clusterIP: 172.22.8.19, externalIP: , isSchedulable: true
+I1118 12:18:27.452049 1038125 cluster.go:87] Name: cloud-worker-4, clusterIP: 172.22.8.22, externalIP: , isSchedulable: true
+I1118 12:18:27.452060 1038125 cluster.go:87] Name: cloud-worker-5, clusterIP: 172.22.8.170, externalIP: , isSchedulable: true
+I1118 12:18:27.452070 1038125 cluster.go:87] Name: cloud-worker-6, clusterIP: 172.22.8.83, externalIP: , isSchedulable: true
+I1118 12:18:27.452080 1038125 cluster.go:87] Name: cloud-worker-7, clusterIP: 172.22.8.116, externalIP: , isSchedulable: true
+I1118 12:18:27.452090 1038125 cluster.go:87] Name: cloud-worker-8, clusterIP: 172.22.8.39, externalIP: , isSchedulable: true
+I1118 12:18:27.452124 1038125 cluster.go:87] Name: macro-worker-1, clusterIP: 172.22.14.19, externalIP: , isSchedulable: true
+I1118 12:18:27.452135 1038125 cluster.go:87] Name: macro-worker-2, clusterIP: 172.22.14.159, externalIP: , isSchedulable: true
+I1118 12:18:27.452146 1038125 cluster.go:87] Name: macro-worker-3, clusterIP: 172.22.14.140, externalIP: , isSchedulable: true
+I1118 12:18:27.452156 1038125 cluster.go:87] Name: macro-worker-4, clusterIP: 172.22.14.171, externalIP: , isSchedulable: true
+I1118 12:18:27.452167 1038125 cluster.go:87] Name: macro-worker-5, clusterIP: 172.22.14.33, externalIP: , isSchedulable: true
+I1118 12:18:27.452177 1038125 cluster.go:87] Name: macro-worker-6, clusterIP: 172.22.14.202, externalIP: , isSchedulable: true
+I1118 12:18:27.452187 1038125 cluster.go:87] Name: macro-worker-7, clusterIP: 172.22.14.56, externalIP: , isSchedulable: true
+I1118 12:18:27.452198 1038125 cluster.go:87] Name: micro-worker-1, clusterIP: 172.22.14.66, externalIP: , isSchedulable: true
+I1118 12:18:27.452208 1038125 cluster.go:87] Name: micro-worker-10, clusterIP: 172.22.14.118, externalIP: , isSchedulable: true
+I1118 12:18:27.452218 1038125 cluster.go:87] Name: micro-worker-11, clusterIP: 172.22.14.201, externalIP: , isSchedulable: true
+I1118 12:18:27.452233 1038125 cluster.go:87] Name: micro-worker-12, clusterIP: 172.22.14.71, externalIP: , isSchedulable: true
+I1118 12:18:27.452242 1038125 cluster.go:87] Name: micro-worker-13, clusterIP: 172.22.14.97, externalIP: , isSchedulable: true
+I1118 12:18:27.452252 1038125 cluster.go:87] Name: micro-worker-14, clusterIP: 172.22.14.229, externalIP: , isSchedulable: true
+I1118 12:18:27.452262 1038125 cluster.go:87] Name: micro-worker-15, clusterIP: 172.22.14.124, externalIP: , isSchedulable: true
+I1118 12:18:27.452271 1038125 cluster.go:87] Name: micro-worker-16, clusterIP: 172.22.14.208, externalIP: , isSchedulable: true
+I1118 12:18:27.452281 1038125 cluster.go:87] Name: micro-worker-17, clusterIP: 172.22.14.196, externalIP: , isSchedulable: true
+I1118 12:18:27.452290 1038125 cluster.go:87] Name: micro-worker-18, clusterIP: 172.22.14.61, externalIP: , isSchedulable: true
+I1118 12:18:27.452299 1038125 cluster.go:87] Name: micro-worker-19, clusterIP: 172.22.14.136, externalIP: , isSchedulable: true
+I1118 12:18:27.452308 1038125 cluster.go:87] Name: micro-worker-2, clusterIP: 172.22.14.151, externalIP: , isSchedulable: true
+I1118 12:18:27.452317 1038125 cluster.go:87] Name: micro-worker-20, clusterIP: 172.22.14.177, externalIP: , isSchedulable: true
+I1118 12:18:27.452326 1038125 cluster.go:87] Name: micro-worker-21, clusterIP: 172.22.14.246, externalIP: , isSchedulable: true
+I1118 12:18:27.452337 1038125 cluster.go:87] Name: micro-worker-22, clusterIP: 172.22.14.146, externalIP: , isSchedulable: true
+I1118 12:18:27.452346 1038125 cluster.go:87] Name: micro-worker-23, clusterIP: 172.22.14.23, externalIP: , isSchedulable: true
+I1118 12:18:27.452357 1038125 cluster.go:87] Name: micro-worker-3, clusterIP: 172.22.14.167, externalIP: , isSchedulable: true
+I1118 12:18:27.452367 1038125 cluster.go:87] Name: micro-worker-4, clusterIP: 172.22.14.110, externalIP: , isSchedulable: true
+I1118 12:18:27.452376 1038125 cluster.go:87] Name: micro-worker-5, clusterIP: 172.22.14.154, externalIP: , isSchedulable: true
+I1118 12:18:27.452385 1038125 cluster.go:87] Name: micro-worker-6, clusterIP: 172.22.14.62, externalIP: , isSchedulable: true
+I1118 12:18:27.452394 1038125 cluster.go:87] Name: micro-worker-7, clusterIP: 172.22.14.125, externalIP: , isSchedulable: true
+I1118 12:18:27.452403 1038125 cluster.go:87] Name: micro-worker-8, clusterIP: 172.22.14.18, externalIP: , isSchedulable: true
+I1118 12:18:27.452413 1038125 cluster.go:87] Name: micro-worker-9, clusterIP: 172.22.14.53, externalIP: , isSchedulable: true
+I1118 12:18:27.452423 1038125 cluster.go:87] Name: test-master, clusterIP: 172.22.14.30, externalIP: , isSchedulable: true
+I1118 12:18:27.481764 1038125 framework.go:74] Creating framework with 1 clients and "/home/ubuntu/.kube/kul-cluster.config" kubeconfig.
+I1118 12:18:27.487325 1038125 exec_service.go:86] Exec service: setting up service!
+I1118 12:18:27.522432 1038125 framework.go:276] Applying templates for "manifest/exec_deployment.yaml"
+I1118 12:18:27.522497 1038125 framework.go:287] Applying manifest/exec_deployment.yaml
+I1118 12:18:27.565443 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: namespace(cluster-loader), labelSelector(feature = exec)
+I1118 12:18:27.608314 1038125 wait_for_pods.go:64] Exec service: namespace(cluster-loader), labelSelector(feature = exec): starting with timeout: 1m59.949520732s
+I1118 12:18:37.609305 1038125 wait_for_pods.go:122] Exec service: namespace(cluster-loader), labelSelector(feature = exec): Pods: 3 out of 3 created, 3 running (3 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:18:37.609378 1038125 exec_service.go:122] Exec service: service set up successfully!
+W1118 12:18:37.609490 1038125 imagepreload.go:92] No images specified. Skipping image preloading
+I1118 12:18:37.620462 1038125 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-test/generatedConfig_direct-scheduler-throughput.yaml
+I1118 12:18:37.628478 1038125 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-test/generatedConfig_direct-scheduler-throughput.yaml
+I1118 12:18:37.639008 1038125 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-test/generatedConfig_direct-scheduler-throughput.yaml
+I1118 12:18:37.645729 1038125 clusterloader.go:454] Test config successfully dumped to: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-test/generatedConfig_direct-scheduler-throughput.yaml
+I1118 12:18:37.645752 1038125 clusterloader.go:243] --------------------------------------------------------------------------------
+I1118 12:18:37.645762 1038125 clusterloader.go:244] Running vanilla(use-case/config.yaml)
+I1118 12:18:37.645771 1038125 clusterloader.go:245] --------------------------------------------------------------------------------
+I1118 12:18:37.645786 1038125 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-w0u8s1
+I1118 12:18:37.672601 1038125 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+W1118 12:18:37.693506 1038125 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:18:37.693506 1038125 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:18:37.693594 1038125 prometheus_measurement.go:68] GatekeeperMutationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:18:37.693784 1038125 prometheus_measurement.go:68] GatekeeperValidationRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:18:37.697867 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:18:37.744373 1038125 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1118 12:18:37.744474 1038125 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1118 12:18:37.744540 1038125 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1118 12:18:37.791363 1038125 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1118 12:18:37.791441 1038125 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1118 12:18:37.798311 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:18:37.843684 1038125 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.949726936s
+I1118 12:18:42.844218 1038125 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 20 out of 20 created, 20 running (20 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:18:42.844352 1038125 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1118 12:18:42.844394 1038125 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+W1118 12:18:42.848119 1038125 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:18:42.848185 1038125 api_availability_measurement.go:292] APIAvailability: gathering summaries
+W1118 12:18:42.848232 1038125 prometheus_measurement.go:68] GatekeeperMutationRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:18:42.848185 1038125 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+W1118 12:18:42.848434 1038125 prometheus_measurement.go:68] GatekeeperConstraintTemplateIngestionDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:18:42.848368 1038125 prometheus_measurement.go:68] GatekeeperValidationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:18:42.848517 1038125 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:18:42.848572 1038125 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1118 12:18:42.848622 1038125 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1118 12:18:42.906197 1038125 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1118 12:18:52.935456 1038125 simple_test_executor.go:402] Resources cleanup time: 10.026725406s
+I1118 12:18:52.935534 1038125 clusterloader.go:253] --------------------------------------------------------------------------------
+I1118 12:18:52.935547 1038125 clusterloader.go:254] Test Finished
+I1118 12:18:52.935559 1038125 clusterloader.go:255]   Test: vanilla(use-case/config.yaml)
+I1118 12:18:52.935572 1038125 clusterloader.go:256]   Status: Success
+I1118 12:18:52.935584 1038125 clusterloader.go:260] --------------------------------------------------------------------------------
+I1118 12:18:52.935616 1038125 clusterloader.go:243] --------------------------------------------------------------------------------
+I1118 12:18:52.935629 1038125 clusterloader.go:244] Running pod-eu-region(use-case/config.yaml)
+I1118 12:18:52.935642 1038125 clusterloader.go:245] --------------------------------------------------------------------------------
+I1118 12:18:52.935661 1038125 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-e48ezm
+I1118 12:18:52.957390 1038125 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+W1118 12:18:52.958886 1038125 prometheus_measurement.go:68] GatekeeperMutationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:18:52.960603 1038125 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:18:52.960732 1038125 prometheus_measurement.go:68] GatekeeperValidationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:18:52.960789 1038125 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:18:52.962424 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:18:53.010837 1038125 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1118 12:18:53.010923 1038125 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1118 12:18:53.010984 1038125 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1118 12:18:53.068742 1038125 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1118 12:18:53.068846 1038125 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1118 12:18:53.079692 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:18:53.124981 1038125 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.949608065s
+I1118 12:18:58.126276 1038125 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 20 out of 20 created, 20 running (20 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:18:58.126380 1038125 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1118 12:18:58.126416 1038125 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+I1118 12:18:58.129952 1038125 api_availability_measurement.go:292] APIAvailability: gathering summaries
+W1118 12:18:58.130012 1038125 prometheus_measurement.go:68] GatekeeperConstraintTemplateIngestionDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:18:58.130111 1038125 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:18:58.130125 1038125 prometheus_measurement.go:68] GatekeeperValidationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:18:58.130162 1038125 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:18:58.130139 1038125 prometheus_measurement.go:68] GatekeeperMutationRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:18:58.130782 1038125 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+I1118 12:18:58.130843 1038125 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1118 12:18:58.130883 1038125 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1118 12:18:58.174236 1038125 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1118 12:19:08.200799 1038125 simple_test_executor.go:402] Resources cleanup time: 10.026279493s
+I1118 12:19:08.200867 1038125 clusterloader.go:253] --------------------------------------------------------------------------------
+I1118 12:19:08.200881 1038125 clusterloader.go:254] Test Finished
+I1118 12:19:08.200894 1038125 clusterloader.go:255]   Test: pod-eu-region(use-case/config.yaml)
+I1118 12:19:08.200906 1038125 clusterloader.go:256]   Status: Success
+I1118 12:19:08.200918 1038125 clusterloader.go:260] --------------------------------------------------------------------------------
+I1118 12:19:08.200952 1038125 clusterloader.go:243] --------------------------------------------------------------------------------
+I1118 12:19:08.200966 1038125 clusterloader.go:244] Running pod-us-region(use-case/config.yaml)
+I1118 12:19:08.200979 1038125 clusterloader.go:245] --------------------------------------------------------------------------------
+I1118 12:19:08.200998 1038125 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-rj574j
+I1118 12:19:08.230534 1038125 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+W1118 12:19:08.233045 1038125 prometheus_measurement.go:68] GatekeeperMutationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:19:08.235513 1038125 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:19:08.235638 1038125 prometheus_measurement.go:68] GatekeeperValidationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:19:08.237042 1038125 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:19:08.240726 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:19:08.288197 1038125 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1118 12:19:08.288326 1038125 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1118 12:19:08.288409 1038125 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1118 12:19:08.380089 1038125 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1118 12:19:08.380161 1038125 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1118 12:19:08.393851 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:19:08.437383 1038125 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.949327107s
+I1118 12:19:13.438626 1038125 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 20 out of 20 created, 20 running (20 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:19:13.438741 1038125 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1118 12:19:13.438781 1038125 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+W1118 12:19:13.441691 1038125 prometheus_measurement.go:68] GatekeeperValidationRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:19:13.442220 1038125 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+W1118 12:19:13.442259 1038125 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:19:13.442589 1038125 api_availability_measurement.go:292] APIAvailability: gathering summaries
+W1118 12:19:13.443015 1038125 prometheus_measurement.go:68] GatekeeperConstraintTemplateIngestionDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:19:13.443845 1038125 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:19:13.443856 1038125 prometheus_measurement.go:68] GatekeeperMutationRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:19:13.443898 1038125 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1118 12:19:13.443952 1038125 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1118 12:19:13.494373 1038125 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1118 12:19:23.514006 1038125 simple_test_executor.go:402] Resources cleanup time: 10.019064049s
+I1118 12:19:23.514085 1038125 clusterloader.go:253] --------------------------------------------------------------------------------
+I1118 12:19:23.514102 1038125 clusterloader.go:254] Test Finished
+I1118 12:19:23.514113 1038125 clusterloader.go:255]   Test: pod-us-region(use-case/config.yaml)
+I1118 12:19:23.514126 1038125 clusterloader.go:256]   Status: Success
+I1118 12:19:23.514138 1038125 clusterloader.go:260] --------------------------------------------------------------------------------
+I1118 12:19:23.514167 1038125 clusterloader.go:243] --------------------------------------------------------------------------------
+I1118 12:19:23.514181 1038125 clusterloader.go:244] Running pod-italynorth-region(use-case/config.yaml)
+I1118 12:19:23.514194 1038125 clusterloader.go:245] --------------------------------------------------------------------------------
+I1118 12:19:23.514213 1038125 simple_test_executor.go:58] AutomanagedNamespacePrefix: test-qojvo2
+I1118 12:19:23.538111 1038125 simple_test_executor.go:152] Step "[step: 01] Creating scheduler throughput measurements" started
+W1118 12:19:23.545856 1038125 prometheus_measurement.go:68] GatekeeperValidationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:19:23.545920 1038125 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:19:23.546271 1038125 prometheus_measurement.go:68] GatekeeperMutationRequestDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:19:23.546326 1038125 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:19:23.548175 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:19:23.596438 1038125 scheduling_throughput.go:121] SchedulingThroughput: starting collecting throughput data
+I1118 12:19:23.596562 1038125 simple_test_executor.go:174] Step "[step: 01] Creating scheduler throughput measurements" ended
+I1118 12:19:23.596626 1038125 simple_test_executor.go:152] Step "[step: 02] create scheduler throughput pods" started
+I1118 12:19:23.662892 1038125 simple_test_executor.go:174] Step "[step: 02] create scheduler throughput pods" ended
+I1118 12:19:23.662980 1038125 simple_test_executor.go:152] Step "[step: 03] Waiting for scheduler throughput pods to be created" started
+I1118 12:19:23.676427 1038125 reflector.go:368] Caches populated for *v1.Pod from *v1.PodStore: labelSelector(group = direct-scheduler-throughput)
+I1118 12:19:23.715199 1038125 wait_for_pods.go:64] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): starting with timeout: 4m59.949589514s
+I1118 12:19:28.716342 1038125 wait_for_pods.go:122] WaitForRunningPods: labelSelector(group = direct-scheduler-throughput): Pods: 20 out of 20 created, 20 running (20 updated), 0 pending scheduled, 0 not scheduled, 0 inactive, 0 terminating, 0 unknown, 0 runningButNotReady 
+I1118 12:19:28.716437 1038125 simple_test_executor.go:174] Step "[step: 03] Waiting for scheduler throughput pods to be created" ended
+I1118 12:19:28.716478 1038125 simple_test_executor.go:152] Step "[step: 04] Collecting scheduler throughput measurements" started
+W1118 12:19:28.719108 1038125 prometheus_measurement.go:68] GatekeeperConstraintTemplateIngestionDuration: Prometheus is disabled, skipping the measurement!
+W1118 12:19:28.719235 1038125 prometheus_measurement.go:68] GatekeeperValidationRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:19:28.719314 1038125 scheduling_throughput.go:154] SchedulingThroughput: gathering data
+W1118 12:19:28.719630 1038125 prometheus_measurement.go:68] GatekeeperMutationRequestDuration: Prometheus is disabled, skipping the measurement!
+I1118 12:19:28.719992 1038125 api_availability_measurement.go:292] APIAvailability: gathering summaries
+W1118 12:19:28.720117 1038125 prometheus_measurement.go:68] SchedulingThroughputPrometheus: Prometheus is disabled, skipping the measurement!
+W1118 12:19:28.720178 1038125 prometheus_measurement.go:68] APIResponsivenessPrometheus: Prometheus is disabled, skipping the measurement!
+I1118 12:19:28.720200 1038125 simple_test_executor.go:174] Step "[step: 04] Collecting scheduler throughput measurements" ended
+I1118 12:19:28.720247 1038125 simple_test_executor.go:152] Step "[step: 05] Delete scheduler throughput pods" started
+I1118 12:19:28.760439 1038125 simple_test_executor.go:174] Step "[step: 05] Delete scheduler throughput pods" ended
+I1118 12:19:38.785996 1038125 simple_test_executor.go:402] Resources cleanup time: 10.025232051s
+I1118 12:19:38.786074 1038125 clusterloader.go:253] --------------------------------------------------------------------------------
+I1118 12:19:38.786090 1038125 clusterloader.go:254] Test Finished
+I1118 12:19:38.786102 1038125 clusterloader.go:255]   Test: pod-italynorth-region(use-case/config.yaml)
+I1118 12:19:38.786114 1038125 clusterloader.go:256]   Status: Success
+I1118 12:19:38.786126 1038125 clusterloader.go:260] --------------------------------------------------------------------------------
+
+JUnit report was created: /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-test/junit.xml
+I1118 12:19:38.787099 1038125 prometheus.go:307] Get snapshot from Prometheus
+I1118 12:19:38.787120 1038125 exec_service.go:130] Exec service: tearing down service
+Look into /home/ubuntu/kss-fix/test/result/use-case/data-sovereignty-test for the measurements
+
+[*] Delete Gatekeeper resources
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh "warn-unknown-eu-region" deleted
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh "warn-unknown-us-region" deleted
+k8srequirespecificnodeaffinity.constraints.gatekeeper.sh "ensure-data-sovereignty" deleted
+constrainttemplate.templates.gatekeeper.sh "k8srequirespecificnodeaffinity" deleted
+modifyset.mutations.gatekeeper.sh "add-eu-region-node-affinity" deleted
+modifyset.mutations.gatekeeper.sh "add-us-region-node-affinity" deleted
+expansiontemplate.expansion.gatekeeper.sh "expand-deployments" deleted
+

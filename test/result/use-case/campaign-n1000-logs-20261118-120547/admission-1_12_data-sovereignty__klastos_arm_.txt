@@ -1,0 +1,5 @@
+webhook                                        type        op      rej      calls     mean   p50<=   p90<=   p99<=
+csi-admission.scheduling.diktyo.x-k8s.io       admit       CREATE  false      160   31.4ms   100ms   100ms   100ms
+
+POST pods request, apiserver-side (webhooks + persistence): calls=187 mean=43.4ms
+Exact mean from request to scheduled = this mean + the watcher's mean e2e (means add; percentiles do not).

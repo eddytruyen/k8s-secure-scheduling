@@ -1,0 +1,691 @@
+[
+  {
+    "name": "cloud-worker-1",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "5a1c172825644292a68fd6acee057f86",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "cloud-worker-1",
+      "kubernetes.io/os": "linux",
+      "monitoringNode": "yes",
+      "topology.kubernetes.io/integration-segment": "segment-alpha",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s1",
+      "topology.kubernetes.io/segment-integrated": "seg-3",
+      "topology.kubernetes.io/tier": "data",
+      "topology.kubernetes.io/zone": "cloud1",
+      "workerNode": "no"
+    }
+  },
+  {
+    "name": "cloud-worker-2",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "5a1c172825644292a68fd6acee057f86",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "cloud-worker-2",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "segment-alpha",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s2",
+      "topology.kubernetes.io/segment-integrated": "seg-3",
+      "topology.kubernetes.io/tier": "data",
+      "topology.kubernetes.io/zone": "cloud1",
+      "workerNode": "no"
+    }
+  },
+  {
+    "name": "cloud-worker-3",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "5a1c172825644292a68fd6acee057f86",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "cloud-worker-3",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s3",
+      "topology.kubernetes.io/segment-integrated": "seg-3",
+      "topology.kubernetes.io/tier": "data",
+      "topology.kubernetes.io/zone": "cloud1",
+      "workerNode": "no"
+    }
+  },
+  {
+    "name": "cloud-worker-4",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "5a1c172825644292a68fd6acee057f86",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "cloud-worker-4",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s4",
+      "topology.kubernetes.io/segment-integrated": "seg-3",
+      "topology.kubernetes.io/tier": "data",
+      "topology.kubernetes.io/zone": "cloud1",
+      "workerNode": "no"
+    }
+  },
+  {
+    "name": "cloud-worker-5",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "5a1c172825644292a68fd6acee057f86",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "cloud-worker-5",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s5",
+      "topology.kubernetes.io/segment-integrated": "seg-4",
+      "topology.kubernetes.io/tier": "data",
+      "topology.kubernetes.io/zone": "cloud2",
+      "workerNode": "no"
+    }
+  },
+  {
+    "name": "cloud-worker-6",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "5a1c172825644292a68fd6acee057f86",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "cloud-worker-6",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s6",
+      "topology.kubernetes.io/segment-integrated": "seg-4",
+      "topology.kubernetes.io/tier": "data",
+      "topology.kubernetes.io/zone": "cloud2",
+      "workerNode": "no"
+    }
+  },
+  {
+    "name": "cloud-worker-7",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "5a1c172825644292a68fd6acee057f86",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "cloud-worker-7",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s1",
+      "topology.kubernetes.io/segment-integrated": "seg-4",
+      "topology.kubernetes.io/tier": "data",
+      "topology.kubernetes.io/zone": "cloud2",
+      "workerNode": "no"
+    }
+  },
+  {
+    "name": "cloud-worker-8",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "5a1c172825644292a68fd6acee057f86",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "cloud-worker-8",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s2",
+      "topology.kubernetes.io/segment-integrated": "seg-4",
+      "topology.kubernetes.io/tier": "data",
+      "topology.kubernetes.io/zone": "cloud2",
+      "workerNode": "no"
+    }
+  },
+  {
+    "name": "macro-worker-1",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "macro-worker-1",
+      "kubernetes.io/os": "linux",
+      "sparkClient": "yes",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s1",
+      "topology.kubernetes.io/segment-integrated": "seg-5",
+      "topology.kubernetes.io/tier": "compute",
+      "topology.kubernetes.io/zone": "fog1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "macro-worker-2",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "macro-worker-2",
+      "kubernetes.io/os": "linux",
+      "sparkClient": "yes",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s2",
+      "topology.kubernetes.io/segment-integrated": "seg-5",
+      "topology.kubernetes.io/tier": "compute",
+      "topology.kubernetes.io/zone": "fog1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "macro-worker-3",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "macro-worker-3",
+      "kubernetes.io/os": "linux",
+      "sparkClient": "yes",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s3",
+      "topology.kubernetes.io/segment-integrated": "seg-5",
+      "topology.kubernetes.io/tier": "compute",
+      "topology.kubernetes.io/zone": "fog1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "macro-worker-4",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "macro-worker-4",
+      "kubernetes.io/os": "linux",
+      "sparkClient": "yes",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s4",
+      "topology.kubernetes.io/segment-integrated": "seg-5",
+      "topology.kubernetes.io/tier": "compute",
+      "topology.kubernetes.io/zone": "fog1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "macro-worker-5",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "macro-worker-5",
+      "kubernetes.io/os": "linux",
+      "sparkClient": "yes",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s5",
+      "topology.kubernetes.io/segment-integrated": "seg-6",
+      "topology.kubernetes.io/tier": "compute",
+      "topology.kubernetes.io/zone": "fog2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "macro-worker-6",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "macro-worker-6",
+      "kubernetes.io/os": "linux",
+      "sparkClient": "yes",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s6",
+      "topology.kubernetes.io/segment-integrated": "seg-6",
+      "topology.kubernetes.io/tier": "compute",
+      "topology.kubernetes.io/zone": "fog2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "macro-worker-7",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "macro-worker-7",
+      "kubernetes.io/os": "linux",
+      "sparkClient": "yes",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s1",
+      "topology.kubernetes.io/segment-integrated": "seg-6",
+      "topology.kubernetes.io/tier": "compute",
+      "topology.kubernetes.io/zone": "fog2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-1",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-1",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s1",
+      "topology.kubernetes.io/segment-integrated": "seg-1",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-10",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-10",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s4",
+      "topology.kubernetes.io/segment-integrated": "seg-1",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-11",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-11",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s5",
+      "topology.kubernetes.io/segment-integrated": "seg-1",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-12",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-12",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-0",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s6",
+      "topology.kubernetes.io/segment-integrated": "seg-0",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-13",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-13",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s1",
+      "topology.kubernetes.io/segment-integrated": "seg-2",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-14",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-14",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s2",
+      "topology.kubernetes.io/segment-integrated": "seg-0",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-15",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-15",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s3",
+      "topology.kubernetes.io/segment-integrated": "seg-0",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-16",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-16",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s4",
+      "topology.kubernetes.io/segment-integrated": "seg-0",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-17",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-17",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s5",
+      "topology.kubernetes.io/segment-integrated": "seg-2",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-18",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-18",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s6",
+      "topology.kubernetes.io/segment-integrated": "seg-0",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-19",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-19",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s1",
+      "topology.kubernetes.io/segment-integrated": "seg-2",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-2",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-2",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s2",
+      "topology.kubernetes.io/segment-integrated": "seg-1",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-20",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-20",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s2",
+      "topology.kubernetes.io/segment-integrated": "seg-0",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-21",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-21",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s3",
+      "topology.kubernetes.io/segment-integrated": "seg-2",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-22",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-22",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s4",
+      "topology.kubernetes.io/segment-integrated": "seg-8",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-23",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-23",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s5",
+      "topology.kubernetes.io/segment-integrated": "seg-2",
+      "topology.kubernetes.io/zone": "edge2",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-3",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-3",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s3",
+      "topology.kubernetes.io/segment-integrated": "seg-1",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-4",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-4",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s4",
+      "topology.kubernetes.io/segment-integrated": "seg-1",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-5",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-5",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s5",
+      "topology.kubernetes.io/segment-integrated": "seg-1",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-6",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-6",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s6",
+      "topology.kubernetes.io/segment-integrated": "seg-7",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-7",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-7",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s1",
+      "topology.kubernetes.io/segment-integrated": "seg-7",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-8",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-8",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s2",
+      "topology.kubernetes.io/segment-integrated": "seg-1",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "micro-worker-9",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "micro-worker-9",
+      "kubernetes.io/os": "linux",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment": "s3",
+      "topology.kubernetes.io/segment-integrated": "seg-7",
+      "topology.kubernetes.io/zone": "edge1",
+      "workerNode": "yes"
+    }
+  },
+  {
+    "name": "test-master",
+    "labels": {
+      "beta.kubernetes.io/arch": "amd64",
+      "beta.kubernetes.io/os": "linux",
+      "grasshopper.io/openstack-project": "ffff833f2281486eb39d45761f203e4d",
+      "kubernetes.io/arch": "amd64",
+      "kubernetes.io/hostname": "test-master",
+      "kubernetes.io/os": "linux",
+      "node-role.kubernetes.io/control-plane": "",
+      "node.kubernetes.io/exclude-from-external-load-balancers": "",
+      "route-reflector": "true",
+      "sparkClient": "yes",
+      "topology.kubernetes.io/integration-segment": "seg-1",
+      "topology.kubernetes.io/region": "ku-leuven",
+      "topology.kubernetes.io/segment-integrated": "seg-9",
+      "topology.kubernetes.io/zone": "master",
+      "workerNode": "yes"
+    }
+  }
+]

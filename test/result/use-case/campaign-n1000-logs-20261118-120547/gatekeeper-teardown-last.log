@@ -1,0 +1,32 @@
+--- Gatekeeper policy objects (constraints, templates, mutations, config) ---
+No resources found
+No resources found
+No resources found
+No resources found
+--- PodMonitors (metrics exporter) ---
+podmonitor.monitoring.coreos.com "gatekeeper-audit" deleted
+podmonitor.monitoring.coreos.com "gatekeeper-controller-manager" deleted
+--- Helm releases ---
+release gatekeeper-policy-manager not installed
+release "gatekeeper" uninstalled
+--- Leftovers: webhook configurations, CRDs, namespace ---
+customresourcedefinition.apiextensions.k8s.io "assign.mutations.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "assignimage.mutations.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "assignmetadata.mutations.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "configpodstatuses.status.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "configs.config.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "connectionpodstatuses.status.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "connections.connection.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "constraintpodstatuses.status.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "constrainttemplatepodstatuses.status.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "constrainttemplates.templates.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "expansiontemplate.expansion.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "expansiontemplatepodstatuses.status.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "modifyset.mutations.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "mutatorpodstatuses.status.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "providerpodstatuses.status.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "providers.externaldata.gatekeeper.sh" deleted
+customresourcedefinition.apiextensions.k8s.io "syncsets.syncset.gatekeeper.sh" deleted
+namespace "gatekeeper-system" deleted
+--- Verifying ---
+Gatekeeper removed.

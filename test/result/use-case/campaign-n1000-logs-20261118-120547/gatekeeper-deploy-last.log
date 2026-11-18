@@ -1,0 +1,31 @@
+--- Preflight ---
+ok
+
+--- Installing Gatekeeper chart 3.23.1 ---
+"gatekeeper" has been added to your repositories
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "gatekeeper" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Release "gatekeeper" does not exist. Installing it now.
+NAME: gatekeeper
+LAST DEPLOYED: Wed Nov 18 12:14:49 2026
+NAMESPACE: gatekeeper-system
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+
+--- Metrics exporter PodMonitors ---
+podmonitor.monitoring.coreos.com/gatekeeper-audit created
+podmonitor.monitoring.coreos.com/gatekeeper-controller-manager created
+
+--- Verifying ---
+deployment "gatekeeper-controller-manager" successfully rolled out
+deployment "gatekeeper-audit" successfully rolled out
+gatekeeper-audit-7585f95889-5fs5d                1/1   Running   0     20s   192.168.205.78    test-master   <none>   <none>
+gatekeeper-controller-manager-7d7c4bc4d5-7qmgx   1/1   Running   0     20s   192.168.205.118   test-master   <none>   <none>
+gatekeeper-controller-manager-7d7c4bc4d5-r8rzr   1/1   Running   0     20s   192.168.205.98    test-master   <none>   <none>
+gatekeeper-controller-manager-7d7c4bc4d5-rxtbj   1/1   Running   0     20s   192.168.205.117   test-master   <none>   <none>
+--- Waiting until the webhooks answer (rollout status is not enough) ---
+Gatekeeper webhooks answering after 6s
+
+Gatekeeper deployed. Remove it again with teardown-gatekeeper-stack.sh before evaluating another arm.

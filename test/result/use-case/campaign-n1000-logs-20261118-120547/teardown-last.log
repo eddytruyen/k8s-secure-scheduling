@@ -1,0 +1,64 @@
+Switched to context "kubernetes-admin@kubernetes".
+=== KLASTOS stack teardown (KWOK cluster, context: kubernetes-admin@kubernetes) ===
+
+--- Step 1: Removing operator pods ---
+
+--- Step 2: Removing leftover custom resources ---
+
+--- Step 3: Removing zone label - SKIPPED (CLUSTER_BACKEND=real keeps the cluster's own zones) ---
+
+--- Step 4: Removing RBAC ---
+
+--- Step 5: Removing namespaces ---
+
+--- Step 6: Removing CRDs ---
+
+--- Step 7: Removing Diktyo scheduler ---
+
+--- Step 8: Removing csi-gate-webhook admission controller (if installed) ---
+make: Entering directory '/home/ubuntu/githubrepos/Nestor-paper/full-example/deploy'
+=== Undeploying CSI gate webhook (operators left untouched) ===
+kubectl delete -f /home/ubuntu/githubrepos/Nestor-paper/csi-gate-webhook/deploy/deployment.yaml --ignore-not-found
+kubectl delete -f /home/ubuntu/githubrepos/Nestor-paper/csi-gate-webhook/deploy/webhook-config.yaml --ignore-not-found
+kubectl delete -f /home/ubuntu/githubrepos/Nestor-paper/csi-gate-webhook/deploy/rbac.yaml --ignore-not-found
+make: Leaving directory '/home/ubuntu/githubrepos/Nestor-paper/full-example/deploy'
+--- Step 8b: Removing OPA admission controller (deprecated; if installed) ---
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Preflight checks...
+[0;32m✅[0m kubectl found.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 1: Removing MutatingWebhookConfiguration...
+[1;33m⚠️  [0m MutatingWebhookConfiguration 'opa-mutating-webhook' not found, skipping.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 2: Removing OPA deployment resources...
+[1;33m⚠️  [0m Namespace 'opa' not found — skipping ac.yaml deletion.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 3: Removing policy ConfigMap...
+[0;32m✅[0m ConfigMap 'opa-policy' deleted.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 4: Removing TLS secret...
+[0;32m✅[0m Secret 'opa-server' deleted.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 5: Removing webhook-exclusion labels from system namespaces...
+label "openpolicyagent.org/webhook" not found.
+namespace/kube-system not labeled
+[0;32m✅[0m Label removed from namespace 'kube-system'.
+[1;33m⚠️  [0m Namespace 'opa' not found, skipping.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 6: Deleting opa namespace...
+[1;33m⚠️  [0m Namespace 'opa' not found, skipping.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 7: Removing cluster-scoped RBAC resources...
+[0;32m✅[0m Cluster-scoped RBAC deleted.
+[1;33m----------------------------------------[0m
+[1;33mℹ️  [0m Step 8: Removing locally generated TLS and config files...
+[0;32m✅[0m Local generated files removed.
+[1;33m----------------------------------------[0m
+
+[0;32m========================================[0m
+[0;32m  OPA Admission Controller uninstalled  [0m
+[0;32m========================================[0m
+
+
+=== Teardown complete ===
+Gatekeeper and node topology.kubernetes.io/region labels were left untouched.

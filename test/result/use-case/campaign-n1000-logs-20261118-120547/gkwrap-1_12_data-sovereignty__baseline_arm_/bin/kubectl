@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+"/usr/local/bin/kubectl" "$@"; rc=$?
+if [ $rc -eq 0 ] && [[ " $* " == *" apply "* ]] && [[ "$*" == *use-case-demos* ]]; then "/home/ubuntu/klastos-kul/experiment1/lib/gk-wait-ready.sh" >&2 || true; fi
+exit $rc
