@@ -30,6 +30,7 @@
 #     rather than trusting this default blindly.
 
 {{$totalSchedulerThroughputPods := DefaultParam .CL2_SCHEDULER_THROUGHPUT_PODS 5000}}
+{{$enableSchedulerMetrics := DefaultParam .CL2_ENABLE_SCHEDULER_METRICS true}}  # false where kube-scheduler binds 127.0.0.1 (kubeadm default)
 {{$halfPods := DivideInt $totalSchedulerThroughputPods 2}}
 {{$defaultQps := DefaultParam .CL2_DEFAULT_QPS  500}}
 {{$defaultBurst := DefaultParam .CL2_DEFAULT_BURST 1000}}
@@ -84,12 +85,14 @@ steps:
       action: start
       labelSelector: group = direct-scheduler-throughput
 
+{{if $enableSchedulerMetrics}}
   - Identifier: SchedulingMetrics
     Method: SchedulingMetrics
     Params:
       action: start
       labelSelector: group = direct-scheduler-throughput
       measurementInterval: 1s
+{{end}}
 
   - Identifier: SchedulingThroughputPrometheus
     Method: SchedulingThroughputPrometheus
@@ -137,10 +140,12 @@ steps:
     Method: APIResponsivenessPrometheus
     Params:
       action: gather
+{{if $enableSchedulerMetrics}}
   - Identifier: SchedulingMetrics
     Method: SchedulingMetrics
     Params:
       action: gather
+{{end}}
   - Identifier: DirectSchedulingThroughput
     Method: SchedulingThroughput
     Params:
