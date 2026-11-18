@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+# ClusterLoader2 target selection. Both default to the historical values, so an
+# unset environment behaves exactly as before (local kind+KWOK cluster):
+#   KUBECONFIG    - the cluster to drive. CL2 takes an explicit --kubeconfig, so
+#                   without this it ignores the environment and silently runs
+#                   against ~/.kube/config whatever the caller intended.
+#   CL2_PROVIDER  - kind|local|skeleton|gce|... "kind" assumes a kind cluster and
+#                   probes for its control-plane container; use "skeleton" for a
+#                   plain remote cluster.
 # Requires: node labels for $TEST's policy already applied once via
 # `POLICY=$TEST update-labels.sh`, before this script's first invocation -
 # see run-klastos-use-case-test.sh's header for why relabeling on every
@@ -49,7 +57,7 @@ CL2_PROMETHEUS_TOLERATE_MASTER=true \
     --log_file=$SCRIPT_DIR/result/use-case/$TEST-test.log \
     --report-dir=$SCRIPT_DIR/result/use-case/$TEST-test \
     --testsuite=$SCRIPT_DIR/use-case/$TEST/scheduler-suite.yaml \
-    --nodes=$NODES --provider=kind --kubeconfig=$HOME/.kube/config --v=2
+    --nodes=$NODES --provider="${CL2_PROVIDER:-kind}" --kubeconfig="${KUBECONFIG:-$HOME/.kube/config}" --v=2
 
 echo -e "Look into $SCRIPT_DIR/result/use-case/$TEST-test for the measurements\n"
 

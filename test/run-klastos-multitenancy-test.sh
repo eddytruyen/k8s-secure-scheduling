@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+# ClusterLoader2 target selection. Both default to the historical values, so an
+# unset environment behaves exactly as before (local kind+KWOK cluster):
+#   KUBECONFIG    - the cluster to drive. CL2 takes an explicit --kubeconfig, so
+#                   without this it ignores the environment and silently runs
+#                   against ~/.kube/config whatever the caller intended.
+#   CL2_PROVIDER  - kind|local|skeleton|gce|... "kind" assumes a kind cluster and
+#                   probes for its control-plane container; use "skeleton" for a
+#                   plain remote cluster.
 # KLASTOS counterpart of run-use-case-test.sh (TEST=multi-tenancy), for the
 # multi-tenancy use case — second use-case instantiation of Experiment 1,
 # alongside run-klastos-use-case-test.sh (data-sovereignty).
@@ -128,7 +136,7 @@ for CLASS in $CLASSES; do
       --report-dir="$SCRIPT_DIR/result/use-case/$RESULT_DIR_NAME/$CLASS" \
       --testconfig="$SCRIPT_DIR/use-case/$USE_CASE_SUBDIR/$TESTCONFIG_NAME" \
       --testoverrides="$SCRIPT_DIR/use-case/$USE_CASE_SUBDIR/${CLASS}${OVERRIDE_SUFFIX}/override.yaml" \
-      --nodes="$NODES" --provider=kind --kubeconfig="$HOME/.kube/config" --v=2
+      --nodes="$NODES" --provider="${CL2_PROVIDER:-kind}" --kubeconfig="${KUBECONFIG:-$HOME/.kube/config}" --v=2
 
   echo -e "Look into $SCRIPT_DIR/result/use-case/$RESULT_DIR_NAME/$CLASS for the measurements\n"
 
